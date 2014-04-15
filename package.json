@@ -1,0 +1,49 @@
+{
+  "name": "agreemates",
+  "version": "0.0.1",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.10.0",
+	"mocha": "*",
+	"chai": "*",
+	"sinon": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/AgreeMates/AgreeMates.git"
+  },
+  "contributors": [
+    {
+      "name": "Aengus McMillin",
+      "email": "aengusm@uw.edu"
+    },
+    {
+      "name": "Amit Burstein",
+      "email": "bursta@uw.edu"
+    },
+    {
+      "name": "Nickolas Evans",
+      "email": "evansn3@uw.edu"
+    },
+    {
+      "name": "Jordan Heier",
+      "email": "heierj@uw.edu"
+    },
+    {
+      "name": "William McNamara",
+      "email": "mcnawi11@uw.edu"
+    },
+    {
+      "name": "Lukas Bischofberger",
+      "email": "lukasbi@uw.edu"
+    },
+    {
+      "name": "Dennis Ding",
+      "email": "dennisd7@uw.edu"
+    },
+    {
+      "name": "Haocheng Zhao",
+      "email": "samzhao@uw.edu"
+    }
+  ]
+}
