@@ -1,3 +1,10 @@
 language: node_js
 node_js:
-    - "0.10"
+    - '0.10'
+deploy:
+    provider: heroku
+    app:
+        master: agreemates
+        develop: agreemates-develop
+    api_key:
+        secure: KpxcjXqtCn9KAWyanHWQ6PYUQZ3UIWdmZKInLeAvRIj1IzJkR92zWFjr2iS25jnsaP+w6bGkwjfzDdNpEnvovp1I+jIiXKj7kOopv6LHresuesc3DdlsOoVhfxZNnuXpesKNZBvwA4ee+V4KJ3VNOi6Q0o//xUsewKjPxExcKb4=
