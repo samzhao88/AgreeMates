@@ -18,3 +18,14 @@ Haocheng Zhao (samzhao@uw)
 [Angular](http://angularjs.org/)  
 [MongoDB](https://www.mongodb.org/)  
 [PostgreSQL](http://www.postgresql.org/)
+
+## Installation
+Use the included vagrant configuration to setup a custom AgreeMates server.
+
+```
+cd installation
+vagrant up
+vagrant ssh
+```
+
+Once setup, AgreeMates will be installed at '/AgreeMates'

@@ -20,3 +20,8 @@ coverage
 build/Release
 
 bower_components
+
+# Vagrant Stuff
+.vagrant
+installation/tmp
+installation/modules
