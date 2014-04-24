@@ -1,54 +1,62 @@
 {
-	"name": "agreemates",
-	"version": "0.0.1",
-	"dependencies": {
-		"express": "4.x"
-	},
-	"devDependencies": {
-		"mocha": "*",
-		"chai": "*",
-		"sinon": "*",
-		"gulp": "~3.6.1",
-		"gulp-rename": "~1.2.0",
-		"gulp-concat": "~2.2.0",
-		"gulp-uglify": "~0.2.1",
-		"gulp-jshint": "~1.5.3"
-	},
-	"repository": {
-		"type": "git",
-		"url": "http://github.com/AgreeMates/AgreeMates.git"
-	},
-	"contributors": [
-	{
-		"name": "Aengus McMillin",
-		"email": "aengusm@uw.edu"
-	},
-	{
-		"name": "Amit Burstein",
-		"email": "bursta@uw.edu"
-	},
-	{
-		"name": "Nickolas Evans",
-		"email": "evansn3@uw.edu"
-	},
-	{
-		"name": "Jordan Heier",
-		"email": "heierj@uw.edu"
-	},
-	{
-		"name": "William McNamara",
-		"email": "mcnawi11@uw.edu"
-	},
-	{
-		"name": "Lukas Bischofberger",
-		"email": "lukasbi@uw.edu"
-	},
-	{
-		"name": "Dennis Ding",
-		"email": "dennisd7@uw.edu"
-	},
-	{
-		"name": "Haocheng Zhao",
-		"email": "samzhao@uw.edu"
-	}]
+  "name": "agreemates",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "4.x"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "sinon": "*",
+    "gulp": "~3.6.1",
+    "gulp-rename": "~1.2.0",
+    "gulp-concat": "~2.2.0",
+    "gulp-uglify": "~0.2.1",
+    "gulp-jshint": "~1.5.3",
+    "karma": "^0.12.10",
+    "karma-phantomjs-launcher": "~0.1.1",
+    "karma-mocha": "^0.1.3",
+    "karma-chai": "0.0.2",
+    "karma-sinon": "~1.0.0",
+    "gulp-istanbul": "^0.1.1",
+    "gulp-mocha": "^0.4.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/AgreeMates/AgreeMates.git"
+  },
+  "contributors": [
+    {
+      "name": "Aengus McMillin",
+      "email": "aengusm@uw.edu"
+    },
+    {
+      "name": "Amit Burstein",
+      "email": "bursta@uw.edu"
+    },
+    {
+      "name": "Nickolas Evans",
+      "email": "evansn3@uw.edu"
+    },
+    {
+      "name": "Jordan Heier",
+      "email": "heierj@uw.edu"
+    },
+    {
+      "name": "William McNamara",
+      "email": "mcnawi11@uw.edu"
+    },
+    {
+      "name": "Lukas Bischofberger",
+      "email": "lukasbi@uw.edu"
+    },
+    {
+      "name": "Dennis Ding",
+      "email": "dennisd7@uw.edu"
+    },
+    {
+      "name": "Haocheng Zhao",
+      "email": "samzhao@uw.edu"
+    }
+  ]
 }
