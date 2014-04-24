@@ -19,6 +19,9 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
+# Remove fsevents for cross platform compatibility
+fsevents
+
 bower_components
 
 # Vagrant Stuff
