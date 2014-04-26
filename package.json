@@ -6,7 +6,8 @@
     "rcfinder": "~0.1.6",
     "knex": "^0.5.13",
     "bookshelf": "^0.6.10",
-    "pg": "^3.0.3"
+    "pg": "^3.0.3",
+    "lodash.bind": "^2.4.1"
   },
   "devDependencies": {
     "mocha": "*",
