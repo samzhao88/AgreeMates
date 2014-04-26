@@ -2,7 +2,8 @@
   "name": "agreemates",
   "version": "0.0.1",
   "dependencies": {
-    "express": "4.x"
+    "express": "4.x",
+	"rcfinder": "~0.1.6"
   },
   "devDependencies": {
     "mocha": "*",
