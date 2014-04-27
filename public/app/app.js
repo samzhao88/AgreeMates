@@ -1,12 +1,14 @@
 // Define all the modules with no dependencies
 angular.module('Dashboard', []);
 angular.module('User', []);
+angular.module('Nav', []);
 
 // Lastly, define your "main" module and inject all other modules as dependencies
 var app = angular.module('Main',
   [
     'Dashboard',
     'User',
+    'Nav',
     'ngRoute',
   ]
 );
@@ -20,6 +22,21 @@ app.config(['$routeProvider',
       	controller: 'editUser'
       }).
       when('/user', {
+        templateUrl: 'views/user.html',
+        module: 'User',
+        controller: 'showUser'
+      }).
+      when('/bills', {
+        templateUrl: 'views/user.html',
+        module: 'User',
+        controller: 'showUser'
+      }).
+      when('/contact', {
+        templateUrl: 'views/user.html',
+        module: 'User',
+        controller: 'showUser'
+      }).
+      when('/about', {
         templateUrl: 'views/user.html',
         module: 'User',
         controller: 'showUser'
