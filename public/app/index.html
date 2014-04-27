@@ -1,21 +1,42 @@
 <!doctype html>
-<html lang="en" ng-app="Main">
+<html lang="en" ng-app>
 <head>
   <meta charset="utf-8">
   <title>AgreeMates</title>
-  <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/app.css">
+  <!--<link rel="stylesheet" href="css/app.css">-->
+
+  <script src="controllers/navbar.js"></script>
   <script src="vendors/angular.js"></script>
-  <script src="vendors/angular-route.js"></script>
+  
+  <!--<link rel="stylesheet" href="css/bootstrap-theme.min.css">-->
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+  <script src="vendors/bootstrap.min.js"></script>
+
+  <!--<script src="vendors/angular-route.js"></script>
   <script src="app.js"></script>
+
   <script src="controllers/dashboard.js"></script>
-  <script src="controllers/user.js"></script>
+  <script src="controllers/user.js"></script>-->
   
 </head>
 <body>
- 
- <ng-view></ng-view>
+
+<h1> AgreeMates </h1>
+<br>
+
+
+<aside class="well span3" ng-app="navList">
+    <ul class="nav nav-list" ng-controller="navCtrl">
+
+        <li ng-class="navClass('home')"><a href='#/home'>Home</a></li>
+        <li ng-class="navClass('bills')"><a href='#/bills'> Bills </a></li>
+        <li ng-class="navClass('about')"><a href='#/about'>About Us</a></li>  
+        <li ng-class="navClass('contact')"><a href='#/contact'>Contact Us</a></li>
+
+    </ul>
+</aside>
+
+<ng-view></ng-view>
  
 </body>
 </html>
