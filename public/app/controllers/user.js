@@ -1,7 +1,7 @@
 // app/controllers/dashboard.js
 angular.module('User')
-.controller('showUser', function($scope) {
- 	$scope.text = "show user";
+.controller('showUser', function($scope, $location) {
+ 	$scope.text = $location.path();
 })
 .controller('editUser', function($scope) {
 	$scope.text = "edit user";

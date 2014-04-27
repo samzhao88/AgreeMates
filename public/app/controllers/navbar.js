@@ -1,8 +1,7 @@
-var navList = angular.module('navList', []);
+//NavController for the entire app
 
-navList.controller('navCtrl', ['$scope', '$location', function ($scope, $location) {
-    $scope.navClass = function (page) {
-        var currentRoute = $location.path().substring(1) || 'home';
-        return page === currentRoute ? 'active' : '';
-    };        
+app.controller('navCtrl', ['$scope', '$location', function ($scope, $location) {
+    $scope.routeIs = function(routeName) {
+    return $location.path() === routeName;
+  };
 }]);
