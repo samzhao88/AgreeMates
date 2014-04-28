@@ -1,7 +1,7 @@
 var express = require('express');
 var bookshelf  = require('bookshelf');
-var app = express();
 
+var app = express();
 
 //this should only be called once in the application -> backend put that somewhere in the configs pls :)
 var bookshelf.pg = Bookshelf.initialize({
