@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var compress = require('compression');
 var bookshelf  = require('bookshelf');
+var router = require('./routes');
 var config = require('./config');
 
 var app = express();
@@ -20,10 +21,13 @@ var db = bookshelf.initialize({
   }
 });
 
+app.use(express.static(__dirname + '/public/app'));
 app.use(logger());
 app.use(compress());
 app.use(bodyParser());
 app.use(cookieParser());
+
+router(app);
 
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
