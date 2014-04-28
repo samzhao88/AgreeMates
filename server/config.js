@@ -5,7 +5,7 @@ var env = process.env.NODE_ENV || 'development';
 var config = {
   development: {
     root: root,
-    port: 80 || 3000,
+    port: process.env.PORT || 3000,
     db: {
       host: '127.0.0.1',
       user: 'USER',
@@ -15,7 +15,7 @@ var config = {
   },
   production: {
     root: root,
-    port: 80,
+    port: process.env.PORT,
     db: {
       host: 'HOST',
       user: 'USER',
