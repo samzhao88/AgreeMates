@@ -1,41 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" ng-app="Main">
 <head>
   <meta charset="utf-8">
   <title>AgreeMates</title>
-  <link rel="stylesheet" type="text/css" href="css/app.css">
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-
-  
-  <script src="vendors/angular.js"></script>
-  <script src="vendors/angular-route.js"></script>
-
-  <script src="app.js"></script>
-
-  <script src="controllers/dashboard.js"></script>
-  <script src="controllers/user.js"></script>
-  <script src="controllers/navbar.js"></script>
-  
-  
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 
-<h1> AgreeMates </h1>
-<br>
+  <h1>AgreeMates</h1>
+  <br>
 
+  <aside class="well span3">
+      <ul class="nav nav-list" ng-controller="navCtrl">
+          <li ng-class="{active: routeIs('/')}"><a href='#/'>Home</a></li>
+          <li ng-class="{active: routeIs('/bills')}"><a href='#/bills'> Bills </a></li>
+          <li ng-class="{active: routeIs('/about')}"><a href='#/about'>About Us</a></li>
+          <li ng-class="{active: routeIs('/contact')}"><a href='#/contact'>Contact Us</a></li>
+      </ul>
+  </aside>
 
-<aside class="well span3">
-    <ul class="nav nav-list" ng-controller="navCtrl">
+  <ng-view></ng-view>
 
-        <li ng-class="{active: routeIs('/')}"><a href='#/'>Home</a></li>
-        <li ng-class="{active: routeIs('/bills')}"><a href='#/bills'> Bills </a></li>
-        <li ng-class="{active: routeIs('/about')}"><a href='#/about'>About Us</a></li>  
-        <li ng-class="{active: routeIs('/contact')}"><a href='#/contact'>Contact Us</a></li>
+  <script src="bower_components/jquery/jquery.min.js"></script>
+  <script src="bower_components/angular/angular.min.js"></script>
+  <script src="bower_components/angular-route/angular-route.min.js"></script>
+  <script src="app.js"></script>
+  <script src="controllers/dashboard.js"></script>
+  <script src="controllers/user.js"></script>
+  <script src="controllers/navbar.js"></script>
 
-    </ul>
-</aside>
-
-<ng-view></ng-view>
- 
 </body>
 </html>
