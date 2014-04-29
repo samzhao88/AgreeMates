@@ -4,11 +4,11 @@
 
 var Bookshelf = db;
 
-var Model = require("./").model;
+var SupplyModel = require("./supply").model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "",
-	: function() {
-		return this.belongsToOne(Model);
+	tableName: "supplies",
+	Apartment: function() {
+		return this.belongsToOne(ApartmentModel);
 	},
 });
