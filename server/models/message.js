@@ -8,7 +8,7 @@ var CommentModel = require("./comment").model;
 var BoardModel = require("./board").model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "",
+	tableName: "message",
 	comment : function() {
 		return this.hasMany(CommentModel);
 	},
