@@ -4,11 +4,15 @@
 
 var Bookshelf = db;
 
-var Model = require("./").model;
+var MessageModel = require("./message").model;
+var UserModel = require("./user").model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "",
-	: function() {
-		return this.belongsToOne(Model);
+	tableName: "comments",
+	message: function() {
+		return this.belongsToOne(MessageModel);
+	},
+	user: function() {
+		return this.belongsToOne(UserModel);
 	},
 });

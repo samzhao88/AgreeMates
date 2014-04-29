@@ -4,11 +4,15 @@
 
 var Bookshelf = db;
 
-var Model = require("./").model;
+var CommentModel = require("./comment").model;
+var BoardModel = require("./board").model;
 
 exports.model = Bookshelf.Model.extend({
 	tableName: "",
-	: function() {
-		return this.belongsToOne(Model);
+	comment : function() {
+		return this.hasMany(CommentModel);
+	},
+	board : function() {
+		return this.belongsToOne(BoardModel);
 	},
 });
