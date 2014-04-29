@@ -2,36 +2,36 @@
  * This is the model representation for a single user.
  */
 
-var Bookshelf = require('bookshelf').pg;
+var Bookshelf = db;
 
-var Comment = require("./comment").model;
-var Message = require("./message").model;
-var Chore = require("./chore").model;
-var Bill = require("./bill").model;
-var Payment = require("./payment").model;
-var Aparment = require("./apartment").model;
+var CommentModel = require("./comment").model;
+var MessageModel = require("./message").model;
+var ChoreModel = require("./chore").model;
+var BillModel = require("./bill").model;
+var PaymentModel = require("./payment").model;
+var AparmentModel = require("./apartment").model;
 
 exports.model = Bookshelf.Model.extend({
 	tableName: "users",
 	comments: function() {
-		return this.hasMany(Comment);
+		return this.hasMany(CommentModel);
 	},
 	messages: function() {
-		return this.hasMany(Message);
+		return this.hasMany(MessageModel);
 	},
 	createdChores: function() {
-		return this.hasMany(Chore);
+		return this.hasMany(ChoreModel);
 	},
 	createdBills: function() {
-		return this.hasMany(Bill);
+		return this.hasMany(BillModel);
 	},
 	payments: function() {
-		return this.hasMany(Payment);
+		return this.hasMany(PaymentModel);
 	},
 	assignedChores: function() {
-		return this.belongsToMany(Chore);
+		return this.belongsToMany(ChoreModel);
 	},
 	apartment: function() {
-		return this.belongsToOne(Aparment);
+		return this.belongsToOne(AparmentModel);
 	}
 });
