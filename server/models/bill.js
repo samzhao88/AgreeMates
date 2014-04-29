@@ -1,5 +1,5 @@
 /* 
- * This is the model representation for a single .
+ * This is the model representation for a single bill
  */
 
 var Bookshelf = db;

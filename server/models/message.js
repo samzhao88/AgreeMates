@@ -1,5 +1,5 @@
 /* 
- * This is the model representation for a single .
+ * This is the model representation for a single message
  */
 
 var Bookshelf = db;
