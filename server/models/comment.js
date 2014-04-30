@@ -2,7 +2,7 @@
  * This is the model representation for a single .
  */
 
-var Bookshelf = db;
+var Bookshelf = require('bookshelf').db;
 
 var Model = require("./").model;
 

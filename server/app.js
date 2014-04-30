@@ -10,7 +10,7 @@ var config = require('./config');
 var app = express();
 
 //this should only be called once in the application -> backend put that somewhere in the configs pls :)
-var db = bookshelf.initialize({
+bookshelf.db = bookshelf.initialize({
   client: 'pg',
   connection: {
     host     : config.db.host,
