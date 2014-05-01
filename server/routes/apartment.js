@@ -4,7 +4,11 @@ var apartment = function(app) {
     res.end();
   });
 
-  app.get('/apartment/edit/:apt', function(req, res) {
+  app.post('/apartment/add', function(req, res) {
+    res.end();
+  });
+
+  app.post('/apartment/edit', function(req, res) {
     res.end();
   });
 
@@ -16,11 +20,19 @@ var apartment = function(app) {
     res.end();
   });
 
-  app.get('/apartment/info', function(req, res) {
+  app.post('/apartment/delete', function(req, res) {
+    res.end();
+  });
+
+  app.get('/apartment', function(req, res) {
     res.end();
   });
 
   app.get('/apartment/add/roommate', function(req, res) {
+    res.end();
+  });
+
+  app.post('/apartment/add/roommate', function(req, res) {
     res.end();
   });
 
