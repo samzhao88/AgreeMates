@@ -23,6 +23,7 @@ build/Release
 fsevents
 
 bower_components
+node_modules
 
 # Vagrant Stuff
 .vagrant
