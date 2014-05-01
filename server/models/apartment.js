@@ -28,3 +28,7 @@ exports.model = Bookshelf.Model.extend({
 		return this.belongsToMany(UserModel);
 	},
 });
+
+exports.collection = Bookshelf.Collection.extend({
+	model: exports.model
+});

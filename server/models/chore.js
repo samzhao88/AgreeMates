@@ -19,3 +19,7 @@ exports.model = Bookshelf.Model.extend({
 		return this.belongsToOne(ApartmentModel);
 	}
 });
+
+exports.collection = Bookshelf.Collection.extend({
+	model: exports.model
+});
