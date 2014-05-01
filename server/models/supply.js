@@ -2,7 +2,7 @@
  * This is the model representation for a single supply
  */
 
-var Bookshelf = require('bookshelf').db;
+var Bookshelf = require('bookshelf').DB;
 
 var ApartmentModel = require("./apartment").model;
 

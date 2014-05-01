@@ -33,23 +33,23 @@ app.use(cookieParser());
 router(app);
 app.use(express.static(path.join(__dirname + './../public/app')));
 
-
-var UserModel = require('./models/user');
-
-var us = new UserModel;
-
-
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
   
-  console.log(getMethods(us));
-  /*new UserModel({'firstname': 'first'})
+  var UserModel = require('./models/user').collection;
+
+  new UserModel()
   .fetch()
   .then(function(model) {
-    // outputs 'Slaughterhouse Five'
-    console.log(model.get('firstname'));
+  	for(mod in model){
+  		console.log(mod.get('firstname'));
+    	console.log(mod.get('lastname'));
+  	}
+  	console.log(getMethods(model));
+    
+
   });
-*/
+
 });
 
 function getMethods(obj)

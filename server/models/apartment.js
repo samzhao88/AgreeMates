@@ -2,7 +2,7 @@
  * This is the model representation for a single apartment
  */
 
-var Bookshelf = require('bookshelf').db;
+var Bookshelf = require('bookshelf').DB;
 
 var BoardModel = require("./board").model;
 var SupplyModel = require("./supply").model;
