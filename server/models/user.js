@@ -2,18 +2,20 @@
  * This is the model representation for a single user.
  */
 
-var Bookshelf = require('bookshelf').db;
+var Bookshelf = require('bookshelf').DB;
 
+/*
 var CommentModel = require("./comment").model;
 var MessageModel = require("./message").model;
 var ChoreModel = require("./chore").model;
 var BillModel = require("./bill").model;
 var PaymentModel = require("./payment").model;
 var AparmentModel = require("./apartment").model;
+*/
 
 exports.model = Bookshelf.Model.extend({
 	tableName: "users",
-	comments: function() {
+	/*comments: function() {
 		return this.hasMany(CommentModel);
 	},
 	messages: function() {
@@ -33,5 +35,5 @@ exports.model = Bookshelf.Model.extend({
 	},
 	apartment: function() {
 		return this.belongsToOne(AparmentModel);
-	}
+	}*/
 });

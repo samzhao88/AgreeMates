@@ -4,7 +4,7 @@
 
 var Bookshelf = require('bookshelf').db;
 
-var SupplyModel = require("./supply").model;
+var ApartmentModel = require("./apartment").model;
 
 exports.model = Bookshelf.Model.extend({
 	tableName: "supplies",
