@@ -1,16 +1,22 @@
 // Define all the modules with no dependencies
-angular.module('Dashboard', []);
-angular.module('User', []);
-angular.module('Nav', []);
-angular.module('Bill',[])
+angular.module('Calendar', []);
+angular.module('Bills', []);
+angular.module('Chores', []);
+angular.module('Supplies',[]);
+angular.module('Board', []);
+angular.module('Settings', []);
+angular.module('Profile', []);
 
 // Lastly, define your "main" module and inject all other modules as dependencies
 var app = angular.module('Main',
   [
-    'Dashboard',
-    'User',
-    'Nav',
-    'Bill',
+    'Calendar',
+    'Bills',
+    'Chores',
+    'Supplies',
+    'Board',
+    'Settings',
+    'Profile',
     'ngRoute'
   ]
 );
@@ -18,35 +24,30 @@ var app = angular.module('Main',
 app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
-       when('/user/edit', {
-      	templateUrl: 'views/user.html',
-      	module: 'User',
-      	controller: 'editUser'
-      }).
-      when('/user', {
-        templateUrl: 'views/user.html',
-        module: 'User',
-        controller: 'showUser'
+      when('/', {
+        templateUrl: 'views/showCalendar.html',
+        module: 'Calendar',
+        controller: 'showCalendar'
       }).
       when('/bills', {
-        templateUrl: 'views/user.html',
-        module: 'User',
-        controller: 'showUser'
+        templateUrl: 'views/showBills.html',
+        module: 'Bills',
+        controller: 'showBills'
       }).
-      when('/contact', {
-        templateUrl: 'views/user.html',
-        module: 'User',
-        controller: 'showUser'
+      when('/chores', {
+        templateUrl: 'views/showChores.html',
+        module: 'Chores',
+        controller: 'showChores'
       }).
-      when('/about', {
-        templateUrl: 'views/user.html',
-        module: 'User',
-        controller: 'showUser'
+      when('/supplies', {
+        templateUrl: 'views/showSupplies.html',
+        module: 'Supplies',
+        controller: 'showSupplies'
       }).
-      when('/', {
-        templateUrl: 'views/user.html',
-        module: 'Dashboard',
-        controller: 'showDashboard'
+      when('/board', {
+        templateUrl: 'views/showBoard.html',
+        module: 'Board',
+        controller: 'showBoard'
       }).
       otherwise({
         redirectTo: '/'
