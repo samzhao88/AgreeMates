@@ -17,7 +17,7 @@ var bills = function(app) {
   });
 
   app.get('/bills/all', function(req, res) {
-    res.end();
+    res.json({title: 'Bills'});
   });
 
   app.get('/bills/recent', function(req, res) {
