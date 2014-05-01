@@ -2,7 +2,7 @@
  * This is the model representation for a single payment.
  */
 
-var Bookshelf = db;
+var Bookshelf = require('bookshelf').db;
 
 var UserModel = require("./user").model;
 var BillModel = require("./bill").model;

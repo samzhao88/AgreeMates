@@ -2,7 +2,7 @@
  * This is the model representation for a single comment
  */
 
-var Bookshelf = db;
+var Bookshelf = require('bookshelf').db;
 
 var MessageModel = require("./message").model;
 var UserModel = require("./user").model;

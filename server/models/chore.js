@@ -2,7 +2,7 @@
  * This is the model representation for a single chore
  */
 
-var Bookshelf = db;
+var Bookshelf = require('bookshelf').db;
 
 var UserModel = require("./user").model;
 var ApartmentModel = require("./apartment").model;

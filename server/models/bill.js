@@ -2,7 +2,7 @@
  * This is the model representation for a single bill
  */
 
-var Bookshelf = db;
+var Bookshelf = require('bookshelf').db;
 
 var PaymentModel = require("./payment").model;
 var ApartmentModel = require("./apartment").model;
