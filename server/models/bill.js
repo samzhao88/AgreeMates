@@ -6,6 +6,7 @@ var Bookshelf = db;
 
 var PaymentModel = require("./payment").model;
 var ApartmentModel = require("./apartment").model;
+var ApartmentModel = require("./apartment").model;
 
 exports.model = Bookshelf.Model.extend({
 	tableName: "bills",
@@ -14,5 +15,8 @@ exports.model = Bookshelf.Model.extend({
 	},
 	apartment: function() {
 		return this.belongsToOne(ApartmentModel);
+	},
+	createdUser: function() {
+		return this.belongsToOne(UserModel);
 	},
 });

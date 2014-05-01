@@ -8,7 +8,7 @@ var SupplyModel = require("./supply").model;
 
 exports.model = Bookshelf.Model.extend({
 	tableName: "supplies",
-	Apartment: function() {
+	apartment: function() {
 		return this.belongsToOne(ApartmentModel);
 	},
 });
