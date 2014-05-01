@@ -1,6 +1,8 @@
 CREATE TABLE users 
   ( 
-     id           SERIAL PRIMARY KEY, 
+     id           SERIAL PRIMARY KEY,
+	 google_id    VAR_CHAR(21),
+	 facebook_id  VAR_CHAR(21),
      first_name   VAR_CHAR(255) NOT NULL, 
      last_name    VAR_CHAR(255) NOT NULL, 
      email        VAR_CHAR(255) NOT NULL, 
