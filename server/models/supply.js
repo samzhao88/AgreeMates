@@ -1,14 +1,14 @@
 /* 
- * This is the model representation for a single .
+ * This is the model representation for a single supply
  */
 
 var Bookshelf = require('bookshelf').db;
 
-var Model = require("./").model;
+var SupplyModel = require("./supply").model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "",
-	: function() {
-		return this.belongsToOne(Model);
+	tableName: "supplies",
+	apartment: function() {
+		return this.belongsToOne(ApartmentModel);
 	},
 });

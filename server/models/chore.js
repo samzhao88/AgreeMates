@@ -1,14 +1,21 @@
 /* 
- * This is the model representation for a single .
+ * This is the model representation for a single chore
  */
 
 var Bookshelf = require('bookshelf').db;
 
-var Model = require("./").model;
+var UserModel = require("./user").model;
+var ApartmentModel = require("./apartment").model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "",
-	: function() {
-		return this.belongsToOne(Model);
+	tableName: "chores",
+	assignedUsers: function() {
+		return this.belongsToMany(UserModel);
 	},
+	createdUser: function() {
+		return this.belongsToOne(UserModel);
+	},
+	apartment: function() {
+		return this.belongsToOne(ApartmentModel);
+	}
 });
