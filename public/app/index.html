@@ -29,41 +29,48 @@
         <li><a href="#"><i class="ion-ios7-bell"></i><span class="badge red-badge notif-badge">2</span></a></li>
       </ul>
 
+      <!-- code for Profile Avatar -->
       <div id="sidebar" class="navbar-default navbar-static-side" role="navigation">
         <div class="hidden-xs" id="user-info">
           <img src="https://s3.amazonaws.com/uifaces/faces/twitter/sindresorhus/128.jpg" id="user-image" class="img-circle">
           <p id="user-online"><span id="user-online-dot"></span> Online</p>
           <p id="user-welcome">Welcome, {{firstname}}!</p>
         </div>
+
+
+        <!-- code for side-bar -->
         <div class="sidebar-collapse">
-          <ul class="nav" id="side-menu">
+          <ul class="nav nav-list" id="side-menu" ng-controller="navCtrl">
             <li class="nav-header">
               Tasks
             </li>
-            <li class="active">
-              <a href="index.html">Calendar</a>
+
+            <li ng-class="{active: routeIs('/calendar')}"><a href='#/calendar'>Calendar</a></li>
+         
+            <li ng-class="{active: routeIs('/bills')}"><a href='#/bills'> Bills </a></li>
+            
+
+
+            <li ng-class="{active: routeIs('/chores')}"><a href='#/chores'> Chores
+            <!-- Need to modify for angular notification --> 
+            <span class="badge pull-right red-badge">2</span></a>
+            
             </li>
-            <li>
-              <a href="index.html">Bills</a>
-            </li>
-            <li>
-              <a href="index.html">Chores <span class="badge pull-right red-badge">2</span></a>
-            </li>
-            <li>
-              <a href="index.html">Supplies</a>
-            </li>
-            <li>
-              <a href="index.html">Message Board</a>
-            </li>
+            
+            <li ng-class="{active: routeIs('/supplies')}"><a href='#/supplies'> Supplies </a></li>
+            
+            <li ng-class="{active: routeIs('/board')}"><a href='#/board'> Message Board </a></li>
+            
             <li class="nav-header">
-              Settings
+              Apartment
             </li>
-            <li>
-              <a href="index.html">Profile</a>
-            </li>
-            <li>
-              <a href="index.html">Apartment</a>
-            </li>
+
+
+            <li ng-class="{active: routeIs('/settings')}"><a href='#/settings'> Settings </a></li>
+
+
+            <li ng-class="{active: routeIs('/profile')}"><a href='#/profile'> Profile </a></li>
+
           </ul>
         </div>
       </div>
