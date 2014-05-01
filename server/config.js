@@ -8,9 +8,10 @@ var config = {
     port: process.env.PORT || 3000,
     db: {
       host: '127.0.0.1',
-      user: 'USER',
-      password: 'PASSWORD',
-      database: 'DB_NAME'
+      user: 'postgres',
+      password: 'agreemates',
+      database: 'postgres',
+      port: '5432',
     }
   },
   production: {
