@@ -11,7 +11,7 @@ var mocha = require('gulp-mocha');
 
 // Lint Task
 gulp.task('lint', function() {
-	return gulp.src(['./public/**/.js', '!./public/app/bower_components', './server/**/*.js')
+	return gulp.src(['./public/**/.js', '!./public/app/bower_components', './server/**/*.js'])
 		.pipe(jshint())
 		.pipe(jshint.reporter('default'));
 });
