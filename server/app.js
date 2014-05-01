@@ -35,30 +35,23 @@ app.use(express.static(path.join(__dirname + './../public/app')));
 
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
-  
-  var UserModel = require('./models/user').collection;
 
-  new UserModel()
+  //example code
+  //get a specific user:
+  var UserModel = require('./models/user').model;
+  new UserModel({'id': '0'})
   .fetch()
-  .then(function(model) {
-  	for(mod in model){
-  		console.log(mod.get('firstname'));
-    	console.log(mod.get('lastname'));
-  	}
-  	console.log(getMethods(model));
-    
+  .then(function(user) {
+  	console.log(user.firstname);
+  });
 
+  //get all users
+  var UserCollection = require('./models/user').collection;
+
+  new UserCollection()
+  .fetch()
+  .then(function(models) {
+  	console.log(JSON.stringify(models));
   });
 
 });
-
-function getMethods(obj)
-{
-    var res = [];
-    for(var m in obj) {
-        if(typeof obj[m] == "function") {
-            res.push(m)
-        }
-    }
-    return res;
-}

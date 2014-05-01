@@ -11,7 +11,6 @@ var ChoreModel = require("./chore").model;
 var BillModel = require("./bill").model;
 var PaymentModel = require("./payment").model;
 var AparmentModel = require("./apartment").model;
-var UserModel = require("./user").model;
 
 exports.model = Bookshelf.Model.extend({
 	tableName: "users",
@@ -39,6 +38,6 @@ exports.model = Bookshelf.Model.extend({
 });
 
 exports.collection = Bookshelf.Collection.extend({
-	model: UserModel
+	model: exports.model
 });
 
