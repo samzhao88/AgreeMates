@@ -14,7 +14,7 @@ var PaymentModel = require("./payment").model;
 var ApartmentModel = require("./apartment").model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "users",/*
+	tableName: "users",
 	comments: function() {
 		return this.hasMany(CommentModel);
 	},
@@ -32,7 +32,7 @@ exports.model = Bookshelf.Model.extend({
 	},
 	assignedChores: function() {
 		return this.belongsToMany(ChoreModel);
-	},*/
+	},
 	apartment: function() {
 		return this.belongsTo(ApartmentModel);
 	},
