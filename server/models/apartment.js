@@ -25,7 +25,7 @@ exports.model = Bookshelf.Model.extend({
 		return this.hasMany(BillModel);
 	},
 	users: function() {
-		return this.belongsToMany(UserModel);
+		return this.hasMany(UserModel);
 	},
 });
 

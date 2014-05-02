@@ -9,11 +9,11 @@ var ApartmentModel = require("./apartment").model;
 
 exports.model = Bookshelf.Model.extend({
 	tableName: "boards",
-	message: function() {
+	messages: function() {
 		return this.hasMany(MessageModel);
 	},
 	apartment: function() {
-		return this.belongsToOne(ApartmentModel);
+		return this.belongsTo(ApartmentModel);
 	}
 });
 

@@ -36,11 +36,14 @@ app.use(express.static(path.join(__dirname + './../public/app')));
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
 
-  /*
+ 
   //example code
-  //get a specific user:
+  
   var UserModel = require('./models/user').model;
-  new UserModel({id: 0})
+  var ApartmentModel = require('./models/apartment').model;
+   /*
+   //get a specific user:
+   new UserModel({id: 0})
   .fetch()
   .then(function(user) {
   	console.log(user.first_name);
@@ -68,6 +71,22 @@ app.listen(config.port, function() {
   .then(function(user){
 
   });
+
+  //fetch user with related apartment
+  new UserModel({id: 1})
+  .fetch({withRelated: ['apartment']})
+  .then(function(user) {
+    console.log(user.attributes.first_name);
+    console.log(user.relations.apartment.attributes.address);
+  });
 */
 
+/*
+  //fetch apartment nr 1 with all messages on board
+  new ApartmentModel({id: 1})
+  .fetch({withRelated: ['board.messages']})
+  .then(function(model){
+    console.log(model);
+  });
+*/
 });

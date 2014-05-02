@@ -4,16 +4,17 @@
 
 var Bookshelf = require('bookshelf').DB;
 
-
+/*
 var CommentModel = require("./comment").model;
 var MessageModel = require("./message").model;
 var ChoreModel = require("./chore").model;
 var BillModel = require("./bill").model;
 var PaymentModel = require("./payment").model;
-var AparmentModel = require("./apartment").model;
+*/
+var ApartmentModel = require("./apartment").model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "users",
+	tableName: "users",/*
 	comments: function() {
 		return this.hasMany(CommentModel);
 	},
@@ -31,10 +32,10 @@ exports.model = Bookshelf.Model.extend({
 	},
 	assignedChores: function() {
 		return this.belongsToMany(ChoreModel);
-	},
+	},*/
 	apartment: function() {
-		return this.belongsToOne(ApartmentModel);
-	}
+		return this.belongsTo(ApartmentModel);
+	},
 });
 
 exports.collection = Bookshelf.Collection.extend({
