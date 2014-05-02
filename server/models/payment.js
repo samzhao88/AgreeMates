@@ -2,7 +2,7 @@
  * This is the model representation for a single payment.
  */
 
-var Bookshelf = require('bookshelf').db;
+var Bookshelf = require('bookshelf').DB;
 
 var UserModel = require("./user").model;
 var BillModel = require("./bill").model;
@@ -15,4 +15,8 @@ exports.model = Bookshelf.Model.extend({
 	bill: function() {
 		return this.belongsToOne(BillModel);
 	}
+});
+
+exports.collection = Bookshelf.Collection.extend({
+	model: exports.model
 });
