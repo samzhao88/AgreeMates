@@ -21,6 +21,9 @@ Haocheng Zhao (samzhao@uw)
 
 ## Installation
 Use the included vagrant configuration to setup a custom AgreeMates server.
+First, install vagrant from http://www.vagrantup.com/downloads, and VirtualBox from https://www.virtualbox.org/wiki/Downloads.
+
+Then once those are installed, in the AgreeMates folder run the following commands from the terminal/shell:
 
 ```
 cd installation
@@ -28,4 +31,6 @@ vagrant up
 vagrant ssh
 ```
 
-Once setup, AgreeMates will be installed at '/AgreeMates'
+'vagrant up' may take a while to complete, but unless it throws an error it is still working.
+Once setup, AgreeMates will be installed at '~/AgreeMates' in the virtual machine. Launch it from
+the AgreeMates directory by running 'npm start'.

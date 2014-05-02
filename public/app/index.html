@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<!-- This is the homepage of AgreeMates. It contains a header, a side-bar and placeholder for Angular view -->
 <html lang="en" ng-app="Main">
 
 <head>
   <meta charset="utf-8">
   <title>{{title}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="stylehseet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600,700">
   <link rel="stylesheet" href="bower_components/ionicons/css/ionicons.min.css">
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -15,6 +17,7 @@
   <div id="wrapper">
 
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
+      <!-- header -->
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
           <span class="sr-only">Toggle navigation</span>
@@ -29,8 +32,9 @@
         <li><a href="#"><i class="ion-ios7-bell"></i><span class="badge red-badge notif-badge">2</span></a></li>
       </ul>
 
-      <!-- code for Profile Avatar -->
+      <!-- side-bar --> 
       <div id="sidebar" class="navbar-default navbar-static-side" role="navigation">
+        <!-- Profile Avatar -->
         <div class="hidden-xs" id="user-info">
           <img src="https://s3.amazonaws.com/uifaces/faces/twitter/sindresorhus/128.jpg" id="user-image" class="img-circle">
           <p id="user-online"><span id="user-online-dot"></span> Online</p>
@@ -38,30 +42,34 @@
         </div>
 
 
-        <!-- code for side-bar -->
+        <!-- menu bar -->
         <div class="sidebar-collapse">
+<<<<<<< HEAD
           <ul class="nav nav-list" id="side-menu" ng-controller="navCtrl">
+=======
+          <ul class="nav nav-list" id="side-menu" ng-controller="navbarController">
+>>>>>>> 16c4dac5e6b48593589b3a411163b08d0082c377
             <li class="nav-header">
               Tasks
             </li>
 
-            <li ng-class="{active: routeIs('/calendar')}">
-              <a href='#/calendar'>Calendar</a>
+            <li ng-class="{active: isActive('/')}">
+              <a href='#/'>Calendar</a>
             </li>
 
-            <li ng-class="{active: routeIs('/bills')}">
+            <li ng-class="{active: isActive('/bills')}">
               <a href='#/bills'>Bills</a>
             </li>
 
-            <li ng-class="{active: routeIs('/chores')}">
+            <li ng-class="{active: isActive('/chores')}">
               <a href='#/chores'>Chores<span class="badge pull-right red-badge">2</span></a>
             </li>
 
-            <li ng-class="{active: routeIs('/supplies')}">
+            <li ng-class="{active: isActive('/supplies')}">
               <a href='#/supplies'>Supplies</a>
             </li>
 
-            <li ng-class="{active: routeIs('/board')}">
+            <li ng-class="{active: isActive('/board')}">
               <a href='#/board'>Message Board</a>
             </li>
 
@@ -69,11 +77,11 @@
               Apartment
             </li>
 
-            <li ng-class="{active: routeIs('/settings')}">
+            <li ng-class="{active: isActive('/settings')}">
               <a href='#/settings'>Settings</a>
             </li>
 
-            <li ng-class="{active: routeIs('/profile')}">
+            <li ng-class="{active: isActive('/profile')}">
               <a href='#/profile'>Profile</a>
             </li>
           </ul>
@@ -102,6 +110,7 @@
   <script src="controllers/navbar.js"></script>
 
   <script>
+    // JS function to collapse the side-bar when the page is less than 768px wide
     $(function () {
       $(window).bind("load resize", function () {
         width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
