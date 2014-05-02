@@ -1,7 +1,7 @@
 /* 
  * This is the model representation for a single board.
-	attributes: none
-	invariant: none
+ *	attributes: none
+ *	invariant: none
  */
 
 var Bookshelf = require('bookshelf').DB;
