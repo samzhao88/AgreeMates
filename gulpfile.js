@@ -8,6 +8,7 @@ var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var istanbul = require('gulp-istanbul');
 var mocha = require('gulp-mocha');
+var bump = require('gulp-bump');
 
 // Lint Task
 gulp.task('lint', function() {
@@ -48,6 +49,12 @@ gulp.task('test', function () {
 	gulp.src('./server/test/**/*.js')
 		.pipe(mocha({ reporter: 'list' }))
 		.on("error", handleError);
+});
+
+gulp.task('bump', function () {
+	gulp.src(['./package.json', './bower.json'])
+		.pipe(bump())
+		.pipe(gulp.dest('./'));
 });
 
 // Default Task
