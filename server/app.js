@@ -36,6 +36,7 @@ app.use(express.static(path.join(__dirname + './../public/app')));
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
 
+  /*
   //example code
   //get a specific user:
   var UserModel = require('./models/user').model;
@@ -67,5 +68,6 @@ app.listen(config.port, function() {
   .then(function(user){
 
   });
+*/
 
 });
