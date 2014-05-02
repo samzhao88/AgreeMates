@@ -54,6 +54,16 @@ app.config(['$routeProvider',
         module: 'Board',
         controller: 'showBoard'
       }).
+      when('/settings', {
+        templateUrl: 'views/settings.html',
+        module: 'Settings',
+        controller: 'settings'
+      }).
+      when('/profile', {
+        templateUrl: 'views/profile.html',
+        module: 'Profile',
+        controller: 'profile'
+      }).
       otherwise({
         redirectTo: '/calendar'
       });
