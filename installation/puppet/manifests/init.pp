@@ -10,6 +10,13 @@ class { 'nodejs':
 	version => 'v0.10.26'
 }
 
+class { 'postgresql::server': }
+
+postgresql::server::role { 'vagrant':
+	createdb		=> true,
+	login			=> true,
+	password_hash 	=> postgresql_password("vagrant", "vagrant"),
+}
 
 package { 'express':
 	ensure	=> present,
