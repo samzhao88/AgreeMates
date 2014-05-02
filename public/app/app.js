@@ -65,6 +65,6 @@ app.config(['$routeProvider',
         controller: 'profile'
       }).
       otherwise({
-        redirectTo: '/calendar'
+        redirectTo: '/'
       });
   }]);

@@ -1,6 +1,7 @@
-// server/routes/bill.sj
-// Bill routes
-
+/** 
+ * server/routes/bill.sj
+ * Bill routes
+ */
 var bills = function(app) {
 
   // Process add bill form, add to database
