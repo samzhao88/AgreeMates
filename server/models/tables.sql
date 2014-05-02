@@ -1,3 +1,10 @@
+CREATE TABLE apartments 
+  ( 
+     id      SERIAL PRIMARY KEY, 
+     name    VARCHAR(255), 
+     address VARCHAR(255) NOT NULL
+  );
+
 CREATE TABLE users 
   ( 
      id           SERIAL PRIMARY KEY,
@@ -11,20 +18,28 @@ CREATE TABLE users
      FOREIGN KEY(apartment_id) REFERENCES apartments
   ); 
 
+CREATE TABLE chores 
+  ( 
+     id            SERIAL PRIMARY KEY, 
+     name          VARCHAR(255), 
+     createdate    DATE, 
+     duedate       DATE, 
+     interval      INT, 
+     completed     BOOLEAN, 
+     reocurring_id SERIAL, 
+     user_id       INT, 
+     apartment_id  INT, 
+     FOREIGN KEY(user_id) REFERENCES users, 
+     FOREIGN KEY(apartment_id) REFERENCES apartments
+  );
+
 CREATE TABLE users_chores 
   ( 
      user_id  INT, 
      chore_id INT, 
      FOREIGN KEY(user_id) REFERENCES users, 
      FOREIGN KEY(chore_id) REFERENCES chores
-  ); 
-
-CREATE TABLE apartments 
-  ( 
-     id      SERIAL PRIMARY KEY, 
-     name    VARCHAR(255), 
-     address VARCHAR(255) NOT NULL
-  ); 
+  );  
 
 CREATE TABLE supplies 
   ( 
@@ -56,22 +71,7 @@ CREATE TABLE comments
      message_id INT, 
      FOREIGN KEY(user_id) REFERENCES users, 
      FOREIGN KEY(message_id) REFERENCES messages
-  ); 
-
-CREATE TABLE chores 
-  ( 
-     id            SERIAL PRIMARY KEY, 
-     name          VARCHAR(255), 
-     createdate    DATE, 
-     duedate       DATE, 
-     interval      INT, 
-     completed     BOOLEAN, 
-     reocurring_id SERIAL, 
-     user_id       INT, 
-     apartment_id  INT, 
-     FOREIGN KEY(user_id) REFERENCES users, 
-     FOREIGN KEY(apartment_id) REFERENCES apartments
-  ); 
+  );  
 
 CREATE TABLE bills 
   ( 

@@ -36,13 +36,14 @@ app.use(express.static(path.join(__dirname + './../public/app')));
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
 
+  /*
   //example code
   //get a specific user:
   var UserModel = require('./models/user').model;
-  new UserModel({'id': '0'})
+  new UserModel({id: 0})
   .fetch()
   .then(function(user) {
-  	console.log(user.firstname);
+  	console.log(user.first_name);
   });
 
   //get all users
@@ -53,5 +54,20 @@ app.listen(config.port, function() {
   .then(function(models) {
   	console.log(JSON.stringify(models));
   });
+
+  //create a new user
+  new UserModel({first_name: 'adf', last_name: 'asdf', email: 'adf', phone: '1111'})
+  .save()
+  .then(function(user){
+
+  });
+
+  //updating a user
+  new UserModel({id: 0})
+  .save({first_name: 'newname'}, {patch: true})
+  .then(function(user){
+
+  });
+*/
 
 });
