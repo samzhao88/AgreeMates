@@ -17,7 +17,7 @@ var supplies = function(app) {
   });
 
   app.get('/supplies/all', function(req, res) {
-    res.end();
+    res.json({title: 'Supplies'});
   });
 
 };

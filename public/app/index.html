@@ -40,37 +40,42 @@
 
         <!-- code for side-bar -->
         <div class="sidebar-collapse">
-          <ul class="nav nav-list" id="side-menu" ng-controller="navCtrl">
+          <ul class="nav nav-list" id="side-menu">
             <li class="nav-header">
               Tasks
             </li>
 
-            <li ng-class="{active: routeIs('/calendar')}"><a href='#/calendar'>Calendar</a></li>
-         
-            <li ng-class="{active: routeIs('/bills')}"><a href='#/bills'> Bills </a></li>
-            
-
-
-            <li ng-class="{active: routeIs('/chores')}"><a href='#/chores'> Chores
-            <!-- Need to modify for angular notification --> 
-            <span class="badge pull-right red-badge">2</span></a>
-            
+            <li ng-class="{active: routeIs('/calendar')}">
+              <a href='#/calendar'>Calendar</a>
             </li>
-            
-            <li ng-class="{active: routeIs('/supplies')}"><a href='#/supplies'> Supplies </a></li>
-            
-            <li ng-class="{active: routeIs('/board')}"><a href='#/board'> Message Board </a></li>
-            
+
+            <li ng-class="{active: routeIs('/bills')}">
+              <a href='#/bills'>Bills</a>
+            </li>
+
+            <li ng-class="{active: routeIs('/chores')}">
+              <a href='#/chores'>Chores<span class="badge pull-right red-badge">2</span></a>
+            </li>
+
+            <li ng-class="{active: routeIs('/supplies')}">
+              <a href='#/supplies'>Supplies</a>
+            </li>
+
+            <li ng-class="{active: routeIs('/board')}">
+              <a href='#/board'>Message Board</a>
+            </li>
+
             <li class="nav-header">
               Apartment
             </li>
 
+            <li ng-class="{active: routeIs('/settings')}">
+              <a href='#/settings'>Settings</a>
+            </li>
 
-            <li ng-class="{active: routeIs('/settings')}"><a href='#/settings'> Settings </a></li>
-
-
-            <li ng-class="{active: routeIs('/profile')}"><a href='#/profile'> Profile </a></li>
-
+            <li ng-class="{active: routeIs('/profile')}">
+              <a href='#/profile'>Profile</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -78,15 +83,7 @@
 
     <div id="page-wrapper">
       <div class="row">
-        <div class="col-lg-12">
-          <h1>Calendar</h1>
-          <hr>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-lg-8">
-          Some stuff goes here
-        </div>
+        <ng-view></ng-view>
       </div>
     </div>
 
@@ -97,9 +94,11 @@
   <script src="bower_components/angular-route/angular-route.min.js"></script>
   <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="app.js"></script>
-  <script src="controllers/dashboard.js"></script>
-  <script src="controllers/user.js"></script>
-  <script src="controllers/navbar.js"></script>
+  <script src="controllers/bills.js"></script>
+  <script src="controllers/board.js"></script>
+  <script src="controllers/calendar.js"></script>
+  <script src="controllers/chores.js"></script>
+  <script src="controllers/supplies.js"></script>
 
   <script>
     $(function () {
