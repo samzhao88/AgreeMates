@@ -1,6 +1,7 @@
-// Located in server/routes/main.js
-// Route for the front page
-
+/** 
+ * Located in server/routes/main.js
+ * Route for the front page
+ */
 var main = function(app) {
 
   app.get('/', function(req, res) {

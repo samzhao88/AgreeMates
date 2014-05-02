@@ -1,6 +1,7 @@
-// server/routes/calendar.js
-// Calendar Routes
-
+/**
+ * server/routes/calendar.js
+ * Calendar Routes
+ */
 var calendar = function(app) {
 
  // Shows the apartment calendar

@@ -1,6 +1,7 @@
-// Located in server/routes/user.js
-// Defines all the routes for users
-
+/**
+ * Located in server/routes/user.js
+ * Defines all the routes for users
+ */
 var user = function(app) {
 
   // Adds a user to the database

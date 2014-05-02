@@ -29,7 +29,7 @@ var app = angular.module('Main',
 app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
-      when('/', {
+      when('/calendar', {
         templateUrl: 'views/showCalendar.html',
         module: 'Calendar',
         controller: 'showCalendar'
@@ -53,6 +53,16 @@ app.config(['$routeProvider',
         templateUrl: 'views/showBoard.html',
         module: 'Board',
         controller: 'showBoard'
+      }).
+      when('/settings', {
+        templateUrl: 'views/settings.html',
+        module: 'Settings',
+        controller: 'settings'
+      }).
+      when('/profile', {
+        templateUrl: 'views/profile.html',
+        module: 'Profile',
+        controller: 'profile'
       }).
       otherwise({
         redirectTo: '/'

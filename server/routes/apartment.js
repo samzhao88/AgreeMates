@@ -1,6 +1,7 @@
-// server/routes/apartment.js
-// Apartment routes
-
+/**
+ * server/routes/apartment.js
+ * Apartment routes
+ */
 var apartment = function(app) {
 
   // Add apartment to database
