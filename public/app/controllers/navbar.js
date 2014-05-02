@@ -1,7 +1,7 @@
-//NavController for the entire app
+angular.module('Nav').controller('navbarController', function ($scope, $location) {
 
-app.controller('navCtrl', ['$scope', '$location', function ($scope, $location) {
-    $scope.routeIs = function(routeName) {
-    return $location.path() === routeName;
+  $scope.isActive = function(viewLocation) {
+    return viewLocation === $location.path();
   };
-}]);
+
+});

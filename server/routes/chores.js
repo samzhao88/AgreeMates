@@ -17,7 +17,7 @@ var chores = function(app) {
   });
 
   app.get('/chores/all', function(req, res) {
-    res.end();
+    res.json({title: 'Chores'});
   });
 
   app.get('/chores/recent', function(req, res) {

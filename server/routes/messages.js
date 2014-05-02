@@ -17,7 +17,7 @@ var messages = function(app) {
   });
 
   app.get('/messages/recent', function(req, res) {
-    res.end();
+    res.json({title: 'Message Board'});
   });
 
 };

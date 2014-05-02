@@ -2,7 +2,7 @@
  * This is the model representation for a single apartment
  */
 
-var Bookshelf = require('bookshelf').db;
+var Bookshelf = require('bookshelf').DB;
 
 var BoardModel = require("./board").model;
 var SupplyModel = require("./supply").model;
@@ -27,4 +27,8 @@ exports.model = Bookshelf.Model.extend({
 	users: function() {
 		return this.belongsToMany(UserModel);
 	},
+});
+
+exports.collection = Bookshelf.Collection.extend({
+	model: exports.model
 });
