@@ -40,28 +40,28 @@
 
         <!-- code for side-bar -->
         <div class="sidebar-collapse">
-          <ul class="nav nav-list" id="side-menu">
+          <ul class="nav nav-list" id="side-menu" ng-controller="navbarController">
             <li class="nav-header">
               Tasks
             </li>
 
-            <li ng-class="{active: routeIs('/calendar')}">
-              <a href='#/calendar'>Calendar</a>
+            <li ng-class="{active: isActive('/')}">
+              <a href='#/'>Calendar</a>
             </li>
 
-            <li ng-class="{active: routeIs('/bills')}">
+            <li ng-class="{active: isActive('/bills')}">
               <a href='#/bills'>Bills</a>
             </li>
 
-            <li ng-class="{active: routeIs('/chores')}">
+            <li ng-class="{active: isActive('/chores')}">
               <a href='#/chores'>Chores<span class="badge pull-right red-badge">2</span></a>
             </li>
 
-            <li ng-class="{active: routeIs('/supplies')}">
+            <li ng-class="{active: isActive('/supplies')}">
               <a href='#/supplies'>Supplies</a>
             </li>
 
-            <li ng-class="{active: routeIs('/board')}">
+            <li ng-class="{active: isActive('/board')}">
               <a href='#/board'>Message Board</a>
             </li>
 
@@ -69,11 +69,11 @@
               Apartment
             </li>
 
-            <li ng-class="{active: routeIs('/settings')}">
+            <li ng-class="{active: isActive('/settings')}">
               <a href='#/settings'>Settings</a>
             </li>
 
-            <li ng-class="{active: routeIs('/profile')}">
+            <li ng-class="{active: isActive('/profile')}">
               <a href='#/profile'>Profile</a>
             </li>
           </ul>
@@ -99,6 +99,7 @@
   <script src="controllers/calendar.js"></script>
   <script src="controllers/chores.js"></script>
   <script src="controllers/supplies.js"></script>
+  <script src="controllers/navbar.js"></script>
 
   <script>
     $(function () {
