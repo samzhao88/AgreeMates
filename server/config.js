@@ -1,7 +1,11 @@
+// server/config.js
+//Returns the configuration values of the application.
+
 var path = require('path');
 var root = path.normalize(__dirname + '/..');
-var env = process.env.NODE_ENV || 'development';
+var env = process.env.NODE_ENV || 'development'; //sets enviroment
 
+//sets the configuration for development or production based upon env
 var config = {
   development: {
     root: root,
