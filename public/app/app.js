@@ -1,3 +1,5 @@
+// This file register all modules to the app
+
 // Define all the modules with no dependencies
 angular.module('Calendar', []);
 angular.module('Bills', []);
@@ -8,7 +10,7 @@ angular.module('Settings', []);
 angular.module('Profile', []);
 angular.module('Nav', []);
 
-// Lastly, define your "main" module and inject all other modules as dependencies
+// Define the "main" module and inject all other modules as dependencies
 var app = angular.module('Main',
   [
     'Calendar',
@@ -23,6 +25,7 @@ var app = angular.module('Main',
   ]
 );
 
+// Register all routes
 app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
