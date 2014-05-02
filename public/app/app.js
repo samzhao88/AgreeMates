@@ -6,6 +6,7 @@ angular.module('Supplies',[]);
 angular.module('Board', []);
 angular.module('Settings', []);
 angular.module('Profile', []);
+angular.module('Nav', []);
 
 // Lastly, define your "main" module and inject all other modules as dependencies
 var app = angular.module('Main',
@@ -17,6 +18,7 @@ var app = angular.module('Main',
     'Board',
     'Settings',
     'Profile',
+    'Nav',
     'ngRoute'
   ]
 );
