@@ -1,3 +1,5 @@
+// Contains the code to start the server
+
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
