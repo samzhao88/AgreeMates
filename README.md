@@ -32,4 +32,5 @@ vagrant ssh
 ```
 
 'vagrant up' may take a while to complete, but unless it throws an error it is still working.
-Once setup, AgreeMates will be installed at '~/AgreeMates' in the virtual machine
+Once setup, AgreeMates will be installed at '~/AgreeMates' in the virtual machine. Launch it from
+the AgreeMates directory by running 'npm start'.
