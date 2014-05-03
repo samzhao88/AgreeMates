@@ -1,7 +1,5 @@
-/**
- * Located in server/routes/messages.js
- * Defines all the routes for messages
- */
+// Messages routes
+
 var messages = function(app) {
 
   // Adds a message to the message board

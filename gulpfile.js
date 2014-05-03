@@ -1,3 +1,5 @@
+// Register build and test automation tasks
+
 // Include gulp
 var gulp = require('gulp');
 
