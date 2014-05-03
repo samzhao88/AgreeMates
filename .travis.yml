@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+    - '0.10'
+before_script:
+    - npm install -g bower
+    - bower install
+deploy:
+    provider: heroku
+    app:
+        master: agreemates
+        develop: agreemates-develop
+    api_key:
+        secure: CSrNNtZONBWPdYo3Vs0cApPAuM292C7sIOL6PHYWJfNGI5+eFUMbA0tJb+DirP7corXkUhU2tidUWQIbpQFYldeavRSSBPu+QSsbqEnVsWI19Tt0B8RObT8PV693seRrrhHQcI19qwh4mJxWO3VE0ewiR30ipxU6klyYvSnHdZk=

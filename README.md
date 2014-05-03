@@ -12,9 +12,12 @@ Lukas Bischofberger (lukasbi@uw)
 Dennis Ding (dennisd7@uw)  
 Haocheng Zhao (samzhao@uw)
 
-## Resources
-[Node.js](http://nodejs.org/)  
-[Express framework](http://expressjs.com/)  
-[Angular](http://angularjs.org/)  
-[MongoDB](https://www.mongodb.org/)  
-[PostgreSQL](http://www.postgresql.org/)
+## Documentation
+[Product Page & User Documentation](https://github.com/AgreeMates/AgreeMates/wiki/Product-Home-Page)  
+[Developer Documentation](https://github.com/AgreeMates/AgreeMates/wiki/Developer-Documentation)
+
+## Other Links
+[Stable Release Site](http://agreemates.com)  
+[Development Release Site](http://agreemates-develop.herokuapp.com)  
+[GitHub Development Site](http://agreemates.github.io)  
+[Bug Reporting](https://github.com/AgreeMates/AgreeMates/issues)  

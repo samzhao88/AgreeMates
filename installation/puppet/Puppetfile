@@ -1,0 +1,7 @@
+#use the official puppet labs forge
+
+forge "http://forge.puppetlabs.com"
+
+mod "puppetlabs/stdlib", "4.1.0"
+mod "willdurand/nodejs", "1.6.2"
+mod "puppetlabs/postgresql", "3.3.3"
