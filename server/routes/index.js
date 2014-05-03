@@ -1,7 +1,5 @@
-/**
- * Located in server/routes/index.js
- * Requires all the files containing routes for modularity
- */
+// Requires all the files containing routes for modularity
+
 var router = function(app) {
 
   require('./main.js')(app);

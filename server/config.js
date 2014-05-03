@@ -1,5 +1,5 @@
 // server/config.js
-//Returns the configuration values of the application.
+// Returns the configuration values of the application.
 
 var path = require('path');
 var root = path.normalize(__dirname + '/..');

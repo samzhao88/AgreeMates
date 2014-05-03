@@ -12,7 +12,6 @@ var config = require('./config');
 
 var app = express();
 
-//this should only be called once in the application -> backend put that somewhere in the configs pls :)
 Bookshelf.DB = Bookshelf.initialize({
   client: 'pg',
   connection: {
@@ -37,39 +36,4 @@ app.use(express.static(path.join(__dirname + './../public/app')));
 
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
-
-  /*
-  //example code
-  //get a specific user:
-  var UserModel = require('./models/user').model;
-  new UserModel({id: 0})
-  .fetch()
-  .then(function(user) {
-  	console.log(user.first_name);
-  });
-
-  //get all users
-  var UserCollection = require('./models/user').collection;
-
-  new UserCollection()
-  .fetch()
-  .then(function(models) {
-  	console.log(JSON.stringify(models));
-  });
-
-  //create a new user
-  new UserModel({first_name: 'adf', last_name: 'asdf', email: 'adf', phone: '1111'})
-  .save()
-  .then(function(user){
-
-  });
-
-  //updating a user
-  new UserModel({id: 0})
-  .save({first_name: 'newname'}, {patch: true})
-  .then(function(user){
-
-  });
-*/
-
 });

@@ -1,3 +1,5 @@
+// Testing code for the back end
+
 var expect = require('chai').expect;
 
 describe("A test suite", function() {

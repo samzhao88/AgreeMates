@@ -1,7 +1,5 @@
-/** 
- * Located in server/routes/supplies.js
- * Defines routes for supplies
- */
+// Supplies routes
+
 var supplies = function(app) {
 
   // Adds a supply to be tracked by the app

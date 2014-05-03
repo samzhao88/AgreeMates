@@ -1,7 +1,5 @@
-/**
- * server/routes/chores.js
- * Chore Routes
- */
+// Chore routes
+
 var chores = function(app) {
 
   // Process chore form and adds to database

@@ -1,7 +1,5 @@
-/** 
- * server/routes/bill.sj
- * Bill routes
- */
+// Bill routes
+
 var bills = function(app) {
 
   // Process add bill form, add to database
@@ -13,7 +11,7 @@ var bills = function(app) {
   app.get('/bills/edit/:bill', function(req, res) {
     res.end();
   });
-  
+
   // Process edit bill form, modify database
   app.post('/bills/edit', function(req, res) {
     res.end();

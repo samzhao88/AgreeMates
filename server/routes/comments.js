@@ -1,8 +1,5 @@
-/**
- * Located in server/routes/comments.js
- * Defines all the routes for comments
- */
- 
+// Comments routes
+
 var comments = function(app) {
 
 };
