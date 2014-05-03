@@ -1,5 +1,9 @@
 /* 
  * This is the model representation for a single apartment
+ * attributes: id			int,
+ *  		   name         string, the apartment's name
+ *             address      string, the apartment's address
+ * invariant: id != null, address != null
  */
 
 var Bookshelf = require('bookshelf').DB;
