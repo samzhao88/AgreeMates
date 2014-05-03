@@ -29,7 +29,7 @@ var app = angular.module('Main',
 app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
-      when('/calendar', {
+      when('/', {
         templateUrl: 'views/showCalendar.html',
         module: 'Calendar',
         controller: 'showCalendar'
