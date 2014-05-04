@@ -1,5 +1,7 @@
 // Contains the code to start the server
 
+'use strict';
+
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');

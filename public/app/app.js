@@ -1,5 +1,7 @@
 // This file register all modules to the app
 
+'use strict';
+
 // Define all the modules with no dependencies
 angular.module('Calendar', []);
 angular.module('Bills', []);

@@ -11,13 +11,15 @@
  *            and message_id reference an id in users and messages respectively.
  */
 
+'use strict';
+
 var Bookshelf = require('bookshelf').DB;
 
-var MessageModel = require("./message").model;
-var UserModel = require("./user").model;
+var MessageModel = require('./message').model;
+var UserModel = require('./user').model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "comments",
+	tableName: 'comments',
 	message: function() {
 		return this.belongsToOne(MessageModel);
 	},

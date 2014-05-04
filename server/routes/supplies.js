@@ -1,5 +1,7 @@
 // Supplies routes
 
+'use strict';
+
 var supplies = function(app) {
 
   // Adds a supply to be tracked by the app

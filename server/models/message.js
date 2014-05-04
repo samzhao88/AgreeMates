@@ -8,16 +8,18 @@
  *   user_id      int, 
  *   apartment_id int, 
  * invariant: no attributes can be null, user_id
- *            and apartment_id reference an id in users and apartment respectively.
+ * 		and apartment_id reference an id in users and apartment respectively.
  */
+
+'use strict';
 
 var Bookshelf = require('bookshelf').DB;
 
-var CommentModel = require("./comment").model;
-var BoardModel = require("./board").model;
+var CommentModel = require('./comment').model;
+var BoardModel = require('./board').model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "message",
+	tableName: 'message',
 	comment : function() {
 		return this.hasMany(CommentModel);
 	},

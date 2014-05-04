@@ -6,16 +6,18 @@
  * invariant: id != null, address != null
  */
 
+'use strict';
+
 var Bookshelf = require('bookshelf').DB;
 
-var BoardModel = require("./board").model;
-var SupplyModel = require("./supply").model;
-var ChoreModel = require("./chore").model;
-var BillModel = require("./bill").model;
-var UserModel = require("./user").model;
+var BoardModel = require('./board').model;
+var SupplyModel = require('./supply').model;
+var ChoreModel = require('./chore').model;
+var BillModel = require('./bill').model;
+var UserModel = require('./user').model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "apartments",
+	tableName: 'apartments',
 	board: function() {
 		return this.hasOne(BoardModel);
 	},

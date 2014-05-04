@@ -1,3 +1,5 @@
+'use strict';
+
 // Angular controller for bills
 angular.module('Bills').controller('showBills', function ($scope, $http) {
 

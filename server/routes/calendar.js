@@ -1,5 +1,7 @@
 // Calendar routes
 
+'use strict';
+
 var calendar = function(app) {
 
  // Shows the apartment calendar

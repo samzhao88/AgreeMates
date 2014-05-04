@@ -1,5 +1,7 @@
 // Chore routes
 
+'use strict';
+
 var chores = function(app) {
 
   // Process chore form and adds to database

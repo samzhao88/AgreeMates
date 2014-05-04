@@ -9,22 +9,23 @@
  *   email        string, user's email
  *   phone        int, the user's phone number
  *   apartment_id int,  
- * invariant: id, first/last name and email cannot be null, apartment_id references apartments,
- *           email and phone number are well formatted
+ * invariant: id, first/last name and email cannot be null, apartment_id 
+ * 		references apartments, email and phone number are well formatted
  */
+
+'use strict';
 
 var Bookshelf = require('bookshelf').DB;
 
-
-var CommentModel = require("./comment").model;
-var MessageModel = require("./message").model;
-var ChoreModel = require("./chore").model;
-var BillModel = require("./bill").model;
-var PaymentModel = require("./payment").model;
-var AparmentModel = require("./apartment").model;
+var CommentModel = require('./comment').model;
+var MessageModel = require('./message').model;
+var ChoreModel = require('./chore').model;
+var BillModel = require('./bill').model;
+var PaymentModel = require('./payment').model;
+var ApartmentModel = require('./apartment').model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: "users",
+	tableName: 'users',
 	comments: function() {
 		return this.hasMany(CommentModel);
 	},

@@ -1,5 +1,7 @@
 // Apartment routes
 
+'use strict';
+
 var apartment = function(app) {
 
   // Add apartment to database

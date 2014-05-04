@@ -1,5 +1,7 @@
 // User routes
 
+'use strict';
+
 var user = function(app) {
 
   // Adds a user to the database
