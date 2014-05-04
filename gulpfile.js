@@ -50,6 +50,8 @@ function handleError(err) {
 	this.emit('end');
 }
 
+gulp.task('test', ['test:server', 'test:client'], function() {});
+
 // Run server tests and output reports
 gulp.task('test:server', function () {
 	gulp.src('./server/test/**/*.js')
@@ -64,9 +66,7 @@ gulp.task('test:client', function () {
 			configFile: 'karma.conf.js',
 			action: 'run'
 		}))
-		.on('error', function(err) {
-			throw err;
-		});
+		.on('error', handleError);
 });
 
 gulp.task('bump', function () {
