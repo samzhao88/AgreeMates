@@ -9,11 +9,12 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var compress = require('compression');
 var Bookshelf  = require('bookshelf');
+var passport = require('passport');
 var router = require('./routes');
 var config = require('./config');
 
 var app = express();
-
+require('./passport')(passport);
 Bookshelf.DB = Bookshelf.initialize({
   client: 'pg',
   connection: {
@@ -33,7 +34,12 @@ app.use(logger());
 app.use(compress());
 app.use(bodyParser());
 app.use(cookieParser());
+
+app.use(express.session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
 router(app);
+require('./routes/passport.js')(app,passport);
 app.use(express.static(path.join(__dirname + './../public/app')));
 
 app.listen(config.port, function() {
