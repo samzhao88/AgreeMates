@@ -2,27 +2,17 @@
 
 'use strict';
 
-// Define all the modules with no dependencies
-angular.module('Calendar', []);
-angular.module('Bills', []);
-angular.module('Chores', []);
-angular.module('Supplies',[]);
-angular.module('Board', []);
-angular.module('Settings', []);
-angular.module('Profile', []);
-angular.module('Nav', []);
-
 // Define the "main" module and inject all other modules as dependencies
-var app = angular.module('Main',
+var app = angular.module('main',
   [
-    'Calendar',
-    'Bills',
-    'Chores',
-    'Supplies',
-    'Board',
-    'Settings',
-    'Profile',
-    'Nav',
+    'main.calendar',
+    'main.bills',
+    'main.chores',
+    'main.supplies',
+    'main.board',
+    'main.settings',
+    'main.profile',
+    'main.nav',
     'ngRoute'
   ]
 );
@@ -32,39 +22,39 @@ app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
       when('/', {
-        templateUrl: 'views/showCalendar.html',
-        module: 'Calendar',
-        controller: 'showCalendar'
+        templateUrl: 'calendar/calendar.html',
+        module: 'main.calendar',
+        controller: 'CalendarCtrl'
       }).
       when('/bills', {
-        templateUrl: 'views/showBills.html',
-        module: 'Bills',
-        controller: 'showBills'
+        templateUrl: 'bills/bills.html',
+        module: 'main.bills',
+        controller: 'BillsCtrl'
       }).
       when('/chores', {
-        templateUrl: 'views/showChores.html',
-        module: 'Chores',
-        controller: 'showChores'
+        templateUrl: 'chores/chores.html',
+        module: 'main.chores',
+        controller: 'ChoresCtrl'
       }).
       when('/supplies', {
-        templateUrl: 'views/showSupplies.html',
-        module: 'Supplies',
-        controller: 'showSupplies'
+        templateUrl: 'supplies/supplies.html',
+        module: 'main.supplies',
+        controller: 'SuppliesCtrl'
       }).
       when('/board', {
-        templateUrl: 'views/showBoard.html',
-        module: 'Board',
-        controller: 'showBoard'
+        templateUrl: 'board/board.html',
+        module: 'main.board',
+        controller: 'BoardCtrl'
       }).
       when('/settings', {
-        templateUrl: 'views/settings.html',
-        module: 'Settings',
-        controller: 'settings'
+        templateUrl: 'settings/settings.html',
+        module: 'main.settings',
+        controller: 'SettingsCtrl'
       }).
       when('/profile', {
-        templateUrl: 'views/profile.html',
-        module: 'Profile',
-        controller: 'profile'
+        templateUrl: 'profile/profile.html',
+        module: 'main.profile',
+        controller: 'ProfileCtrl'
       }).
       otherwise({
         redirectTo: '/'
