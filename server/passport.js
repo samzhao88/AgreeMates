@@ -12,20 +12,20 @@ module.exports = function(passport) {
 
 	// used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-	done(null,user.id);
+		done(null,user.id);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
-	/*
-	Need a simple way to recreate a user without searching in database
-	An example down below of idea
-	*/
-	new UserModel({id: id})
-    	.fetch()
-    	.then(function(user) {
-    		done(null,user);
- 	});
+		/*
+		Need a simple way to recreate a user without searching in database
+		An example down below of idea
+		*/
+		new UserModel({id: id})
+	    	.fetch()
+	    	.then(function(user) {
+	    		done(null,user);
+	 	});
     });
 
 	// code for facebook (use('facebook', new FacebookStrategy))
@@ -46,34 +46,41 @@ module.exports = function(passport) {
     function(req, token, refreshToken, profile, done) {
         // asynchronous
         process.nextTick(function() {
+
+        	if(!req.user){
+
 	            // find the user in the database based on their facebook id
-	            new UserModel({id: profile.id})
-    	.fetch()
-    	.then(function(user){
+	            new UserModel({facebook_id: profile.id})
+    			.fetch()
+    			.then(function(user){
 
 	                // if there is an error, stop everything and return that
 	                // ie an error connecting to the database
-	               // if (err)
+	               	// if (err)
 	                    //return done(err);
 
 	                // if the user is found, then log them in
 	                if (user) {
+	                	 // if there is a user id already but no token (user was linked at one point and then removed)
 	                    return done(null, user); // user found, return that user
 	                } else {
 	                    // if there is no user found with that facebook id, create them
-			    // set all of the facebook information in our user model
-	                   new UserModel({first_name: profile.name.givenName, 
-					last_name: profile.name.familyName, 
-					email: profile.emails[0].value, 
-					facebook_id: profile.id,
-					facebook_token: token})
-			   .save()
-			   .then(function(user){
-				return done(null, user);
- 			  });
+			    		// set all of the facebook information in our user model
+	                   	new UserModel({first_name: profile.name.givenName, 
+							last_name: profile.name.familyName, 
+							email: profile.emails[0].value, 
+							facebook_id: profile.id,
+							facebook_token: token})
+			   			.save()
+			   			.then(function(user){
+							return done(null, user);
+ 			  			});
 	                }
 
 	            });
+    		} else {
+    			//user is probably logged in with his google account and wanted to connect with facebook -> bad
+    		}
         });
 
     }));
