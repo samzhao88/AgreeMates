@@ -1,3 +1,5 @@
+'use strict';
+
 // Angular controller for calendar
 angular.module('Calendar').controller('showCalendar', function ($scope, $http) {
 

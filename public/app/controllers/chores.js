@@ -1,3 +1,5 @@
+'use strict';
+
 // Angular controller for chores
 angular.module('Chores').controller('showChores', function ($scope, $http) {
 

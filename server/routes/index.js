@@ -1,5 +1,7 @@
 // Requires all the files containing routes for modularity
 
+'use strict';
+
 var router = function(app) {
 
   require('./main.js')(app);

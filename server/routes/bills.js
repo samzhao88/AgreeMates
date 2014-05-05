@@ -1,5 +1,7 @@
 // Bill routes
 
+'use strict';
+
 var bills = function(app) {
 
   // Process add bill form, add to database

@@ -11,12 +11,13 @@ var rename = require('gulp-rename');
 var istanbul = require('gulp-istanbul');
 var mocha = require('gulp-mocha');
 var bump = require('gulp-bump');
+var karma = require('gulp-karma');
 
 // Lint Task
 gulp.task('lint', function() {
-	return gulp.src(['./public/**/.js', '!./public/app/bower_components', './server/**/*.js'])
+	return gulp.src(['public/app/**/*.js', '!public/app/bower_components/**/*.js', 'server/**/*.js'])
 		.pipe(jshint())
-		.pipe(jshint.reporter('default'));
+		.pipe(jshint.reporter('jshint-stylish'));
 });
 
 // Concatenate & Minify JS
@@ -41,16 +42,31 @@ gulp.task('cover', function (cb) {
 		.on('end', cb);
 });
 
+
+// Testing
+
 function handleError(err) {
 	console.log(err.toString());
 	this.emit('end');
 }
 
-// Run tests and output reports
-gulp.task('test', function () {
+gulp.task('test', ['test:server', 'test:client'], function() {});
+
+// Run server tests and output reports
+gulp.task('test:server', function () {
 	gulp.src('./server/test/**/*.js')
 		.pipe(mocha({ reporter: 'list' }))
 		.on("error", handleError);
+});
+
+// Run client tests and output reports
+gulp.task('test:client', function () {
+	return gulp.src('./public/**/*.spec.js')
+		.pipe(karma({
+			configFile: 'karma.conf.js',
+			action: 'run'
+		}))
+		.on('error', handleError);
 });
 
 gulp.task('bump', function () {

@@ -1,5 +1,7 @@
 // Messages routes
 
+'use strict';
+
 var messages = function(app) {
 
   // Adds a message to the message board

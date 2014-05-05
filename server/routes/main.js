@@ -1,5 +1,7 @@
 // Route for the front page
 
+'use strict';
+
 var main = function(app) {
 
   app.get('/', function(req, res) {
