@@ -12,12 +12,12 @@ var MessageModel = require('./message').model;
 var ApartmentModel = require('./apartment').model;
 
 exports.model = Bookshelf.Model.extend({
-	tableName: 'boards',
-	message: function() {
+	tableName: "boards",
+	messages: function() {
 		return this.hasMany(MessageModel);
 	},
 	apartment: function() {
-		return this.belongsToOne(ApartmentModel);
+		return this.belongsTo(ApartmentModel);
 	}
 });
 

@@ -45,8 +45,8 @@ exports.model = Bookshelf.Model.extend({
 		return this.belongsToMany(ChoreModel);
 	},
 	apartment: function() {
-		return this.belongsToOne(ApartmentModel);
-	}
+		return this.belongsTo(ApartmentModel);
+	},
 });
 
 exports.collection = Bookshelf.Collection.extend({
