@@ -1,11 +1,12 @@
 #!/bin/sh
 
-AGREEMATES_DIR=/AgreeMates
+AGREEMATES_DIR=/home/vagrant/AgreeMates
 
 if [ ! -d "$AGREEMATES_DIR" ]; then
-	cd /
+	cd /home/vagrant
 	git clone https://github.com/AgreeMates/AgreeMates.git
-	cd $AGREEMATES_DIR
+	cd AgreeMates
 	npm install
+	chown -R vagrant $AGREEMATES_DIR
 fi
 

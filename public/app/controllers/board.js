@@ -1,3 +1,6 @@
+'use strict';
+
+// Angular controller for message board
 angular.module('Board').controller('showBoard', function ($scope, $http) {
 
   $http.get('/messages/recent').

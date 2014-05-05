@@ -13,6 +13,17 @@
   // Define globals exposed by Node.js.
   "node": true,
 
+  "predef": [ "angular" ],
+
+  "globals": {
+    "describe":   false,
+    "it":         false,
+    "before":     false,
+    "beforeEach": false,
+    "after":      false,
+    "afterEach":  false
+  },
+
   /*
    * ENFORCING OPTIONS
    * =================
@@ -53,5 +64,7 @@
   "maxlen": 80,
 
   // Enforce placing 'use strict' at the top function scope
-  "strict": true
+  "strict": true,
+
+  "expr": true
 }

@@ -1,11 +1,15 @@
 /* 
  * This is the model representation for a single board.
+ *	attributes: none
+ *	invariant: none
  */
+
+'use strict';
 
 var Bookshelf = require('bookshelf').DB;
 
-var MessageModel = require("./message").model;
-var ApartmentModel = require("./apartment").model;
+var MessageModel = require('./message').model;
+var ApartmentModel = require('./apartment').model;
 
 exports.model = Bookshelf.Model.extend({
 	tableName: "boards",

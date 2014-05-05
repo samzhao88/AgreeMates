@@ -1,3 +1,7 @@
+// Contains the code to start the server
+
+'use strict';
+
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
@@ -10,7 +14,6 @@ var config = require('./config');
 
 var app = express();
 
-//this should only be called once in the application -> backend put that somewhere in the configs pls :)
 Bookshelf.DB = Bookshelf.initialize({
   client: 'pg',
   connection: {
@@ -36,57 +39,4 @@ app.use(express.static(path.join(__dirname + './../public/app')));
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
 
- 
-  //example code
-  
-  var UserModel = require('./models/user').model;
-  var ApartmentModel = require('./models/apartment').model;
-   /*
-   //get a specific user:
-   new UserModel({id: 0})
-  .fetch()
-  .then(function(user) {
-  	console.log(user.first_name);
-  });
-
-  //get all users
-  var UserCollection = require('./models/user').collection;
-
-  new UserCollection()
-  .fetch()
-  .then(function(models) {
-  	console.log(JSON.stringify(models));
-  });
-
-  //create a new user
-  new UserModel({first_name: 'adf', last_name: 'asdf', email: 'adf', phone: '1111'})
-  .save()
-  .then(function(user){
-
-  });
-
-  //updating a user
-  new UserModel({id: 0})
-  .save({first_name: 'newname'}, {patch: true})
-  .then(function(user){
-
-  });
-
-  //fetch user with related apartment
-  new UserModel({id: 1})
-  .fetch({withRelated: ['apartment']})
-  .then(function(user) {
-    console.log(user.attributes.first_name);
-    console.log(user.relations.apartment.attributes.address);
-  });
-*/
-
-/*
-  //fetch apartment nr 1 with all messages on board
-  new ApartmentModel({id: 1})
-  .fetch({withRelated: ['board.messages']})
-  .then(function(model){
-    console.log(model);
-  });
-*/
 });

@@ -1,3 +1,7 @@
+// This file register all modules to the app
+
+'use strict';
+
 // Define all the modules with no dependencies
 angular.module('Calendar', []);
 angular.module('Bills', []);
@@ -8,7 +12,7 @@ angular.module('Settings', []);
 angular.module('Profile', []);
 angular.module('Nav', []);
 
-// Lastly, define your "main" module and inject all other modules as dependencies
+// Define the "main" module and inject all other modules as dependencies
 var app = angular.module('Main',
   [
     'Calendar',
@@ -23,6 +27,7 @@ var app = angular.module('Main',
   ]
 );
 
+// Register all routes
 app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
@@ -50,6 +55,16 @@ app.config(['$routeProvider',
         templateUrl: 'views/showBoard.html',
         module: 'Board',
         controller: 'showBoard'
+      }).
+      when('/settings', {
+        templateUrl: 'views/settings.html',
+        module: 'Settings',
+        controller: 'settings'
+      }).
+      when('/profile', {
+        templateUrl: 'views/profile.html',
+        module: 'Profile',
+        controller: 'profile'
       }).
       otherwise({
         redirectTo: '/'

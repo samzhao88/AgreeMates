@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<!-- This is the homepage of AgreeMates. It contains a header, a side-bar and placeholder for Angular view -->
 <html lang="en" ng-app="Main">
 
 <head>
   <meta charset="utf-8">
   <title>{{title}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="stylehseet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600,700">
   <link rel="stylesheet" href="bower_components/ionicons/css/ionicons.min.css">
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -15,6 +17,7 @@
   <div id="wrapper">
 
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
+      <!-- header -->
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
           <span class="sr-only">Toggle navigation</span>
@@ -29,8 +32,9 @@
         <li><a href="#"><i class="ion-ios7-bell"></i><span class="badge red-badge notif-badge">2</span></a></li>
       </ul>
 
-      <!-- code for Profile Avatar -->
+      <!-- side-bar --> 
       <div id="sidebar" class="navbar-default navbar-static-side" role="navigation">
+        <!-- Profile Avatar -->
         <div class="hidden-xs" id="user-info">
           <img src="https://s3.amazonaws.com/uifaces/faces/twitter/sindresorhus/128.jpg" id="user-image" class="img-circle">
           <p id="user-online"><span id="user-online-dot"></span> Online</p>
@@ -38,9 +42,10 @@
         </div>
 
 
-        <!-- code for side-bar -->
+        <!-- menu bar -->
         <div class="sidebar-collapse">
           <ul class="nav nav-list" id="side-menu" ng-controller="navbarController">
+
             <li class="nav-header">
               Tasks
             </li>
@@ -94,6 +99,7 @@
   <script src="bower_components/angular-route/angular-route.min.js"></script>
   <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="app.js"></script>
+
   <script src="controllers/bills.js"></script>
   <script src="controllers/board.js"></script>
   <script src="controllers/calendar.js"></script>
@@ -102,6 +108,7 @@
   <script src="controllers/navbar.js"></script>
 
   <script>
+    // JS function to collapse the side-bar when the page is less than 768px wide
     $(function () {
       $(window).bind("load resize", function () {
         width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
