@@ -12,9 +12,10 @@ var Bookshelf  = require('bookshelf');
 var passport = require('passport');
 var router = require('./routes');
 var config = require('./config');
+var exSession = require('express-session');
 
 var app = express();
-require('./passport')(passport);
+
 Bookshelf.DB = Bookshelf.initialize({
   client: 'pg',
   connection: {
@@ -26,7 +27,7 @@ Bookshelf.DB = Bookshelf.initialize({
     charset  : 'utf8'
   }
 });
-
+require('./passport')(passport);
 app.set('views', __dirname + './../public/app');
 app.set('view engine', 'html');
 app.engine('html', require('hbs').__express);
@@ -35,7 +36,7 @@ app.use(compress());
 app.use(bodyParser());
 app.use(cookieParser());
 
-app.use(express.session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(exSession({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 router(app);
