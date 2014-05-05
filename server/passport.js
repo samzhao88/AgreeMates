@@ -47,7 +47,7 @@ module.exports = function(passport) {
         // asynchronous
         process.nextTick(function() {
 	            // find the user in the database based on their facebook id
-	            new UserModel({id: id})
+	            new UserModel({id: profile.id})
     	.fetch()
     	.then(function(user){
 
