@@ -13,6 +13,7 @@ var app = angular.module('main',
     'main.settings',
     'main.profile',
     'main.nav',
+    'main.login',
     'ngRoute'
   ]
 );
@@ -57,9 +58,8 @@ app.config(['$routeProvider',
         controller: 'ProfileCtrl'
       }).
        when('/login', {
-        templateUrl: 'login/login.html',
-        module: 'main.login',
-        controller: 'LoginCtrl'
+        controller: 'LoginCtrl',
+        template: '<div></div>'
       }).
       otherwise({
         redirectTo: '/'
