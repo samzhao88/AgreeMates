@@ -25,6 +25,7 @@ fsevents
 vendor
 bower_components
 node_modules
+build
 
 # Vagrant Stuff
 .vagrant

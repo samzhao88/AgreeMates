@@ -1,11 +1,13 @@
 // Karma configuration
 // Generated on Wed Apr 23 2014 20:21:41 GMT-0700 (PDT)
 
+'use strict';
+
 module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: 'client',
+    basePath: 'public',
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -13,21 +15,23 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      '*.js',
-	  'test/**/*.spec.js'
+      'app/vendor/angular/angular.js',
+      'app/vendor/angular-mocks/angular-mocks.js',
+      '**/*.js',
+      'test/**/*.spec.js'
     ],
 
 
     // list of files to exclude
     exclude: [
-      
+
     ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-    
+
     },
 
 

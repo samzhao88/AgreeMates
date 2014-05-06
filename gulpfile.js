@@ -1,4 +1,5 @@
 // Register build and test automation tasks
+'use strict';
 
 // Include gulp
 var gulp = require('gulp');
@@ -15,19 +16,20 @@ var karma = require('gulp-karma');
 
 // Lint Task
 gulp.task('lint', function() {
-	return gulp.src(['public/app/**/*.js', '!public/app/bower_components/**/*.js', 'server/**/*.js'])
+	return gulp.src(['public/app/**/*.js', '!public/app/vendor/**/*.js',
+                  'server/**/*.js'])
 		.pipe(jshint())
 		.pipe(jshint.reporter('jshint-stylish'));
 });
 
 // Concatenate & Minify JS
 gulp.task('scripts', function() {
-	return gulp.src('js/*.js')
+	return gulp.src('public/app/**/*.js')
 		.pipe(concat('all.js'))
-		.pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('build'))
 		.pipe(rename('all.min.js'))
 		.pipe(uglify())
-		.pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('build'));
 });
 
 // Watch Files For Changes
