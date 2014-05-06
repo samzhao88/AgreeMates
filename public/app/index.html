@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- This is the homepage of AgreeMates. It contains a header, a side-bar and placeholder for Angular view -->
-<html lang="en" ng-app="Main">
+<html lang="en" ng-app="main">
 
 <head>
   <meta charset="utf-8">
@@ -44,7 +44,7 @@
 
         <!-- menu bar -->
         <div class="sidebar-collapse">
-          <ul class="nav nav-list" id="side-menu" ng-controller="navbarController">
+          <ul class="nav nav-list" id="side-menu" ng-controller="NavCtrl">
 
             <li class="nav-header">
               Tasks
@@ -106,6 +106,8 @@
   <script src="chores/chores.js"></script>
   <script src="supplies/supplies.js"></script>
   <script src="navbar/navbar.js"></script>
+  <script src="settings/settings.js"></script>
+  <script src="profile/profile.js"></script>
 
   <script>
     // JS function to collapse the side-bar when the page is less than 768px wide
