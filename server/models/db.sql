@@ -20,6 +20,7 @@ SET client_min_messages = warning;
 
 CREATE DATABASE postgres WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'English_United States.1252' LC_CTYPE = 'English_United States.1252';
 
+CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE;
 
 \connect postgres
 
@@ -81,7 +82,7 @@ SET default_with_oids = false;
 
 --
 -- TOC entry 171 (class 1259 OID 25135)
--- Name: apartments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: apartments; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE apartments (
@@ -115,7 +116,7 @@ ALTER SEQUENCE apartments_id_seq OWNED BY apartments.id;
 
 --
 -- TOC entry 185 (class 1259 OID 25310)
--- Name: bills; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: bills; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE bills (
@@ -178,7 +179,7 @@ ALTER SEQUENCE bills_reocurring_id_seq OWNED BY bills.reocurring_id;
 
 --
 -- TOC entry 190 (class 1259 OID 25387)
--- Name: boards; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: boards; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE boards (
@@ -211,7 +212,7 @@ ALTER SEQUENCE board_id_seq OWNED BY boards.id;
 
 --
 -- TOC entry 182 (class 1259 OID 25289)
--- Name: chores; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: chores; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE chores (
@@ -273,7 +274,7 @@ ALTER SEQUENCE chores_reocurring_id_seq OWNED BY chores.reocurring_id;
 
 --
 -- TOC entry 179 (class 1259 OID 25266)
--- Name: comments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: comments; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE comments (
@@ -309,7 +310,7 @@ ALTER SEQUENCE comments_id_seq OWNED BY comments.id;
 
 --
 -- TOC entry 177 (class 1259 OID 25245)
--- Name: messages; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: messages; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE messages (
@@ -346,7 +347,7 @@ ALTER SEQUENCE messages_id_seq OWNED BY messages.id;
 
 --
 -- TOC entry 187 (class 1259 OID 25332)
--- Name: payments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: payments; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE payments (
@@ -382,7 +383,7 @@ ALTER SEQUENCE payments_id_seq OWNED BY payments.id;
 
 --
 -- TOC entry 173 (class 1259 OID 25146)
--- Name: supplies; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: supplies; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE supplies (
@@ -417,7 +418,7 @@ ALTER SEQUENCE supplies_id_seq OWNED BY supplies.id;
 
 --
 -- TOC entry 175 (class 1259 OID 25219)
--- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE users (
@@ -436,7 +437,7 @@ CREATE TABLE users (
 
 --
 -- TOC entry 188 (class 1259 OID 25360)
--- Name: users_chores; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: users_chores; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE users_chores (
@@ -763,7 +764,7 @@ SELECT pg_catalog.setval('users_id_seq', 2, true);
 
 --
 -- TOC entry 1898 (class 2606 OID 25143)
--- Name: apartments_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: apartments_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY apartments
@@ -772,7 +773,7 @@ ALTER TABLE ONLY apartments
 
 --
 -- TOC entry 1910 (class 2606 OID 25319)
--- Name: bills_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: bills_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY bills
@@ -781,7 +782,7 @@ ALTER TABLE ONLY bills
 
 --
 -- TOC entry 1914 (class 2606 OID 25392)
--- Name: board_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: board_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY boards
@@ -790,7 +791,7 @@ ALTER TABLE ONLY boards
 
 --
 -- TOC entry 1908 (class 2606 OID 25295)
--- Name: chores_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: chores_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY chores
@@ -799,7 +800,7 @@ ALTER TABLE ONLY chores
 
 --
 -- TOC entry 1906 (class 2606 OID 25274)
--- Name: comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY comments
@@ -808,7 +809,7 @@ ALTER TABLE ONLY comments
 
 --
 -- TOC entry 1904 (class 2606 OID 25253)
--- Name: messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY messages
@@ -817,7 +818,7 @@ ALTER TABLE ONLY messages
 
 --
 -- TOC entry 1912 (class 2606 OID 25340)
--- Name: payments_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: payments_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY payments
@@ -826,7 +827,7 @@ ALTER TABLE ONLY payments
 
 --
 -- TOC entry 1900 (class 2606 OID 25151)
--- Name: supplies_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: supplies_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY supplies
@@ -835,7 +836,7 @@ ALTER TABLE ONLY supplies
 
 --
 -- TOC entry 1902 (class 2606 OID 25227)
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY users
@@ -982,4 +983,3 @@ ALTER TABLE ONLY users_chores
 --
 -- PostgreSQL database dump complete
 --
-
