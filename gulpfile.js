@@ -52,23 +52,27 @@ function handleError(err) {
 	this.emit('end');
 }
 
+function karmaTest(action) {
+	return gulp.src('./foobar')
+		.pipe(karma({
+			configFile: 'karma.conf.js',
+			action: action
+		}))
+		.on('error', handleError);
+}
+
 gulp.task('test', ['test:server', 'test:client'], function() {});
 
 // Run server tests and output reports
 gulp.task('test:server', function () {
 	gulp.src('./server/test/**/*.js')
 		.pipe(mocha({ reporter: 'list' }))
-		.on("error", handleError);
+		.on('error', handleError);
 });
 
 // Run client tests and output reports
 gulp.task('test:client', function () {
-	return gulp.src('./public/**/*.spec.js')
-		.pipe(karma({
-			configFile: 'karma.conf.js',
-			action: 'run'
-		}))
-		.on('error', handleError);
+  return karmaTest('run');
 });
 
 gulp.task('bump', function () {

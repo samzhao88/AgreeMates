@@ -2,10 +2,13 @@
 
 var expect = chai.expect;
 
-describe('BillsCtrl', function() {
-  beforeEach(angular.mock.module('main'));
+describe('bills module', function() {
+  var module;
+  before(function() {
+    module = angular.module('main.bills');
+  });
 
-  it('should exist', function() {
-    expect(main.bills.BillsCtrl).not.to.equal(null);
+  it('should be registered', function() {
+    expect(module).not.to.equal(null);
   });
 });

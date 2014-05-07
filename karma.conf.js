@@ -17,14 +17,14 @@ module.exports = function(config) {
     files: [
       'app/vendor/angular/angular.js',
       'app/vendor/angular-mocks/angular-mocks.js',
-      '**/*.js',
-      'test/**/*.spec.js'
+      '**/*.js'
     ],
 
 
     // list of files to exclude
     exclude: [
-
+      'app/vendor/bootstrap/**/*.js',
+      'app/vendor/jquery/**/*.js'
     ],
 
 
