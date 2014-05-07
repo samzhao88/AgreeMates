@@ -13,7 +13,7 @@ var app = angular.module('main',
     'main.settings',
     'main.profile',
     'main.nav',
-    'main.login',
+    'main.apartment',
     'ngRoute'
   ]
 );

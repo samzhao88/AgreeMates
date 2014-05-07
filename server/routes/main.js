@@ -21,12 +21,12 @@ var main = function(app) {
   		} else {
 
   			//user has no apart yet
-  			res.render('apartment/index', {title: 'AgreeMates', firstname: 'John'});
+  			res.render('components/apartment/index');
   		}
   	} else {
 
   		//user is not logged in
-  		res.render('login/index');
+  		res.render('components/login/index');
   	}
 	
   });

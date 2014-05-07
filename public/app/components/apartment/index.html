@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <div ng-controller="Controller">
+  <div ng-controller="AptAddCtrl">
   <form novalidate class="simple-form">
     Name: <input type="text" ng-model="user.name" /><br />
     E-mail: <input type="email" ng-model="user.email" /><br />
@@ -19,36 +19,21 @@
   </form>
 </div>
 
-<script>
-  function Controller($scope) {
-    $scope.master = {};
-
-    $scope.update = function(user) {
-      $scope.master = angular.copy(user);
-    };
-
-    $scope.reset = function() {
-      $scope.user = angular.copy($scope.master);
-    };
-
-    $scope.reset();
-  }
-</script>
-
-   <script src="vendor/jquery/dist/jquery.min.js"></script>
+  <script src="vendor/jquery/dist/jquery.min.js"></script>
   <script src="vendor/angular/angular.min.js"></script>
   <script src="vendor/angular-route/angular-route.min.js"></script>
   <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="app.js"></script>
 
-  <script src="bills/bills.js"></script>
-  <script src="board/board.js"></script>
-  <script src="calendar/calendar.js"></script>
-  <script src="chores/chores.js"></script>
-  <script src="supplies/supplies.js"></script>
-  <script src="navbar/navbar.js"></script>
-  <script src="settings/settings.js"></script>
-  <script src="profile/profile.js"></script>
+  <script src="components/bills/bills.js"></script>
+  <script src="components/board/board.js"></script>
+  <script src="components/calendar/calendar.js"></script>
+  <script src="components/chores/chores.js"></script>
+  <script src="components/supplies/supplies.js"></script>
+  <script src="components/navbar/navbar.js"></script>
+  <script src="components/settings/settings.js"></script>
+  <script src="components/profile/profile.js"></script>
+  <script src="components/apartment/apartment.js"></script>
 
 </body>
 </html>
