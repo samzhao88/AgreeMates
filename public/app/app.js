@@ -23,37 +23,37 @@ app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
       when('/', {
-        templateUrl: 'calendar/calendar.html',
+        templateUrl: 'components/calendar/calendar.html',
         module: 'main.calendar',
         controller: 'CalendarCtrl'
       }).
       when('/bills', {
-        templateUrl: 'bills/bills.html',
+        templateUrl: 'components/bills/bills.html',
         module: 'main.bills',
         controller: 'BillsCtrl'
       }).
       when('/chores', {
-        templateUrl: 'chores/chores.html',
+        templateUrl: 'components/chores/chores.html',
         module: 'main.chores',
         controller: 'ChoresCtrl'
       }).
       when('/supplies', {
-        templateUrl: 'supplies/supplies.html',
+        templateUrl: 'components/supplies/supplies.html',
         module: 'main.supplies',
         controller: 'SuppliesCtrl'
       }).
       when('/board', {
-        templateUrl: 'board/board.html',
+        templateUrl: 'components/board/board.html',
         module: 'main.board',
         controller: 'BoardCtrl'
       }).
       when('/settings', {
-        templateUrl: 'settings/settings.html',
+        templateUrl: 'components/settings/settings.html',
         module: 'main.settings',
         controller: 'SettingsCtrl'
       }).
       when('/profile', {
-        templateUrl: 'profile/profile.html',
+        templateUrl: 'components/profile/profile.html',
         module: 'main.profile',
         controller: 'ProfileCtrl'
       }).
