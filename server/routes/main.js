@@ -17,11 +17,11 @@ var main = function(app) {
   		if(usr.aparment_id!=null){
 
   			//user has an apartment
-  			res.render('index', {title: 'AgreeMates', firstname: 'John'});
+  			res.render('index');
   		} else {
 
   			//user has no apart yet
-  			res.render('apartment/apartment', {title: 'AgreeMates', firstname: 'John'});
+  			res.render('apartment/index', {title: 'AgreeMates', firstname: 'John'});
   		}
   	} else {
 
