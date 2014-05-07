@@ -75,6 +75,10 @@ gulp.task('test:client', function () {
   return karmaTest('run');
 });
 
+gulp.task('test:client_watch', function () {
+  return karmaTest('watch');
+});
+
 gulp.task('bump', function () {
 	gulp.src(['./package.json', './bower.json'])
 		.pipe(bump())

@@ -11,4 +11,8 @@ describe('bills module', function() {
   it('should be registered', function() {
     expect(module).not.to.equal(null);
   });
+
+  it('should have a BillsCtrl controller', function() {
+    expect(module.BillsCtrl).not.to.equal(null);
+  });
 });
