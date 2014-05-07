@@ -57,10 +57,6 @@ app.config(['$routeProvider',
         module: 'main.profile',
         controller: 'ProfileCtrl'
       }).
-       when('/login', {
-        controller: 'LoginCtrl',
-        template: '<div></div>'
-      }).
       otherwise({
         redirectTo: '/'
       });
