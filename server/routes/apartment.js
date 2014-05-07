@@ -7,20 +7,16 @@ var apartment = function(app) {
 
   // Add apartment to database
   app.post('/apartment/add', function(req, res) {
-	var name = req.body('name');
-	var address = req.body('address');
+	var name = req.body.name;
+	var address = req.body.address;
 	new ApartmentModel({name: name, address: address})
 	.save()
 	.then(function(model) {
-		res.json(model);
-		console.log("ADDED APARTMENT");
-		console.log(model);
+		res.json({result : "success"});
 		})
-	.otherwise(function(apartment) {
-		res.status(500);
-		console.log("ERROR ADDED APARTMENT");
+	.otherwise(function(error) {
+		res.json({result : "error", error : error});
 		});
-    res.end();
   });
 
   // Get edit apartment page information
