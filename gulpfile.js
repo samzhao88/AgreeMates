@@ -1,4 +1,5 @@
 // Register build and test automation tasks
+'use strict';
 
 // Include gulp
 var gulp = require('gulp');
@@ -15,19 +16,20 @@ var karma = require('gulp-karma');
 
 // Lint Task
 gulp.task('lint', function() {
-	return gulp.src(['public/app/**/*.js', '!public/app/bower_components/**/*.js', 'server/**/*.js'])
+	return gulp.src(['public/app/**/*.js', '!public/app/vendor/**/*.js',
+                  'server/**/*.js'])
 		.pipe(jshint())
 		.pipe(jshint.reporter('jshint-stylish'));
 });
 
 // Concatenate & Minify JS
 gulp.task('scripts', function() {
-	return gulp.src('js/*.js')
+	return gulp.src('public/app/**/*.js')
 		.pipe(concat('all.js'))
-		.pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('build'))
 		.pipe(rename('all.min.js'))
 		.pipe(uglify())
-		.pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('build'));
 });
 
 // Watch Files For Changes
@@ -50,23 +52,31 @@ function handleError(err) {
 	this.emit('end');
 }
 
+function karmaTest(action) {
+	return gulp.src('./foobar')
+		.pipe(karma({
+			configFile: 'karma.conf.js',
+			action: action
+		}))
+		.on('error', handleError);
+}
+
 gulp.task('test', ['test:server', 'test:client'], function() {});
 
 // Run server tests and output reports
 gulp.task('test:server', function () {
 	gulp.src('./server/test/**/*.js')
 		.pipe(mocha({ reporter: 'list' }))
-		.on("error", handleError);
+		.on('error', handleError);
 });
 
 // Run client tests and output reports
 gulp.task('test:client', function () {
-	return gulp.src('./public/**/*.spec.js')
-		.pipe(karma({
-			configFile: 'karma.conf.js',
-			action: 'run'
-		}))
-		.on('error', handleError);
+  return karmaTest('run');
+});
+
+gulp.task('test:client_watch', function () {
+  return karmaTest('watch');
 });
 
 gulp.task('bump', function () {
