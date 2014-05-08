@@ -1,28 +1,29 @@
+
 'use strict';
 
 var expect = chai.expect;
 
-describe('bills module', function() {
-  var billsModule;
+describe('chores module', function() {
+  var choresModule;
   beforeEach(function() {
-    billsModule = module('main.bills');
+    choresModule = module('main.chores');
   });
 
   it('should be registered', function() {
-    expect(billsModule).not.to.equal(null);
+    expect(choresModule).not.to.equal(null);
   });
 
-  describe('BillsCtrl', function() {
+  describe('ChoresCtrl', function() {
     var ctrl, scope, httpMock;
 
     beforeEach(inject(function ($controller, $rootScope, $httpBackend) {
       httpMock = $httpBackend;
 
       scope = $rootScope.$new();
-      httpMock.when('GET', '/bills/all').respond({title: 'bills title'});
+      httpMock.when('GET', '/chores/all').respond({title: 'chores title'});
 
       ctrl = $controller;
-      ctrl('BillsCtrl', {
+      ctrl('ChoresCtrl', {
         $scope: scope
       });
     }));
@@ -32,9 +33,9 @@ describe('bills module', function() {
     });
 
     it('gets the title from the api and assigns it to scope', function() {
-      httpMock.expectGET('/bills/all');
+      httpMock.expectGET('/chores/all');
       httpMock.flush();
-      expect(scope.title).to.equal('bills title');
+      expect(scope.title).to.equal('chores title');
     });
   });
 });

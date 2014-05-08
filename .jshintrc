@@ -21,7 +21,9 @@
     "before":     false,
     "beforeEach": false,
     "after":      false,
-    "afterEach":  false
+    "afterEach":  false,
+    "chai":       false,
+    "inject":     false
   },
 
   /*

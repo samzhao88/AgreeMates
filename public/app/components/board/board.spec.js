@@ -2,27 +2,27 @@
 
 var expect = chai.expect;
 
-describe('bills module', function() {
-  var billsModule;
+describe('board module', function() {
+  var boardModule;
   beforeEach(function() {
-    billsModule = module('main.bills');
+    boardModule = module('main.board');
   });
 
   it('should be registered', function() {
-    expect(billsModule).not.to.equal(null);
+    expect(boardModule).not.to.equal(null);
   });
 
-  describe('BillsCtrl', function() {
+  describe('BoardCtrl', function() {
     var ctrl, scope, httpMock;
 
     beforeEach(inject(function ($controller, $rootScope, $httpBackend) {
       httpMock = $httpBackend;
 
       scope = $rootScope.$new();
-      httpMock.when('GET', '/bills/all').respond({title: 'bills title'});
+      httpMock.when('GET', '/messages/recent').respond({title: 'board title'});
 
       ctrl = $controller;
-      ctrl('BillsCtrl', {
+      ctrl('BoardCtrl', {
         $scope: scope
       });
     }));
@@ -32,9 +32,9 @@ describe('bills module', function() {
     });
 
     it('gets the title from the api and assigns it to scope', function() {
-      httpMock.expectGET('/bills/all');
+      httpMock.expectGET('/messages/recent');
       httpMock.flush();
-      expect(scope.title).to.equal('bills title');
+      expect(scope.title).to.equal('board title');
     });
   });
 });
