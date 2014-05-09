@@ -8,7 +8,7 @@ var UserModel = require('../models/user').model;
 var apartment = function(app) {
 
   // Add apartment to database
-  app.post('/apartment/add', function(req, res) {
+  app.post('/apartment', function(req, res) {
     var name = req.body.name;
     var address = req.body.address;
 
@@ -16,8 +16,9 @@ var apartment = function(app) {
       .save()
       .then(function(model) {
         new UserModel({id: req.user.id})
+          /*jshint camelcase: false */
           .save({apartment_id: model.id}, {patch: true})
-          .then(function(model) {
+          .then(function() {
             res.json({result : 'success'});
           });
       })
@@ -27,32 +28,17 @@ var apartment = function(app) {
   });
 
   // Get edit apartment page information
-  app.get('/apartment/edit/:apt', function(req, res) {
+  app.get('/apartment/:apt', function(req, res) {
     res.end();
   });
 
   // Edit apartment in database
-  app.post('/apartment/edit', function(req, res) {
+  app.put('/apartment/:apt', function(req, res) {
     res.end();
   });
 
   // Removes apartment from the database
-  app.post('/apartment/delete', function(req, res) {
-    res.end();
-  });
-
-  // Get the apartment settings page information
-  app.get('/apartment', function(req, res) {
-    res.end();
-  });
-
-  // Get the add roommate form information
-  app.get('/apartment/add/roommate', function(req, res) {
-    res.end();
-  });
-
-  // Receive add roommate form, process in database, and send email
-  app.post('/apartment/add/roommate', function(req, res) {
+  app.delete('/apartment/:apt', function(req, res) {
     res.end();
   });
 

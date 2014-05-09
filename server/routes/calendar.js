@@ -5,7 +5,7 @@
 var calendar = function(app) {
 
  // Shows the apartment calendar
-  app.get('/calendar/show', function(req, res) {
+  app.get('/calendar', function(req, res) {
     res.json({title: 'Calendar'});
   });
 
