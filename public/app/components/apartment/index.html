@@ -3,19 +3,17 @@
 <head>
   <meta charset="utf-8">
   <title>AgreeMates</title>
-  <link rel="stylesheet" href="../vendor/bootstrap/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../app.css">
+  <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="app.css">
 </head>
 <body>
 
   <div ng-controller="AptAddCtrl">
   <form novalidate class="simple-form">
-    Name: <input type="text" ng-model="user.name" /><br />
-    E-mail: <input type="email" ng-model="user.email" /><br />
-    Gender: <input type="radio" ng-model="user.gender" value="male" />male
-    <input type="radio" ng-model="user.gender" value="female" />female<br />
-    <button ng-click="reset()">RESET</button>
-    <button ng-click="update(user)">SAVE</button>
+    Apartment Name: <input type="text" ng-model="apt.name" /><br />
+    Address: <input type="text" ng-model="apt.address" /><br />
+    <button ng-click="reset()">Reset</button>
+    <button ng-click="update(apt)">Add</button>
   </form>
 </div>
 

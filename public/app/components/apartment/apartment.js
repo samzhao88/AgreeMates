@@ -7,17 +7,15 @@ angular.module('main.apartment').controller('AptAddCtrl', function ($scope, $loc
 
   $scope.master = {};
 
-    $scope.update = function(user) {
-      $scope.master = angular.copy(user);
-      console.log(user.email);
-      console.log(user.name);
+    $scope.update = function(apt) {
+      $scope.master = angular.copy(apt);
     };
 
     $scope.reset = function() {
-      $scope.user = angular.copy($scope.master);
+      $scope.apt = angular.copy($scope.master);
     };
 
-    $http.post('/messages/recent', $scope.user).
+    $http.post('/apartment/add', $scope.apt).
     success(function(data) {
       console.log(data);
     });
