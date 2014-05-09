@@ -6,7 +6,7 @@ angular.module('main.board', []);
 angular.module('main.board').controller('BoardCtrl',
   function ($scope, $http) {
 
-    $http.get('/messages/recent').
+    $http.get('/messages').
       success(function(data) {
         $scope.title = data.title;
       });

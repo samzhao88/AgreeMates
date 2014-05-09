@@ -6,7 +6,7 @@ angular.module('main.calendar', []);
 angular.module('main.calendar').controller('CalendarCtrl',
   function ($scope, $http) {
 
-    $http.get('/calendar/show').
+    $http.get('/calendar').
       success(function(data) {
         $scope.title = data.title;
       });

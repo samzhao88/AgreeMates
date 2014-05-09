@@ -6,7 +6,7 @@ angular.module('main.bills', []);
 angular.module('main.bills').controller('BillsCtrl',
   function($http, $scope) {
 
-    $http.get('/bills/all').success(function(data) {
+    $http.get('/bills').success(function(data) {
       $scope.title = data.title;
     });
 

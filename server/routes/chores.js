@@ -5,7 +5,7 @@
 var chores = function(app) {
 
   app.get('/chores', function(req, res) {
-    res.end();
+    res.json({title: 'Chores'});
   });
 
   // Process chore form and adds to database

@@ -16,8 +16,9 @@ var apartment = function(app) {
       .save()
       .then(function(model) {
         new UserModel({id: req.user.id})
+          /*jshint camelcase: false */
           .save({apartment_id: model.id}, {patch: true})
-          .then(function(model) {
+          .then(function() {
             res.json({result : 'success'});
           });
       })

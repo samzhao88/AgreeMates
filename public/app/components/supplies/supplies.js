@@ -6,7 +6,7 @@ angular.module('main.supplies', []);
 angular.module('main.supplies').controller('SuppliesCtrl',
   function ($scope, $http) {
 
-    $http.get('/supplies/all').
+    $http.get('/supplies').
       success(function(data) {
         $scope.title = data.title;
     });
