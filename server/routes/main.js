@@ -2,33 +2,24 @@
 
 'use strict';
 
-// load up the user model
 var UserModel = require('../models/user').model;
 
 var main = function(app) {
 
   app.get('/', function(req, res) {
-  	
-  	var usr = req.user;
-  	if(usr!=null){
+    /* jshint camelcase: false */
 
-  		//user is logged in
+  	var user = req.user;
 
-  		if(usr.aparment_id!=null){
-
-  			//user has an apartment
+  	if (user != null) {
+  		if (user.attributes.apartment_id != null) {
   			res.render('index');
   		} else {
-
-  			//user has no apart yet
   			res.render('components/apartment/index');
   		}
   	} else {
-
-  		//user is not logged in
   		res.render('components/login/index');
   	}
-	
   });
 
 };

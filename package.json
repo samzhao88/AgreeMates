@@ -38,7 +38,8 @@
     "gulp-mocha": "^0.4.1",
     "jshint-stylish": "^0.2.0",
     "gulp-bump": "^0.1.8",
-    "gulp-karma": "0.0.4"
+    "gulp-karma": "0.0.4",
+    "karma-chrome-launcher": "^0.1.3"
   },
   "main": "server/app.js",
   "scripts": {

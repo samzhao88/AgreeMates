@@ -3,6 +3,8 @@
 // expose our config directly to our application using module.exports
 module.exports = {
 
+	/* jslint maxlen: 130 */
+
 	'facebookAuth' : {
 		'clientID' 		: '286368104863121', // your App ID
 		'clientSecret' 	: 'afe259278751cc567fa4a969e8c87fc5', // your App Secret

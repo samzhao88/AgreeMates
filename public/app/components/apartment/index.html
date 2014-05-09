@@ -9,13 +9,13 @@
 <body>
 
   <div ng-controller="AptAddCtrl">
-  <form novalidate class="simple-form">
-    Apartment Name: <input type="text" ng-model="apt.name" /><br />
-    Address: <input type="text" ng-model="apt.address" /><br />
-    <button ng-click="reset()">Reset</button>
-    <button ng-click="update(apt)">Add</button>
-  </form>
-</div>
+    <form novalidate class="simple-form">
+      Name: <input type="text" ng-model="apartment.name"><br>
+      Address: <input type="text" ng-model="apartment.address"><br>
+      <button ng-click="cancel()">Cancel</button>
+      <button ng-click="add(apartment)">Add</button>
+    </form>
+  </div>
 
   <script src="vendor/jquery/dist/jquery.min.js"></script>
   <script src="vendor/angular/angular.min.js"></script>

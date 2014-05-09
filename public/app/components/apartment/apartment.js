@@ -2,24 +2,17 @@
 
 angular.module('main.apartment', []);
 
-// Angular controller for navigation bar
-angular.module('main.apartment').controller('AptAddCtrl', function ($scope, $location) {
+angular.module('main.apartment').controller('AptAddCtrl',
+  function ($http, $scope) {
 
-  $scope.master = {};
-
-    $scope.update = function(apt) {
-      $scope.master = angular.copy(apt);
+    $scope.add = function(apartment) {
+      $http.post('/apartment/add', apartment)
+        .success(function(data, status, headers, config) {
+          console.log(status, headers, config);
+        })
+        .error(function(data, status, headers, config) {
+          console.log(status, headers, config);
+      });
     };
-
-    $scope.reset = function() {
-      $scope.apt = angular.copy($scope.master);
-    };
-
-    $http.post('/apartment/add', $scope.apt).
-    success(function(data) {
-      console.log(data);
-    });
-
-    $scope.reset();
-
+    
 });
