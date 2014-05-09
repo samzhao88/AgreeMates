@@ -12,7 +12,7 @@ var Bookshelf  = require('bookshelf');
 var passport = require('passport');
 var router = require('./routes');
 var config = require('./config');
-var exSession = require('express-session');
+var session = require('express-session');
 
 var app = express();
 
@@ -27,23 +27,25 @@ Bookshelf.DB = Bookshelf.initialize({
     charset  : 'utf8'
   }
 });
+
 require('./passport')(passport);
+
 app.set('views', __dirname + './../public/app');
 app.set('view engine', 'html');
 app.engine('html', require('hbs').__express);
-app.use(logger());
+
+app.use(logger('dev'));
 app.use(compress());
 app.use(bodyParser());
 app.use(cookieParser());
-
-app.use(exSession({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(session({ secret: 'AgreeMatesSessionSecret' }));
 app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
-router(app);
-require('./routes/passport.js')(app,passport);
+app.use(passport.session());
+
+router(app, passport);
+
 app.use(express.static(path.join(__dirname + './../public/app')));
 
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
-
 });

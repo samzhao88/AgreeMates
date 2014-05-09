@@ -1,22 +1,25 @@
 // Apartment routes
 
 'use strict';
+
 var ApartmentModel = require('../models/apartment').model;
 
 var apartment = function(app) {
 
   // Add apartment to database
   app.post('/apartment/add', function(req, res) {
-	var name = req.body.name;
-	var address = req.body.address;
-	new ApartmentModel({name: name, address: address})
-	.save()
-	.then(function(model) {
-		res.json({result : "success"});
-		})
-	.otherwise(function(error) {
-		res.json({result : "error", error : error});
-		});
+    var name = req.body.name;
+    var address = req.body.address;
+
+    new ApartmentModel({name: name, address: address})
+      .save()
+      .then(function(model) {
+        console.log(model);
+        res.json({result : 'success'});
+      })
+      .otherwise(function(error) {
+        res.json({result : 'error', error : error});
+      });
   });
 
   // Get edit apartment page information

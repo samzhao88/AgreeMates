@@ -9,15 +9,13 @@
 <body>
 
   <div ng-controller="AptAddCtrl">
-  <form novalidate class="simple-form">
-    Name: <input type="text" ng-model="user.name" /><br />
-    E-mail: <input type="email" ng-model="user.email" /><br />
-    Gender: <input type="radio" ng-model="user.gender" value="male" />male
-    <input type="radio" ng-model="user.gender" value="female" />female<br />
-    <button ng-click="reset()">RESET</button>
-    <button ng-click="update(user)">SAVE</button>
-  </form>
-</div>
+    <form novalidate class="simple-form">
+      Name: <input type="text" ng-model="apartment.name"><br>
+      Address: <input type="text" ng-model="apartment.address"><br>
+      <button ng-click="cancel()">Cancel</button>
+      <button ng-click="add(apartment)">Add</button>
+    </form>
+  </div>
 
   <script src="vendor/jquery/dist/jquery.min.js"></script>
   <script src="vendor/angular/angular.min.js"></script>
