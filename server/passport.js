@@ -3,7 +3,7 @@
 'use strict';
 
 var FacebookStrategy = require('passport-facebook').Strategy;
-// var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var UserModel = require('./models/user').model;
 var configAuth = require('./auth');
 
@@ -58,5 +58,51 @@ module.exports = function(passport) {
 			}
 		});
 	}));
+
+
+   // =========================================================================
+    // GOOGLE ==================================================================
+    // =========================================================================
+    passport.use(new GoogleStrategy({
+        clientID        : configAuth.googleAuth.clientID,
+        clientSecret    : configAuth.googleAuth.clientSecret,
+        callbackURL     : configAuth.googleAuth.callbackURL,
+	passReqToCallback : true
+
+    },
+    function(req, token, refreshToken, profile, done) {
+
+		// make the code asynchronous
+		// User.findOne won't fire until we have all our data back from Google
+		process.nextTick(function() {
+
+			var name = profile.displayName.split(" ");
+
+			if (!req.user) {
+				new UserModel({google_id: profile.id})
+					.fetch()
+					.then(function(user) {
+						if (user) {
+							return done(null, user);
+						} else {
+							new UserModel({
+								first_name: name[0],
+								last_name: name[1],
+								email: profile.emails[0].value,
+								google_id: profile.id,
+								google_token: token
+							})
+								.save()
+								.then(function(user) {
+									return done(null, user);
+							});
+						}
+				});
+			} else {
+
+			}
+		});
+
+    }));
 
 };
