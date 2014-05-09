@@ -2,7 +2,7 @@
 
 'use strict';
 
-var router = function(app) {
+var router = function(app, passport) {
 
   require('./main.js')(app);
   require('./bills.js')(app);
@@ -13,6 +13,7 @@ var router = function(app) {
   require('./comments.js')(app);
   require('./user.js')(app);
   require('./apartment')(app);
+  require('./passport')(app, passport);
 
 };
 
