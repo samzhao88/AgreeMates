@@ -13,7 +13,6 @@ var main = function(app) {
 
   	if (user != null) {
   		if (user.attributes.apartment_id != null) {
-        console.log(user);
         if(user.attributes.facebook_id!=null){
           var profile_pic = "https://graph.facebook.com/"+user.attributes.facebook_id+"/picture?height=300&width=300";
         } else if(user.attributes.google_id!=null){
