@@ -2,8 +2,6 @@
 
 'use strict';
 
-var UserModel = require('../models/user').model;
-
 var main = function(app) {
 
   app.get('/', function(req, res) {

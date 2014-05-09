@@ -4,7 +4,7 @@
 
 var comments = function(app) {
 
-  app.get('/comments/recent', function(req, res) {
+  app.get('/comments', function(req, res) {
     res.end();
   });
 
