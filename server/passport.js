@@ -33,6 +33,8 @@ module.exports = function(passport) {
   },
 	function(req, token, refreshToken, profile, done) {
 		process.nextTick(function() {
+
+			console.log(profile);
 			if (!req.user) {
 				new UserModel({facebook_id: profile.id})
 					.fetch()
