@@ -15,7 +15,7 @@ var main = function(app) {
   		if (user.attributes.apartment_id != null) {
         console.log(user);
         if(user.attributes.facebook_id!=null){
-          var profile_pic = "https://graph.facebook.com/"+user.attributes.facebook_id+"/picture?type=large";
+          var profile_pic = "https://graph.facebook.com/"+user.attributes.facebook_id+"/picture?height=300&width=300";
         } else if(user.attributes.google_id!=null){
           var profile_pic = "http://placehold.it/300x300";
           //var profile_pic = "http://picasaweb.google.com/data/entry/api/user/"+user.attributes.google_id+"?alt=json";
