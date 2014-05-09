@@ -20,7 +20,7 @@ SET client_min_messages = warning;
 
 CREATE DATABASE postgres WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'English_United States.1252' LC_CTYPE = 'English_United States.1252';
 
-CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE;
+CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE LOGIN;
 
 \connect postgres
 

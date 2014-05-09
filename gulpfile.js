@@ -34,7 +34,8 @@ gulp.task('scripts', function() {
 
 // Watch Files For Changes
 gulp.task('watch', function() {
-	gulp.watch('js/*.js', ['lint', 'scripts']);
+	gulp.watch(['**/*.js', '!node_modules/**/*.js', '!public/app/vendor/**/*.js'],
+             ['lint', 'scripts']);
 });
 
 // Set up the file coverage
@@ -86,4 +87,4 @@ gulp.task('bump', function () {
 });
 
 // Default Task
-gulp.task('default', ['lint', 'scripts', 'watch']);
+gulp.task('default', ['lint', 'scripts', 'watch', 'test:client_watch']);

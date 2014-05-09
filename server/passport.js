@@ -76,7 +76,7 @@ module.exports = function(passport) {
 		// User.findOne won't fire until we have all our data back from Google
 		process.nextTick(function() {
 
-			var name = profile.displayName.split(" ");
+			var name = profile.displayName.split(' ');
 
 			if (!req.user) {
 				new UserModel({google_id: profile.id})
