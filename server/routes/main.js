@@ -13,7 +13,8 @@ var main = function(app) {
 
   	if (user != null) {
   		if (user.attributes.apartment_id != null) {
-  			res.render('index');
+        console.log(user);
+  			res.render('index', {firstname: user.attributes.first_name});
   		} else {
   			res.render('components/apartment/index');
   		}
