@@ -3,6 +3,7 @@
 'use strict';
 
 var ApartmentModel = require('../models/apartment').model;
+var UserModel = require('../models/user').model;
 
 var apartment = function(app) {
 
@@ -14,8 +15,11 @@ var apartment = function(app) {
     new ApartmentModel({name: name, address: address})
       .save()
       .then(function(model) {
-        console.log(model);
-        res.json({result : 'success'});
+        new UserModel({id: req.user.id})
+          .save({apartment_id: model.id}, {patch: true})
+          .then(function(model) {
+            res.json({result : 'success'});
+          });
       })
       .otherwise(function(error) {
         res.json({result : 'error', error : error});
