@@ -3,23 +3,42 @@
 'use strict';
 
 var SupplyModel = require('../models/supply').model;
+var SupplyCollection = require('../models/supply').collection;
 
 var supplies = function(app) {
 
+  // Get all supplies for an apartment
   app.get('/supplies', function(req, res) {
-    // if (req.user !== undefined) {
-    //   new SupplyModel({apartment_id: req.user.attributes.apartment_id})
-    //     .fetch()
-    //     .then(function(model) {
-    //       console.log(model);
-    //     });
-    // } else {
-    //   res.send(401);
-    // }
+    /* jshint camelcase: false */
 
-    res.end();
+    if (req.user === undefined) {
+      res.json(401, {error: 'Unauthorized user.'});
+      return;
+    }
+
+    var apartmentId = req.user.attributes.apartment_id;
+
+    new SupplyCollection({apartment_id: apartmentId})
+      .fetch()
+      .then(function(model) {
+        var supplies = [];
+        
+        for (var i = 0; i < model.length; i++) {
+          var supply = model.models[i].attributes;
+          supplies.push({
+            id: supply.id,
+            name: supply.name,
+            status: supply.status
+          });
+        }
+
+        res.json({supplies: supplies});
+      }).otherwise(function(error) {
+
+      });
   });
 
+  // Create a new supply
   app.post('/supplies', function(req, res) {
     /* jshint camelcase: false */
 
@@ -47,6 +66,8 @@ var supplies = function(app) {
       .save()
       .then(function(model) {
         res.send(200);
+      }).otherwise(function(error) {
+
       });
   });
 
