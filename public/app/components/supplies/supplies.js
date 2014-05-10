@@ -8,15 +8,12 @@ angular.module('main.supplies').controller('SuppliesCtrl',
 
   	$scope.hideAddBox = true;
 
-    var dummy = [{id: 1, name: 'toilet paper emtpy', status: 0},
-  				{id: 2, name: 'toilet paper running low', status: 1},
-  				{id: 3, name: 'toilet paper fully stocked', status: 2}];
+    $scope.supply = {name: ''};
 
   	//get apll supplies
-    $http.get('/').
+    $http.get('/supplies/').
       success(function(data) {
-        data = dummy;
-        $scope.supplies = data;
+        $scope.supplies = data.supplies;
       }).
       error(function(data, status, headers, config){
         console.log(data);
@@ -26,6 +23,10 @@ angular.module('main.supplies').controller('SuppliesCtrl',
       	$scope.hideAddBox = $scope.hideAddBox === false ? true: false;
       };
 
+      $scope.disabled = function(){
+        return $scope.supply.name == '' ? true : false;
+      }
+
       //add a supply
       $scope.addSupply = function(){
 
@@ -34,7 +35,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
 
       	$http.post('/supplies/',supply).
   	      success(function(data) {
-  	        $scope.supplies.push(supply);
+  	        $scope.supplies.push(data);
   	       	$scope.reset();
   	      	$scope.hideAddBox = true;
   	      }).
@@ -46,7 +47,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
       //update a supply
       $scope.updateSupply = function(index){
 
-      	$http.put('/supplies/', $scope.supplies[index]).
+      	$http.put('/supplies/'+$scope.supplies[index].id, $scope.supplies[index]).
   	      success(function(data) {
   	        //do nothing because radio has already changed
   	      }).
@@ -67,7 +68,8 @@ angular.module('main.supplies').controller('SuppliesCtrl',
       };
 
       $scope.reset = function(){
-      	$scope.supply.name = null;
+      	$scope.supply.name = '';
+        $scope.hideAddBox = true;
       }
 
 });
