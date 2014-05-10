@@ -1,40 +1,63 @@
 <!-- view for chores -->
 <div class="col-lg-12">
   	<h1>
-  	{{title}} hello <a class="test" data-toggle="modal" data-target="#bills_add_modal" class="btn btn-default"> Add </a>
+  	{{title}} <a class="test" data-toggle="modal" data-target="#bills_add_modal" class="btn btn-default"> Add </a>
 	</h1>
-</div>
-
 
 
 <div ng-controller="ChoresCtrl">
-	<div class="modal fade" id="bills_add_modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  		<div class="modal-dialog">
-        	<div class="modal-content">
-            	<div class="modal-header">
 
-            	<h4 class="modal-title" id="myModalLabel">Add Chores</h4>
-            	</div>
+	<!-- (bootstrap modal) pop-up UI for adding chores --> 
+	<div class="modal fade" id="bills_add_modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        	<div class="modal-content">
+            	
+            	
+            	
             	<div class="modal-body">
 
-
+              <!--<h4 class="modal-title" id="myModalLabel">Add Chores</h4>-->
             <!-- get chore name from user -->
             	<div class="row">
-              		<div class="col-xs-4">
-              			<input type="text" ng-model="chores.name" class="form-control" placeholder="Chore Name">
-          			</div>
-          		
-          			<div class="funny col-xs-4">
-            			<input type="text" class="form-control" placeholder="Amount">
-        			</div>      
-            	</div>
+                  <div class="col-md-4">
+              			<input type="text" ng-model="chore.name" class="form-control" placeholder="Chore Name">
+                  </div>
 
-            	<div class="modal-footer">
+
+                  <div class="col-md-4">
+        			     <form action="">
+						          <input type="radio" name="interval" value="0" ng-model= "chore.interval" ng-true-value="0"> One-Time<br>
+						          <input type="radio" name="interval" value="7" ng-model = "chore.interval" ng-true-value="7"> Weekly
+					         </form>
+					       </div>
+ 
+
+
+                  <div class="col-md-4" ng-repeat="user in users">
+                    
+                      <label>
+                          <input type="checkbox" ng-model="user.isChecked" />  <span>{{ user.name }} </span>
+                      </label>
+                      
+                  </div>
+    
+          
+            </div>
+            </div>
+            	 <div class="modal-footer">
+                <br>
+                <br>
                 	<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-                	<button type="button" class="btn btn-default" ng-click"chores.add()">Add</button>
-        		</div>
+                	<button type="button" class="btn btn-default" ng-click="add(chore)">Add</button>
+
+        		    </div>
+          </div>
       		</div>
     	</div>
 		</div>
-	</div>
+	<!-- end pop-up UI for addching chores -->
+
+<hr>
+<p> view stuff goes here </p>
+
 </div>
