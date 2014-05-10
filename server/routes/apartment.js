@@ -28,17 +28,30 @@ var apartment = function(app) {
   });
 
   // Get edit apartment page information
-  app.get('/apartment/:apt', function(req, res) {
-    res.end();
-  });
+  app.get('/apartment/', function(req, res) {
+	var id = req.user.attributes.apartment_id;
+	if(id != null) {
+		new ApartmentModel({id : id})
+			.fetch()
+			.then(function(apartment) {
+					console.log(apartment);
+					res.json({result : 'success', apartment : apartment});
+					})
+			.otherwise(function(error) {
+				res.json({result : 'error', error : error});
+			});
+	} else {
+		res.json({result : 'error'});
+	}
+	});
 
   // Edit apartment in database
-  app.put('/apartment/:apt', function(req, res) {
+  app.put('/apartment/', function(req, res) {
     res.end();
   });
 
   // Removes apartment from the database
-  app.delete('/apartment/:apt', function(req, res) {
+  app.delete('/apartment/', function(req, res) {
     res.end();
   });
 
