@@ -11,7 +11,6 @@ var apartment = function(app) {
   app.post('/apartment', function(req, res) {
     var name = req.body.name;
     var address = req.body.address;
-
     new ApartmentModel({name: name, address: address})
       .save()
       .then(function(model) {
@@ -34,14 +33,15 @@ var apartment = function(app) {
 		new ApartmentModel({id : id})
 			.fetch()
 			.then(function(apartment) {
-					console.log(apartment);
 					res.json({result : 'success', apartment : apartment});
 					})
 			.otherwise(function(error) {
 				res.json({result : 'error', error : error});
 			});
 	} else {
-		res.json({result : 'error'});
+		res.json({result : 'error',
+		error : {status: { code: 401, msg:'could not fetch id'}}
+		});
 	}
 	});
 
@@ -52,10 +52,22 @@ var apartment = function(app) {
 
   // Removes apartment from the database
   app.delete('/apartment', function(req, res) {
-    var id = req.user.attributes.apartment_id;
-	if(id != null) {
-		new ApartmentModel({id : id})
-			.delete()
+    var apartment_id = req.user.attributes.apartment_id;
+	var user_id = req.user.id;
+	console.log(apartment_id);
+	if(user_id != null && apartment_id != null) {
+	  new UserModel({id: user_id})
+			  /*jshint camelcase: false */
+			  .save({apartment_id: null}, {patch: true})
+			  .then(function() {
+				console.log("WORKSS");
+				res.json({result : 'success'});
+			  })
+		  .otherwise(function(error) {
+			res.json({result : 'error', error : error});
+		  });
+		new ApartmentModel({id : apartment_id})
+			.destroy()
 			.then(function(apartment) {
 					res.json({result : 'success'});
 					})
