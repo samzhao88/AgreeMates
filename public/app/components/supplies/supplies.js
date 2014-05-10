@@ -27,12 +27,18 @@ angular.module('main.supplies').controller('SuppliesCtrl',
 
       //add a supply
       $scope.addSupply = function(){
-      	$http.post('/supplies/',$scope.newSupply).
+
+      	var supply = angular.copy($scope.supply);
+      	supply.status = 0;
+
+      	$http.post('/supplies/',supply).
 	      success(function(data) {
 	        if(data.error){
 	        	console.log(data.error);
 	        } else {
-	        	$scope.supplies.push($scope.newSupply);
+	        	$scope.supplies.push(supply);
+	        	$scope.reset();
+	        	$scope.hideAddBox = true;
 	        }
 	      });
       };
@@ -62,5 +68,9 @@ angular.module('main.supplies').controller('SuppliesCtrl',
 	        }
 	      });
       };
+
+      $scope.reset = function(){
+      	$scope.supply.name = null;
+      }
 
 });

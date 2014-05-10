@@ -176,3 +176,13 @@ html, body {
   margin-bottom: 5px;
   margin-right: 9px;
 }
+
+.newSupply {
+  margin-left: 20px;
+  float: left;
+}
+
+.supplyAdd {
+  float: left;
+  margin-left: 10px;
+}
