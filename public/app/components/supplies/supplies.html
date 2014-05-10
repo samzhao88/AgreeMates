@@ -1,8 +1,44 @@
 <!-- view for supplies -->
-<div class="col-lg-12">
-  <h1>{{title}}</h1>
-  <hr>
-  <p>
-    Some supplies go here...
-  </p>
+<div ng-controller="SuppliesCtrl" class="col-lg-12">
+ 	<h1>Supplies</h1>
+  	<hr>
+  	<div class="supplyAddButton">
+		<button type="button" ng-click="showAdd()" class="btn btn-success">Add supply</button>
+	</div>
+	<table class="table table-striped table-hover supplies">
+ 		<tbody>
+ 			<tr ng-class="{'hide': hideAddBox}">	
+ 				<td>	
+ 					<form name="newSupply">
+ 						<input type="text" name="name" ng-model="newSupply.name" required>
+ 					</form>
+ 				</td>
+ 				<td></td>
+ 				<td width="100">
+					<div class="add">
+				    	<button type="button" class="btn btn-success">Add supply</button>
+					</div>
+				</td>
+ 			</tr>
+ 			<tr data-ng-repeat="supply in supplies">
+ 				<td>
+ 					<div class="description">
+ 						<span class="glyphicon glyphicon-edit"></span><span class="name">{{supply.name}}</span>
+ 					</div>
+ 				</td>
+ 				<td>
+				  	<div class="btn-group supplybuttons">
+				        <label class="btn btn-default" ng-class="{ 'active' : supply.status == '0' }" ng-change="updateSupply($index)"  ng-model="supply.status" btn-radio="'0'">Empty </label>
+				        <label class="btn btn-default" ng-class="{ 'active' : supply.status == '1' }" ng-change="updateSupply($index)" ng-model="supply.status" btn-radio="'1'">Running low</label>
+				        <label class="btn btn-default" ng-class="{ 'active' : supply.status == '2' }"  ng-change="updateSupply($index)" ng-model="supply.status" btn-radio="'2'">Fully-stocked</label>
+				    </div>
+				</td>
+				<td width="100">
+					<div class="delete">
+				    	<button ng-click="deleteSupply(supply.id, $index)" type="button" class="btn btn-danger">Delete</button>
+					</div>
+				</td>
+ 			</tr>
+ 		</tbody>
+	</table>
 </div>
