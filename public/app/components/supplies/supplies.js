@@ -15,10 +15,11 @@ angular.module('main.supplies').controller('SuppliesCtrl',
   	//get apll supplies
     $http.get('/').
       success(function(data) {
-        console.log(dummy);
         data = dummy;
         $scope.supplies = data;
-
+      }).
+      error(function(data, status, headers, config){
+        console.log(data);
       });
 
       $scope.showAdd = function(){
@@ -32,41 +33,37 @@ angular.module('main.supplies').controller('SuppliesCtrl',
       	supply.status = 0;
 
       	$http.post('/supplies/',supply).
-	      success(function(data) {
-	        if(data.error){
-	        	console.log(data.error);
-	        } else {
-	        	$scope.supplies.push(supply);
-	        	$scope.reset();
-	        	$scope.hideAddBox = true;
-	        }
-	      });
+  	      success(function(data) {
+  	        $scope.supplies.push(supply);
+  	       	$scope.reset();
+  	      	$scope.hideAddBox = true;
+  	      }).
+          error(function(data, status, headers, config){
+            console.log(data);
+          });
       };
 
       //update a supply
       $scope.updateSupply = function(index){
 
       	$http.put('/supplies/', $scope.supplies[index]).
-	      success(function(data) {
-	        if(data.error){
-	        	console.log(data.error);
-	        	//should change radio button back?
-	        } else {
-	        	//do nothing because radio has already changed
-	        }
-	      });
+  	      success(function(data) {
+  	        //do nothing because radio has already changed
+  	      }).
+          error(function(data, status, headers, config){
+            console.log(data);
+          });
       };
 
       //delete a supply
       $scope.deleteSupply = function(id, index){
       	$http.delete('/supplies/'+id).
-	      success(function(data) {
-	        if(data.error){
-	        	console.log(data.error);
-	        } else {
-	        	$scope.supplies.splice(index, 1);
-	        }
-	      });
+  	      success(function(data) {
+  	        $scope.supplies.splice(index, 1);
+  	      }).
+          error(function(data, status, headers, config){
+            console.log(data);
+          });
       };
 
       $scope.reset = function(){
