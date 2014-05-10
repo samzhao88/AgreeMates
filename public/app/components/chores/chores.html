@@ -1,8 +1,40 @@
 <!-- view for chores -->
 <div class="col-lg-12">
-  <h1>{{title}}</h1>
-  <hr>
-  <p>
-    Some chores go here...
-  </p>
+  	<h1>
+  	{{title}} hello <a class="test" data-toggle="modal" data-target="#bills_add_modal" class="btn btn-default"> Add </a>
+	</h1>
+</div>
+
+
+
+<div ng-controller="ChoresCtrl">
+	<div class="modal fade" id="bills_add_modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  		<div class="modal-dialog">
+        	<div class="modal-content">
+            	<div class="modal-header">
+
+            	<h4 class="modal-title" id="myModalLabel">Add Chores</h4>
+            	</div>
+            	<div class="modal-body">
+
+
+            <!-- get chore name from user -->
+            	<div class="row">
+              		<div class="col-xs-4">
+              			<input type="text" ng-model="chores.name" class="form-control" placeholder="Chore Name">
+          			</div>
+          		
+          			<div class="funny col-xs-4">
+            			<input type="text" class="form-control" placeholder="Amount">
+        			</div>      
+            	</div>
+
+            	<div class="modal-footer">
+                	<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+                	<button type="button" class="btn btn-default" ng-click"chores.add()">Add</button>
+        		</div>
+      		</div>
+    	</div>
+		</div>
+	</div>
 </div>
