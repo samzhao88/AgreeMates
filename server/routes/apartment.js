@@ -28,7 +28,7 @@ var apartment = function(app) {
   });
 
   // Get edit apartment page information
-  app.get('/apartment/', function(req, res) {
+  app.get('/apartment', function(req, res) {
 	var id = req.user.attributes.apartment_id;
 	if(id != null) {
 		new ApartmentModel({id : id})
@@ -46,12 +46,12 @@ var apartment = function(app) {
 	});
 
   // Edit apartment in database
-  app.put('/apartment/', function(req, res) {
+  app.put('/apartment', function(req, res) {
     res.end();
   });
 
   // Removes apartment from the database
-  app.delete('/apartment/', function(req, res) {
+  app.delete('/apartment', function(req, res) {
     res.end();
   });
 
