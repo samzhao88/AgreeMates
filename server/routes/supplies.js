@@ -22,7 +22,7 @@ var supplies = function(app) {
       .fetch()
       .then(function(model) {
         var supplies = [];
-        
+
         for (var i = 0; i < model.length; i++) {
           var supply = model.models[i].attributes;
           supplies.push({
@@ -34,7 +34,7 @@ var supplies = function(app) {
 
         res.json({supplies: supplies});
       }).otherwise(function(error) {
-
+        res.json(503, {error: 'Database error.'});
       });
   });
 
@@ -56,7 +56,7 @@ var supplies = function(app) {
       return;
     }
 
-    if (['0', '1', '2'].indexOf(status) === -1) {
+    if ([0, 1, 2].indexOf(parseInt(status)) === -1) {
       console.log(req.body);
       res.json(400, {error: 'Invalid supply status.'});
       return;
@@ -67,19 +67,52 @@ var supplies = function(app) {
       .then(function(model) {
         res.send(200);
       }).otherwise(function(error) {
-
+        res.json(503, {error: 'Database error.'});
       });
   });
 
+  // Get a single supply
   app.get('/supplies/:supply', function(req, res) {
-    res.end();
+    /* jshint camelcase: false */
+
+    if (req.user === undefined) {
+      res.json(401, {error: 'Unauthorized user.'});
+      return;
+    }
+
+    var supplyId = parseInt(req.params.supply);
+
+    if (isNaN(supplyId)) {
+      res.json(400, {error: 'Invalid supply ID.'});
+      return;
+    }
+
+    new SupplyModel({id: supplyId})
+      .fetch()
+      .then(function(model) {
+        if (model === null) {
+          res.json(400, {error: 'Invalid supply ID.'});
+        } else {
+          var supply = model.attributes;
+          res.json({id: supply.id, name: supply.name, status: supply.status});
+        }
+      })
+      .otherwise(function(error) {
+        res.json(503, {error: 'Database error.'});
+      });
   });
 
+  // Update a single supply
   app.put('/supplies/:supply', function(req, res) {
+    /* jshint camelcase: false */
+
     res.end();
   });
 
+  // Delete a single supply
   app.delete('/supplies/:supply', function(req, res) {
+    /* jshint camelcase: false */
+
     res.end();
   });
 
