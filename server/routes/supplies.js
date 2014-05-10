@@ -108,7 +108,27 @@ var supplies = function(app) {
   app.delete('/supplies/:supply', function(req, res) {
     /* jshint camelcase: false */
 
-    res.end();
+    if (req.user === undefined) {
+      res.json(401, {error: 'Unauthorized user.'});
+      return;
+    }
+
+    var apartmentId = req.user.attributes.apartment_id;
+    var supplyId = req.params.supply;
+
+    if (!isValidId(supplyId)) {
+      res.json(400, {error: 'Invalid supply ID.'});
+      return;
+    }
+
+    new SupplyModel({id: supplyId, apartment_id: apartmentId})
+      .destroy()
+      .then(function(model) {
+        res.send(200);
+      })
+      .otherwise(function(error) {
+        res.json(503, {error: 'Database error.'});
+      })
   });
 
   // Checks if a supply name is valid
