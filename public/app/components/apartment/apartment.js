@@ -8,9 +8,10 @@ angular.module('main.apartment').controller('AptAddCtrl',
 
     $scope.add = function(apartment) {
       $http.post('/apartment', apartment)
-        .success(function(data, status, headers, config) {
-          if(data.result=="success"){
-            window.location.href = "./";
+
+        .success(function(data) {
+          if (data.result === 'success'){
+            window.location.href = './';
           }
         })
         .error(function(data, status, headers, config) {
