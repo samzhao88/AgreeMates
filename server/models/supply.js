@@ -1,11 +1,11 @@
-/* 
+/*
  * This is the model representation for a single supply
  * attributes:
- *   id           int, 
- *   apartment_id int, 
- *   name         string, the supply name 
- *   status       int, 1 if empty, 2 if low, 3 if well stocked 
- * invariant: status = 1|2|3 No attributes can be null, 
+ *   id           int,
+ *   apartment_id int,
+ *   name         string, the supply name
+ *   status       int, 0 if empty, 1 if low, 2 if well stocked
+ * invariant: status = 0|1|2 No attributes can be null, 
  * 		apartment_id references apartments.
  */
 
