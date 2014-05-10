@@ -33,7 +33,7 @@ var supplies = function(app) {
         }
 
         res.json({supplies: supplies});
-      }).otherwise(function(error) {
+      }).otherwise(function() {
         res.json(503, {error: 'Database error.'});
       });
   });
@@ -59,12 +59,13 @@ var supplies = function(app) {
       return;
     }
 
-    new SupplyModel({apartment_id: apartmentId, name: name.trim(), status: status})
+    new SupplyModel({apartment_id: apartmentId,
+      name: name.trim(), status: status})
       .save()
       .then(function(model) {
         var supply = model.attributes;
         res.json({id: supply.id, name: supply.name, status: supply.status});
-      }).otherwise(function(error) {
+      }).otherwise(function() {
         res.json(503, {error: 'Database error.'});
       });
   });
@@ -96,10 +97,10 @@ var supplies = function(app) {
 
     new SupplyModel({id: supplyId, apartment_id: apartmentId})
       .save({name: name.trim(), status: status}, {patch: true})
-      .then(function(model) {
+      .then(function() {
         res.send(200);
       })
-      .otherwise(function(error) {
+      .otherwise(function() {
         res.json(400, {error: 'Invalid supply ID.'});
       });
   });
@@ -123,12 +124,12 @@ var supplies = function(app) {
 
     new SupplyModel({id: supplyId, apartment_id: apartmentId})
       .destroy()
-      .then(function(model) {
+      .then(function() {
         res.send(200);
       })
-      .otherwise(function(error) {
+      .otherwise(function() {
         res.json(503, {error: 'Database error.'});
-      })
+      });
   });
 
   // Checks if a supply name is valid
@@ -143,11 +144,12 @@ var supplies = function(app) {
 
   // Checks if a supply status is valid
   function isValidStatus(status) {
-    return isInt(status) && (status == 0 || status == 1 || status == 2);
+    return isInt(status) && [0, 1, 2].indexOf(parseInt(status)) !== -1;
   }
 
   // Checks if a value is an integer
   function isInt(value) {
+    /* jshint eqeqeq: false */
     return !isNaN(value) && parseInt(value) == value;
   }
 
