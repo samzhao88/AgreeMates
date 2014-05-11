@@ -1,4 +1,4 @@
-// Apartment routes fix errors
+// Apartment routes
 
 'use strict';
 //load apartment models and collections
