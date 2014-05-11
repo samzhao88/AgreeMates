@@ -23,7 +23,7 @@
                   Persons Responsible
                 </div>
             	<br>
-              
+
             	<div class="modal-body">
 
               <!--<h4 class="modal-title" id="myModalLabel">Add Chores</h4>-->
@@ -37,7 +37,9 @@
                   <div class="col-md-4">
         			     <form action="">
 						          <input type="radio" name="interval" value="0" ng-model= "chore.interval" ng-true-value="0"> One-Time<br>
-						          <input type="radio" name="interval" value="7" ng-model = "chore.interval" ng-true-value="7"> Weekly
+						          <input type="radio" name="interval" value="7" ng-model = "chore.interval" ng-true-value="7"> Weekly<br>
+                      <br>
+
 					         </form>
 					       </div>
  
@@ -49,6 +51,10 @@
                           <input type="checkbox" ng-model="user.isChecked" />  <span>{{ user.name }} </span>
                       </label>
                       
+                  </div>
+
+                  <div class="col-md-4">
+                     Due Date <input type="date" name="bday" ng-model="chore.date">
                   </div>
     
           
