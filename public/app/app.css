@@ -148,3 +148,41 @@ html, body {
     margin-top: 51px;
   }
 }
+
+.supplies .supplybuttons {
+  float: right;
+}
+
+.supplies .name {
+  margin-left: 10px;
+}
+
+.supplies .addnew {
+  margin-left: 6px;
+}
+
+.table  tbody tr th {
+  height: 51px;
+  vertical-align: middle;
+}
+
+.supplies .delete {
+  float: right;
+  margin-left: 10px;
+}
+
+.supplyAddButton {
+  float: right;
+  margin-bottom: 5px;
+  margin-right: 9px;
+}
+
+.newSupply {
+  margin-left: 20px;
+  float: left;
+}
+
+.supplyAdd {
+  float: left;
+  margin-left: 10px;
+}
