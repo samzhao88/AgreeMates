@@ -19,7 +19,7 @@ describe('bills module', function() {
       httpMock = $httpBackend;
 
       scope = $rootScope.$new();
-      httpMock.when('GET', '/bills/all').respond({title: 'bills title'});
+      httpMock.when('GET', '/bills').respond({title: 'bills title'});
 
       ctrl = $controller;
       ctrl('BillsCtrl', {
@@ -32,7 +32,7 @@ describe('bills module', function() {
     });
 
     it('gets the title from the api and assigns it to scope', function() {
-      httpMock.expectGET('/bills/all');
+      httpMock.expectGET('/bills');
       httpMock.flush();
       expect(scope.title).to.equal('bills title');
     });

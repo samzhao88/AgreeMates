@@ -19,7 +19,7 @@ describe('calendar module', function() {
       httpMock = $httpBackend;
 
       scope = $rootScope.$new();
-      httpMock.when('GET', '/calendar/show').respond({title: 'calendar title'});
+      httpMock.when('GET', '/calendar').respond({title: 'calendar title'});
 
       ctrl = $controller;
       ctrl('CalendarCtrl', {
@@ -32,7 +32,7 @@ describe('calendar module', function() {
     });
 
     it('gets the title from the api and assigns it to scope', function() {
-      httpMock.expectGET('/calendar/show');
+      httpMock.expectGET('/calendar');
       httpMock.flush();
       expect(scope.title).to.equal('calendar title');
     });

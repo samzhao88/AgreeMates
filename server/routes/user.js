@@ -4,30 +4,26 @@
 
 var user = function(app) {
 
+  // Get user
+  app.get('/user/:user', function(req, res) {
+    res.end();
+  });
+
   // Adds a user to the database
-  app.get('/user/add', function(req, res) {
+  app.post('/user', function(req, res) {
     res.end();
   });
 
-  // Gets the users current information so they can edit it
-  app.get('/user/edit/:user', function(req, res) {
+  // Edits a user
+  app.put('/user/:user', function(req, res) {
     res.end();
   });
 
-  // Updates the users information changes
-  app.post('/user/edit', function(req, res) {
+  // Delets a user
+  app.delete('/user/:user', function(req, res) {
     res.end();
   });
 
-  // Gets the users current notification preferences so they can edit it
-  app.get('/user/edit/preferences/:user', function(req, res) {
-    res.end();
-  });
-
-  // Updates the users preferences changes
-  app.post('/user/edit/preferences', function(req, res) {
-    res.end();
-  });
 
 };
 

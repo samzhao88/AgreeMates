@@ -38,45 +38,45 @@ var app = angular.module('main',
 );
 
 // Register all routes
-app.config(['$routeProvider',
-  function($routeProvider) {
-    $routeProvider.
-      when('/', {
-        templateUrl: 'components/calendar/calendar.html',
-        module: 'main.calendar',
-        controller: 'CalendarCtrl'
-      }).
-      when('/bills', {
-        templateUrl: 'components/bills/bills.html',
-        module: 'main.bills',
-        controller: 'BillsCtrl'
-      }).
-      when('/chores', {
-        templateUrl: 'components/chores/chores.html',
-        module: 'main.chores',
-        controller: 'ChoresCtrl'
-      }).
-      when('/supplies', {
-        templateUrl: 'components/supplies/supplies.html',
-        module: 'main.supplies',
-        controller: 'SuppliesCtrl'
-      }).
-      when('/board', {
-        templateUrl: 'components/board/board.html',
-        module: 'main.board',
-        controller: 'BoardCtrl'
-      }).
-      when('/settings', {
-        templateUrl: 'components/settings/settings.html',
-        module: 'main.settings',
-        controller: 'SettingsCtrl'
-      }).
-      when('/profile', {
-        templateUrl: 'components/profile/profile.html',
-        module: 'main.profile',
-        controller: 'ProfileCtrl'
-      }).
-      otherwise({
-        redirectTo: '/'
-      });
-  }]);
+app.config(function($routeProvider, $locationProvider) {
+  $routeProvider.
+    when('/', {
+    templateUrl: 'components/calendar/calendar.html',
+    module: 'main.calendar',
+    controller: 'CalendarCtrl'
+  }).
+    when('/bills', {
+    templateUrl: 'components/bills/bills.html',
+    module: 'main.bills',
+    controller: 'BillsCtrl'
+  }).
+    when('/chores', {
+    templateUrl: 'components/chores/chores.html',
+    module: 'main.chores',
+    controller: 'ChoresCtrl'
+  }).
+    when('/supplies', {
+    templateUrl: 'components/supplies/supplies.html',
+    module: 'main.supplies',
+    controller: 'SuppliesCtrl'
+  }).
+    when('/board', {
+    templateUrl: 'components/board/board.html',
+    module: 'main.board',
+    controller: 'BoardCtrl'
+  }).
+    when('/settings', {
+    templateUrl: 'components/settings/settings.html',
+    module: 'main.settings',
+    controller: 'SettingsCtrl'
+  }).
+    when('/profile', {
+    templateUrl: 'components/profile/profile.html',
+    module: 'main.profile',
+    controller: 'ProfileCtrl'
+  }).
+    otherwise({
+    redirectTo: '/'
+  });
+
+});

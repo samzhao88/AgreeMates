@@ -19,7 +19,7 @@ describe('board module', function() {
       httpMock = $httpBackend;
 
       scope = $rootScope.$new();
-      httpMock.when('GET', '/messages/recent').respond({title: 'board title'});
+      httpMock.when('GET', '/messages').respond({title: 'board title'});
 
       ctrl = $controller;
       ctrl('BoardCtrl', {
@@ -32,7 +32,7 @@ describe('board module', function() {
     });
 
     it('gets the title from the api and assigns it to scope', function() {
-      httpMock.expectGET('/messages/recent');
+      httpMock.expectGET('/messages');
       httpMock.flush();
       expect(scope.title).to.equal('board title');
     });
