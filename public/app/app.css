@@ -186,3 +186,7 @@ html, body {
   float: left;
   margin-left: 10px;
 }
+
+.messages {
+  clear: both;
+}
