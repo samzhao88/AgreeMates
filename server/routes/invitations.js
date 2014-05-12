@@ -24,7 +24,7 @@ var invitations = function(app) {
       subject: 'You have been invited to an AgreeMates apartment',
       generateTextFromHTML: true,
       html: 'You have been invited to ' + aptName + '! Click this ' +
-        '<a href="http://agreemates.com/invited/' + id + '">link</a> to join'
+        '<a href="http://agreemates.com/invitations/' + id + '">link</a> to join'
     };
 
     smtpTransport.sendMail(mailOptions, function(error, response) {
@@ -59,13 +59,12 @@ var invitations = function(app) {
           .save()
           .then(function(model) {
             var invitation = model.attributes;
-            console.log(invitation);
             sendInvitation(invitation.id, invitation.email, apartmentName);
             res.json({id: invitation.id, email: invitation.email});
           })
-          .otherwise(function() {
-            console.log('error creating invitation');
-            res.json(503, {error: 'Database error'});
+          .otherwise(function(error) {
+            console.log(error);
+            res.json(503, {error: 'error creating invitation'});
           });
       })
       .otherwise(function() {
@@ -75,11 +74,19 @@ var invitations = function(app) {
 
   // Get invitation information
   app.get('/invitations/:invite', function(req, res) {
-    res.end();
+    new InvitationModel({id: req.params.invite})
+      .fetch()
+      .then(function(model) {
+        console.log(model);
+        res.json(model);
+      })
+      .otherwise(function() {
+        res.json(404, {msg: 'error getting invitation'});
+      });
   });
 
   // Removes invitation from the database
-  app.delete('/invitation/:invite', function(req, res) {
+  app.delete('/invitations/:invite', function(req, res) {
     res.end();
   });
 

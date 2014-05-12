@@ -33,6 +33,7 @@ var app = angular.module('main',
     'main.profile',
     'main.nav',
     'main.apartment',
+    'main.invitations',
     'ngRoute'
   ]
 );
@@ -74,6 +75,11 @@ app.config(function($routeProvider) {
     templateUrl: 'components/profile/profile.html',
     module: 'main.profile',
     controller: 'ProfileCtrl'
+  }).
+    when('/invite', {
+    templateUrl: 'components/invitations/invitations.html',
+    module: 'main.invitations',
+    controller: 'InviteCtrl'
   }).
     otherwise({
     redirectTo: '/'
