@@ -14,9 +14,17 @@ var apartment = function(app) {
 	  // Add apartment to database
 	app.post('/apartment', function(req, res) {
 		if(req.body != null && req.user != null) {
+			if(req.user.id == null) {
+				res.json(400, {msg: 'invalid id'});
+				return;
+			}
 			//name and address from post body
 			var name = req.body.name;
 			var address = req.body.address;
+			if(name == null || address == null) {
+				res.json(400, {msg: 'invalid request parameters'});
+				return;
+			}
 			//create apartment
 			new ApartmentModel({name: name, address: address})
 			  .save()
@@ -30,40 +38,58 @@ var apartment = function(app) {
 				});
 			  })
 			  .otherwise(function(error) {
-				res.json(402, {msg: 'error adding apartment'});
+				res.json(401, {msg: 'error adding apartment'});
 			  });
 		} else {
-			res.json(401, {msg: 'couldnt fetch request parameters'});
+			res.json(400, {msg: 'couldnt fetch request parameters'});
 		}
 	});
 
 	  // Get edit apartment page information
-	  app.get('/apartment', function(req, res) {
-		if(req.user != null) {
+	  app.get('/apartment/:apt', function(req, res) {
+		if(req.user != null && req.query != null) {
 			var id = req.user.attributes.apartment_id;
+			console.log(id);
 			if(id != null) {
+				if(id != req.params.apt) {
+					res.json(400, {msg: 'unauthorized'});
+					return;
+				}
+				var u;
+				new Users({apartment_id : id})
+				.fetch()
+				.then(function(users) {
+						u = users;
+				})
+				.otherwise(function(users) {
+					res.json(401,{msg: 'error getting users'});
+				});
 				new ApartmentModel({id : id})
 					.fetch()
 					.then(function(apartment) {
-							res.json({result : 'success', apartment : apartment});
+							res.json(200, {apartment : apartment, users : u});
 							})
 					.otherwise(function(error) {
-						res.json(402, {msg: 'error getting apartment'});
+						res.json(400, {msg: 'error getting apartment'});
 					});
 			} else {
 				res.json(401, {msg:'could not fetch id'});
 			}
 		} else {
-			res.json(401, {msg: 'could not fetch user'});
+			res.json(400, {msg: 'could not fetch user'});
 		}
 	});
 
 	  // Edit apartment in database
-	app.put('/apartment', function(req, res) {
+	app.put('/apartment/:apt', function(req, res) {
 		if(req.user != null && req.body != null) {
 			var apartment_id = req.user.attributes.apartment_id;
 			var user_id = req.user.id;
 			if(user_id != null && apartment_id != null) {
+				if(apartment_id != req.params.apt) {
+					res.json(400, {msg: 'unauthorized'});
+					return;
+				}
 				new ApartmentModel({id : apartment_id})
 						.fetch()
 						//alter aparmtent attributes with parameters from the body
@@ -74,7 +100,7 @@ var apartment = function(app) {
 							res.json({result : 'success'});
 						})
 						.otherwise(function(error) {
-							res.json(402, {msg: 'error getting apartment'});
+							res.json(400, {msg: 'error getting apartment'});
 						});
 			} else {
 				res.json(401, {msg: 'could not fetch id'});
@@ -85,18 +111,29 @@ var apartment = function(app) {
 	});
 
 	  // Removes apartment from the database
-	app.delete('/apartment', function(req, res) {
+	  // Needs to delete all the other models not just break ties
+	app.delete('/apartment/:apt', function(req, res) {
+		if(req.user== null || req.query == null) {
+				res.json(400, {msg: 'invalid request'});
+				return;
+		}
 		var apartment_id = req.user.attributes.apartment_id;
 		var user_id = req.user.id;
 		if(user_id != null && apartment_id != null) {
-		
+			console.log(req.params.apt);
+			console.log(apartment_id);
+			if(apartment_id != req.params.apt) {
+					res.json(400, {msg: 'unauthorized'});
+					return;
+			}
 			//delete associated users
 			new Users({apartment_id : apartment_id})
 			.fetch().then(function(users) {
 				for(var i = 0; i < users.length; i++) {
 					users.models[i].attributes.apartment_id = null;
-					users.models[i].save();
+					users.models[i].save().then(function(x){});
 				}
+				
 				
 				//delete associated bills
 				new Bills({apartment_id : apartment_id})
@@ -123,17 +160,17 @@ var apartment = function(app) {
 							}
 						})
 						.otherwise(function(error) {
-							res.json(401, {msg: 'error deleting chores'});
+							res.json(400, {msg: 'error deleting chores'});
 							return;
 						});
 					})
 					.otherwise(function(error) {
-						res.json(401, {msg: 'error deleting messages'});
+						res.json(400, {msg: 'error deleting messages'});
 						return;
 					});
 				})
 				.otherwise(function(error) {
-					res.json(401, {msg: 'error deleting bills'});
+					res.json(400, {msg: 'error deleting bills'});
 					return;
 				});
 				//delete
@@ -143,11 +180,12 @@ var apartment = function(app) {
 					res.json({result : 'success'});
 				})
 				.otherwise(function(error) {
-					res.json(401, {msg: 'error adding apartment'});
+					console.log(error);
+					res.json(400, {msg: 'derror deleting apartment'});
 					return;
 				});
 			}).otherwise(function(error) {
-					res.json(401, {msg: 'error adding apartment'});
+					res.json(400, {msg: 'error deleting apartment'});
 					return;
 			});
 		} else {
