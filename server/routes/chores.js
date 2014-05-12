@@ -5,11 +5,18 @@
 var chores = function(app) {
 
   app.get('/chores', function(req, res) {
-    res.json({title: 'Chores'});
+    res.json({chores: [{name: "dishes", interval: 7, users: "alice" }, {name: "garbage", interval: 1, users: "bob"}] });
+
   });
 
   // Process chore form and adds to database
   app.post('/chores', function(req, res) {
+
+
+
+
+
+
     res.end();
   });
 
