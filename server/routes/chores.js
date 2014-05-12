@@ -1,8 +1,11 @@
 // Chore routes
 
 'use strict';
-var choreModel = require('../models/chore').model;
-var choreCollection = require('../models/chore').collection;
+var ChoreModel = require('../models/chore').model;
+var ChoreCollection = require('../models/chore').collection;
+var AssignyModel = require('../models/assigny').model;
+var AssignyCollection = require('../models/assigny').collection;
+
 
 var chores = function(app) {
 
@@ -10,26 +13,40 @@ var chores = function(app) {
   app.get('/chores', function(req, res) {
     var apartmentId = req.user.attributes.apartment_id;
 	
-	new choreCollection({apartment_id: apartmentId}).fetch().then(function(model) {
-	var chores = [];
-	
-	for(var i = 0; i < model.length; i++){
-		var chore = model.models[i].attributes;
+	new ChoreCollection({apartment_id: apartmentId})
+	.fetch().
+	then(function(model) {
+		var chores = [];
 		
-		chores.push({
-			id: chore.id,
-			name: chore.name,
-			createdate: chore.createdate,
-			duedate: chore.duedate,
-			interval: chore.interval,
-			completed: chore.completed,
-			reocurring_id: chore.reocurring_id,
-			user_id: chore.user_id,
-			apartment_id: chore.apartment_id
-		});
-	}
-	
-	res.json({chores: chores});
+		for(var i = 0; i < model.length; i++){
+			var chore = model.models[i].attributes;
+			var assignys = [];
+			
+			
+			new AssignyCollection({chore_id: chore.id})
+			.fetch()
+			.then(function(assignModel){
+				for(var j = 0; j < assignModel.length; j++){
+					var assignys = assignModel.models[j].attributes;
+					
+			
+			
+				}
+			})
+			chores.push({
+				id: chore.id,
+				name: chore.name,
+				createdate: chore.createdate,
+				duedate: chore.duedate,
+				interval: chore.interval,
+				completed: chore.completed,
+				reocurring_id: chore.reocurring_id,
+				user_id: chore.user_id,
+				apartment_id: chore.apartment_id
+			});
+		}
+		
+		res.json({chores: chores});
 	}).otherwise(function(){
 		res.json(503,{error: 'Database error.'});
 	});
@@ -37,39 +54,50 @@ var chores = function(app) {
 
   // Process chore form and adds to database
   app.post('/chores', function(req, res) {
-  console.log(req.body);
-  
-  var input = JSON.parse(req.body);
-  
-  if(!(input)){
-	input = {};
-	input.name = req.body.name;
-	input.duedate = req.body.duedate;
-	input.interval = req.body.interval;
-	input.user_id = req.user.attributes.id;
-  }
-  var apartmentId = req.user.attributes.apartment_id;
-  var createDate = new Date;
-  
-  if(!isValidName(input.name)){
-	res.json(400, {error: 'Invalid chore name.'});
-	return;
-  }
-  
-	new choreModel({apartment_id: apartmentId,
-				name: input.name,
-				duedate: input.name,
-				createdate: createDate,
-				user_id: input.user_id,
-				interval: input.interval,
-				})
-				.save()
-				.then(function(model){
-				var chore = model.attributes;
-				res.json(chore);
-				}).otherwise(function(){
-				res.json(503,{error: 'Database error.'});
-			});
+		var name = req.body.name;
+		var apartmentId = req.user.attributes.apartment_id;
+		var userId = req.user.attributes.id;
+		var duedate = req.body.duedate;
+		var date = new Date();
+		var createDate = (date.getMonth() + 1) + '/' + date.getDate()
+			+'/' + date.getFullYear();
+
+		var interval = req.body.interval;
+		var roommates = JSON.parse(req.body.roommates);
+	  
+		 if(!isValidName(name)){
+			res.json(400, {error: 'Invalid chore name.'});
+			return;
+		}
+		
+		// Need to check that date is valid ie on or after date created
+		
+		
+		new ChoreModel({apartment_id: apartmentId,
+					name: name,
+					duedate: duedate,
+					createdate: createDate,
+					user_id: userId,
+					completed: false,
+					interval: interval,
+					})
+					.save()
+					.then(function(model){
+					for(var i = 0; i  < roommates.length; i++){
+						new AssignyModel({
+							completed: false,
+							user_id: roommates[i].id,
+							chore_id: model.id
+						})
+						.save().then(function(model){})
+						.otherwise(function(error){
+							res.json(503,{error: error});
+						});
+					}
+					res.send(200);
+					}).otherwise(function(error){
+					res.json(503,{error: error});
+				});
   });
 
   // Get the chore information
@@ -81,7 +109,7 @@ var chores = function(app) {
       return;
     }
 	
-	new choreModel({apartment_id: apartmentId, id: choreId})
+	new ChoreModel({apartment_id: apartmentId, id: choreId})
 		.fetch().then(function(model){
 			var chore = model.attributes;
 			res.json(chore);
@@ -115,7 +143,7 @@ var chores = function(app) {
       return;
     }
 	
-	new choreModel({id: input.id, apartment_id: apartmentId})
+	new ChoreModel({id: input.id, apartment_id: apartmentId})
 		.destry()
 		.then(function(){
 			res.send(200);
