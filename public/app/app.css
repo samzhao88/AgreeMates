@@ -161,14 +161,13 @@ html, body {
   margin-left: 6px;
 }
 
-.table  tbody tr th {
+.table  tbody tr td {
   height: 51px;
   vertical-align: middle;
 }
 
 .supplies .delete {
   float: right;
-  margin-left: 10px;
 }
 
 .supplyAddButton {
@@ -187,6 +186,14 @@ html, body {
   margin-left: 10px;
 }
 
+.supplyHeader {
+  height: 90px;
+}
+
 .messages {
   clear: both;
+}
+
+.alert {
+  margin-top: 15px;
 }
