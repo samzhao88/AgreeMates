@@ -16,7 +16,7 @@ var chores = function(app) {
 	for(var i = 0; i < model.length; i++){
 		var chore = model.models[i].attributes;
 		
-		supplies.push({
+		chores.push({
 			id: chore.id,
 			name: chore.name,
 			createdate: chore.createdate,
@@ -54,20 +54,17 @@ var chores = function(app) {
   if(!isValidName(input.name)){
 	res.json(400, {error: 'Invalid chore name.'});
 	return;
-  }else if(!isValidDate(input.duedate)){
-	res.json(400. {error: 'Invalid chore date.'});
-	return;
   }
   
-  new choreModel({apartment_id: apartmentId,
+	new choreModel({apartment_id: apartmentId,
 				name: input.name,
 				duedate: input.name,
-				createdate: createDate
+				createdate: createDate,
 				user_id: input.user_id,
 				interval: input.interval,
 				})
 				.save()
-				.then(function(model)){
+				.then(function(model){
 				var chore = model.attributes;
 				res.json(chore);
 				}).otherwise(function(){
@@ -99,7 +96,7 @@ var chores = function(app) {
 	var apartmentId = req.user.attributes.apartment_id;
 	var choreId = req.params.chore;
 	var name = req.body.name;
-	var dueDate: req.body.date;
+	//var dueDate: req.body.date;
   });
 
   // Remove chore from database
