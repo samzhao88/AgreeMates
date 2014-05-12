@@ -13,6 +13,10 @@ var apartment = function(app) {
 
 	  // Add apartment to database
 	app.post('/apartment', function(req, res) {
+		if (req.user === undefined) {
+			res.json(401, {error: 'Unauthorized user.'});
+			return;
+		}
 		if(req.body != null && req.user != null) {
 			if(req.user.id == null) {
 				res.json(400, {msg: 'invalid id'});
@@ -47,6 +51,10 @@ var apartment = function(app) {
 
 	  // Get edit apartment page information
 	  app.get('/apartment/:apt', function(req, res) {
+		if (req.user === undefined) {
+			res.json(401, {error: 'Unauthorized user.'});
+			return;
+		}
 		if(req.user != null && req.query != null) {
 			var id = req.user.attributes.apartment_id;
 			console.log(id);
@@ -82,6 +90,10 @@ var apartment = function(app) {
 
 	  // Edit apartment in database
 	app.put('/apartment/:apt', function(req, res) {
+		if (req.user === undefined) {
+			res.json(401, {error: 'Unauthorized user.'});
+			return;
+		}
 		if(req.user != null && req.body != null) {
 			var apartment_id = req.user.attributes.apartment_id;
 			var user_id = req.user.id;
@@ -113,6 +125,10 @@ var apartment = function(app) {
 	  // Removes apartment from the database
 	  // Needs to delete all the other models not just break ties
 	app.delete('/apartment/:apt', function(req, res) {
+		if (req.user === undefined) {
+			res.json(401, {error: 'Unauthorized user.'});
+			return;
+		}
 		if(req.user== null || req.query == null) {
 				res.json(400, {msg: 'invalid request'});
 				return;
