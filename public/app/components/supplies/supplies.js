@@ -35,7 +35,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
 
     	$http.post('/supplies/',supply).
 	      success(function(data) {
-	        $scope.supplies.push(data);
+	        $scope.supplies.splice(0,0,data);
 	       	$scope.reset();
 	      	$scope.hideAddBox = true;
           $scope.successmsg = "Supply "+data.name+" successfully added!";

@@ -172,12 +172,10 @@ html, body {
 
 .supplyAddButton {
   float: right;
-  margin-bottom: 5px;
-  margin-right: 9px;
+  margin-bottom: 15px;
 }
 
 .newSupply {
-  margin-left: 20px;
   float: left;
 }
 
@@ -186,8 +184,9 @@ html, body {
   margin-left: 10px;
 }
 
-.supplyHeader {
-  height: 90px;
+.supplyAddForm {
+  margin: 0;
+  padding: 0;
 }
 
 .messages {
@@ -196,4 +195,10 @@ html, body {
 
 .alert {
   margin-top: 15px;
+  margin-bottom: 0px;
+}
+
+.tableHeader {
+  border-top: none !important;
+  background: white !important;
 }
