@@ -4,9 +4,9 @@ angular.module('main.chores', []);
 
 // Angular controller for chores
 angular.module('main.chores').controller('ChoresCtrl',
-  function ($scope, $http) {
+  function ($http, $scope) {
 
-    $http.get('/chores').
+    $scope.get('/chores').
       success(function(data) {
         $scope.title = data.title;
       });
