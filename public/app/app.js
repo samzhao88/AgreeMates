@@ -34,6 +34,7 @@ var app = angular.module('main',
     'main.nav',
     'main.apartment',
     'main.invitations',
+    'LocalStorageModule',
     'ngRoute'
   ]
 );
@@ -76,7 +77,7 @@ app.config(function($routeProvider) {
     module: 'main.profile',
     controller: 'ProfileCtrl'
   }).
-    when('/invite', {
+    when('/invitations/:invite', {
     templateUrl: 'components/invitations/invitations.html',
     module: 'main.invitations',
     controller: 'InviteCtrl'

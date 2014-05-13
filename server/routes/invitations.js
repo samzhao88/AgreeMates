@@ -24,7 +24,8 @@ var invitations = function(app) {
       subject: 'You have been invited to an AgreeMates apartment',
       generateTextFromHTML: true,
       html: 'You have been invited to ' + aptName + '! Click this ' +
-        '<a href="http://agreemates.com/invitations/' + id + '">link</a> to join'
+        '<a href="http://agreemates.com/invitations/' +
+        id + '">link</a> to join'
     };
 
     smtpTransport.sendMail(mailOptions, function(error, response) {
@@ -72,15 +73,32 @@ var invitations = function(app) {
       });
   });
 
+  app.get('/invitations', function(req, res) {
+    res.json({title: 'title'});
+  });
+
   // Get invitation information
   app.get('/invitations/:invite', function(req, res) {
     new InvitationModel({id: req.params.invite})
       .fetch()
       .then(function(model) {
-        console.log(model);
-        res.json(model);
+        new ApartmentModel({id: model.attributes.apartment_id})
+          .fetch()
+          .then(function(model2) {
+            console.log(model);
+            console.log(model2);
+            res.json({title: 'Invitation',
+                     id: model.attributes.id,
+                     aptName: model2.attributes.name,
+                     aptAddress: model2.attributes.address});
+          })
+          .otherwise(function(error) {
+            console.log(error);
+            res.json(404, {msg: 'failed to fetch aparment'});
+          });
       })
-      .otherwise(function() {
+      .otherwise(function(error) {
+        console.log(error);
         res.json(404, {msg: 'error getting invitation'});
       });
   });

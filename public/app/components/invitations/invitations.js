@@ -1,14 +1,16 @@
 'use strict';
 
-angular.module('main.invitations', []);
+angular.module('main.invitations', ['LocalStorageModule']);
 
-angular.module('main.invitations').
-  controller('InviteCtrl', function($scope, $http, localStorageService) {
+angular.module('main.invitations').controller('InviteCtrl',
+  ['$scope', '$http', '$routeParams', '$location', 'localStorageService', function($scope, $http, $routeParams, $location, localStorageService) {
 
-  $http.get('/invitations/:invite').success(function(data) {
-    localStorageService.set('InviteId', data.invite);
-
-    var value = localStorageService.get('InviteId');
-    console.log('' + data);
-  });
-});
+    $http.get('/invitations/' + $routeParams.invite).
+      success(function(data) {
+        $scope.title = data.title;
+        $scope.aptName = data.aptName;
+        $scope.aptAddr = data.aptAddress;
+        localStorageService.clearAll();
+        localStorageService.set('InviteID', data.id);
+      });
+}]);
