@@ -3,14 +3,14 @@
 'use strict';
 var ChoreModel = require('../models/chore').model;
 var ChoreCollection = require('../models/chore').collection;
-var AssignyModel = require('../models/assigny').model;
-var AssignyCollection = require('../models/assigny').collection;
+var User_ChoreModel = require('../models/users_chores').model;
+var User_ChoreCollection = require('../models/users_chores').collection;
 
 
 var chores = function(app) {
 
   //Get all chores for an apartment
-  app.get('/chores', function(req, res) {
+  /*app.get('/chores', function(req, res) {
     var apartmentId = req.user.attributes.apartment_id;
 	
 	new ChoreCollection({apartment_id: apartmentId})
@@ -20,19 +20,22 @@ var chores = function(app) {
 		
 		for(var i = 0; i < model.length; i++){
 			var chore = model.models[i].attributes;
-			var assignys = [];
+			//var assignees = [];
 			
 			
-			new AssignyCollection({chore_id: chore.id})
+			new User_ChoreCollection({chore_id: chore.id})
 			.fetch()
 			.then(function(assignModel){
+			 var assignees=[];
 				for(var j = 0; j < assignModel.length; j++){
-					var assignys = assignModel.models[j].attributes;
-					
-			
-			
+					var assign = assignModel.models[j].attributes;
+					assignees.push({
+						chore_id: assign.chore_id,
+						user_id:  assign.user_id,
+						completed: assign.completed,
+					});
 				}
-			})
+			});
 			chores.push({
 				id: chore.id,
 				name: chore.name,
@@ -51,7 +54,7 @@ var chores = function(app) {
 		res.json(503,{error: 'Database error.'});
 	});
   });
-
+*/
   // Process chore form and adds to database
   app.post('/chores', function(req, res) {
 		var name = req.body.name;
@@ -84,12 +87,13 @@ var chores = function(app) {
 					.save()
 					.then(function(model){
 					for(var i = 0; i  < roommates.length; i++){
-						new AssignyModel({
-							completed: false,
+						new User_ChoreModel({
 							user_id: roommates[i].id,
 							chore_id: model.id
 						})
-						.save().then(function(model){})
+						.save()
+						.then(function(choremodel){
+						})
 						.otherwise(function(error){
 							res.json(503,{error: error});
 						});
