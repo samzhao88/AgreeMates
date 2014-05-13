@@ -9,9 +9,9 @@ angular.module('main.bills').controller('BillsCtrl',
   	$scope.bill = {};
 
   	//get all unresolved bills
-    $http.get('/bills?type=unresolved').
+    $http.get('/bills').
     success(function(data) {
-      $scope.unresolvedBills = [{'name': 'eletricity', 'total': 100, 'owned': 50, 'payto': 'Jessica', 'date': '6/10', 'paid': 'no'}]; //test data
+      $scope.unresolvedBills = data.bills;
       $scope.bills = $scope.unresolvedBills;
     }).
     error(function(data, status, headers, config){
@@ -19,13 +19,13 @@ angular.module('main.bills').controller('BillsCtrl',
     });;
 
     //get all unresolved bills
-    $http.get('/bills?type=resolved').
-    success(function(data) {
-      $scope.resolvedBills = [{'name': 'water', 'total': 120, 'owned': 20, 'payto': 'John', 'date': '1/1', 'paid': 'yes'}]; //test data
-    }).
-    error(function(data, status, headers, config){
-        console.log(data);
-    });
+    // $http.get('/bills?type=resolved').
+    // success(function(data) {
+    //   $scope.resolvedBills = [{'name': 'water', 'total': 120, 'owned': 20, 'payto': 'John', 'date': '1/1', 'paid': 'yes'}]; //test data
+    // }).
+    // error(function(data, status, headers, config){
+    //     console.log(data);
+    // });
 
     //select unresolved bills or resolved bills
     $scope.setTable = function(table) {
@@ -36,7 +36,7 @@ angular.module('main.bills').controller('BillsCtrl',
     	}   	
     }
 
-    //get all roommates
+    //get all roommates, need to update
     $http.get('/bills?type=template').
     success(function(data) {
       $scope.roommates = [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jessica'}]; //test data
@@ -46,18 +46,21 @@ angular.module('main.bills').controller('BillsCtrl',
     });    
 
     //show the form when add button is clicked.
-	$scope.showAdd = function(){
-		$scope.hideAddBox = $scope.hideAddBox === false ? true: false;
-	};
+  	$scope.showAdd = function(){
+  		$scope.hideAddBox = $scope.hideAddBox === false ? true: false;
+  	};
 
     //add a new bill
     $scope.addBill = function() {
     	var bill = angular.copy($scope.bill);
+      bill.roommates = [];
+      console.log(bill);
       	$http.post('/bills/', bill).
   	      success(function(data) {
-  	        $scope.bills.push(data);
+  	        //$scope.bills.push(data);
   	       	$scope.reset();
   	      	$scope.hideAddBox = true;
+            console.log(data);
   	      }).
           error(function(data, status, headers, config){
             console.log(data);

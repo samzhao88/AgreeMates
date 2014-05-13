@@ -16,7 +16,7 @@
 	  <div class="form-group">
 	    <label class="col-sm-2 control-label">Amount</label>
 	    <div class="col-sm-2">
-	      <input type="text" class="form-control" ng-model="bill.amount">
+	      <input type="text" class="form-control" ng-model="bill.total">
 	    </div>
 	  </div>
 	  <div class="form-group">
@@ -28,18 +28,18 @@
 	  <div class="form-group">
 	    <label class="col-sm-2 control-label">Frequency</label>
 	    <div class="col-sm-2">
-				<select ng-model="bill.frequency">
-				  <option value="once">One time</option>
-				  <option value="week">Every week</option>
-				  <option value="month">Every month</option>
-				</select>   	
+			<select ng-model="bill.interval">
+			  <option value="0">One time</option>
+			  <option value="2">Every week</option>
+			  <option value="3">Every month</option>
+			</select>   	
 	    </div>
 	  </div>
 	  <div class="form-group">
 	    <label class="col-sm-2 control-label">Responsible</label>
 	    <div class="col-sm-2">
 				<ul class="list-unstyled" ng-repeat="roommate in roommates">
-				  <li><input type="checkbox">{{roommate.name}}</li>
+				  <li><input type="checkbox">{{roommate.name}}<input type="text" ng-model="bill.amount"></li>
 				</ul>	    	
 	    </div>
 	  </div>	  
@@ -69,11 +69,16 @@
 		<!-- Table Content -->
 		<tr ng-repeat="bill in bills">
 			<td>{{bill.name}}</td>	
-			<td>{{bill.total}}</td>
-			<td>{{bill.owned}}</td>		
-			<td>{{bill.payto}}</td>
+			<td>{{bill.amount}}</td>
+			<td>owned</td>		
+			<td>payto</td>
 			<td>{{bill.date}}</td>
 			<td><input type="checkbox"></td>
+			<td>
+				<div class="delete">
+				  <span class="glyphicon glyphicon-remove" ng-click="deleteBill(bill.id, $index)"></span>
+				</div>
+			</td>
 		</tr>
 	</table>
 

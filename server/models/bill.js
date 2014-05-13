@@ -5,8 +5,11 @@
  *   name          string, the bill's name
  *   createdate    date, the creation date
  *   duedate       date, the due date
- *   interval      int, the next interval for repeating bills in days 
- *   	(0 for not reoccuring)
+ *   interval      int
+ 					0 for one-time
+ 					1 for daily
+ 					2 for weekly
+ 					3 for monthly
  *   paid          boolean, true if bill has been paid false otherwise 
  *   amount        decimal, the amount due/paid 
  *   reocurring_id int, an id which maps this bill to other related bills 
