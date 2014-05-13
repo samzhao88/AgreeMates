@@ -1,21 +1,28 @@
 <!-- view for supplies -->
 <div ng-controller="SuppliesCtrl" class="col-lg-12">
- 	<h1>Supplies</h1>
+ 	<div class="supplyHeader clearfix">
+	 	<h1 class="pull-left">Supplies</h1>
+	 	<div class="pull-right alert alert-success" ng-show="success">{{successmsg}}</div>
+		<div class="pull-right alert alert-danger" ng-show="error">{{errormsg}}</div>
+	</div>
   	<hr>
   	<div class="supplyAddButton">
 		<button type="button" ng-click="showAdd()" class="btn btn-success">Add supply</button>
 	</div>
 	<table class="table table-striped table-hover supplies">
  		<tbody>
+ 			<tr>
+ 				<th class="tableHeader">Name</th>
+ 				<th class="tableHeader">Status</th>
+ 				<th class="tableHeader"></th>
+ 			</tr>
  			<tr ng-class="{'hide': hideAddBox}">	
  				<td>
- 					<form>
+ 					<form ng-submit="addSupply()" class="navbar-form navbar-left supplyAddForm">
  						<div class="newSupply">	
-	 						<input type="text" ng-model="supply.name" placeholder=" Supply name" required>
+	 						<input type="text" class="form-control" autofocus ng-model="supply.name" placeholder="Supply name" required>
 	 					</div>
 	 					<div class="supplyAdd">
-		 					<span class="glyphicon glyphicon-ok"></span>&nbsp;
-							<span class="glyphicon glyphicon-remove"></span>
 							<button ng-click="addSupply()" ng-disabled="disabled()" type="button" class="btn btn-success">Add</button>
 							<button ng-click="reset()" type="button" class="btn btn-danger">Cancel</button>
 	 					</div>
@@ -27,12 +34,17 @@
  			</tr>
 
  			<tr data-ng-repeat="supply in supplies">
- 				<td>
- 					<div class="description">
- 						<span class="glyphicon glyphicon-edit"></span><span class="name">{{supply.name}}</span>
+ 				<td ng-click="editSupply($index)">
+ 					<div ng-show="!supply.edit" class="description">
+ 						<span class="name">{{supply.name}}</span>
+ 					</div>
+ 					<div ng-show="supply.edit" class="edit">
+ 						<form ng-submit="updateSupply($index)">
+ 							<input type="text" style="width: 200px;" class="form-control" ng-model="supply.name"  required>
+ 						</form>
  					</div>
  				</td>
- 				<td>
+ 				<td width="300">
 				  	<div class="btn-group supplybuttons">
 				        <label class="btn btn-default" ng-class="{ 'active' : supply.status == '0' }" ng-change="updateSupply($index)"  ng-model="supply.status" btn-radio="'0'">Empty </label>
 				        <label class="btn btn-default" ng-class="{ 'active' : supply.status == '1' }" ng-change="updateSupply($index)" ng-model="supply.status" btn-radio="'1'">Running low</label>
@@ -41,7 +53,7 @@
 				</td>
 				<td width="100">
 					<div class="delete">
-				    	<button ng-click="deleteSupply(supply.id, $index)" type="button" class="btn btn-danger">Delete</button>
+				    	<span class="glyphicon glyphicon-remove" ng-click="deleteSupply(supply.id, $index)"></span>
 					</div>
 				</td>
  			</tr>
