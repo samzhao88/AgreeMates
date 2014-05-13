@@ -10,7 +10,7 @@ var User_ChoreCollection = require('../models/users_chores').collection;
 var chores = function(app) {
 
   //Get all chores for an apartment
-  /*app.get('/chores', function(req, res) {
+  app.get('/chores', function(req, res) {
     var apartmentId = req.user.attributes.apartment_id;
 	
 	new ChoreCollection({apartment_id: apartmentId})
@@ -54,7 +54,7 @@ var chores = function(app) {
 		res.json(503,{error: 'Database error.'});
 	});
   });
-*/
+
   // Process chore form and adds to database
   app.post('/chores', function(req, res) {
 		var name = req.body.name;
@@ -89,7 +89,8 @@ var chores = function(app) {
 					for(var i = 0; i  < roommates.length; i++){
 						new User_ChoreModel({
 							user_id: roommates[i].id,
-							chore_id: model.id
+							chore_id: model.id,
+							order_index: i
 						})
 						.save()
 						.then(function(choremodel){
@@ -128,19 +129,45 @@ var chores = function(app) {
 	var apartmentId = req.user.attributes.apartment_id;
 	var choreId = req.params.chore;
 	var name = req.body.name;
-	//var dueDate: req.body.date;
+	var dueDate = req.body.duedate;
+	var roommates = JSON.parse(req.body.roommates);
+	
+	new ChoreModel({apartment_id: apartmentId, id: choreId})
+	.save({name: name.trim(), duedate: dueDate},{patch: true})
+	.then(function(model) {
+	// Go through users_chores assocaited with chore
+		new User_ChoreModel().query('where', 'chore_id', '=', choreId)
+		.destroy()
+		.then(function(choremodel){
+			for(var i = 0; i  < roommates.length; i++){
+	
+				new User_ChoreModel({
+					user_id: roommates[i].id,
+					chore_id: model.id,
+					order_index: i
+				})
+				.save()
+				.then(function(choremodel){
+				})
+				.otherwise(function(error){
+					res.json(503,{error: error});
+				});
+			}
+		res.send(200);
+		}).otherwise(function(error){
+			res.json(503,{error: error});
+		});
+	})
+	.otherwise(function(){
+		res.json(400, {error: error});
+	});
   });
 
   // Remove chore from database
   app.delete('/chores/:chore', function(req, res) {
     var apartmentId = req.user.attributes.apartment_id;
 	
-	var input  = JSON.parse(req.body);
-	
-	if(!(input)){
-		var input = {};
-		input.id = req.params.id;
-	}
+	var choreId = req.params.chore;
 	
 	if (!isValidId(input.id)) {
       res.json(400, {error: 'Invalid supply ID.'});

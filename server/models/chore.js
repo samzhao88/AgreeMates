@@ -5,7 +5,7 @@
  *   name          string, the chore's name 
  *   createdate    date, the creation dated
  *   duedate       date, the due date
- *   interval      int, the interval for the next bill in days 
+ *   interval      int, the interval for the next chore in days 
  *   	(0 for not reocurring) 
  *   completed     boolean,  true if chore is completed
  *   reocurring_id int, maps this chore to other reocurring chores
