@@ -21,60 +21,48 @@ var bills = function(app) {
     var apartmentId = req.user.attributes.apartment_id;
 
     new BillCollection({apartment_id: apartmentId})
-      .fetch()
+      .fetch({withRelated: ['payment']})
       .then(function(model) {
         var bills = [];
-        async.each(model.models, function(bill, callback) {
-          var id = bill.attributes.id;
-          var name = bill.attributes.name;
-          var amount = bill.attributes.amount;
-          var createDate = bill.attributes.createdate;
-          var dueDate = bill.attributes.duedate;
-          var frequency = bill.attributes.interval;
-          var resolved = bill.attributes.paid;
-          var creatorId = bill.attributes.user_id;
-          var payTo = bill.attributes.user_id;
+        for(var i = 0; i < model.length; i++) {
+          var bill = model.models[i].attributes;
+          var id = bill.id;
+          var name = bill.name;
+          var amount = bill.amount;
+          var createDate = bill.createdate;
+          var dueDate = bill.duedate;
+          var frequency = bill.interval;
+          var resolved = bill.paid;
+          var creatorId = bill.user_id;
+          var payTo = bill.user_id;
 
-          new PaymentCollection()
-            .query('where', 'bill_id', '=', id)
-            .fetch()
-            .then(function(model) {
-              var payments = [];
-
-              for (var i = 0; i < model.length; i++) {
-                var payment = model.models[i].attributes;
-                payments.push({
-                  userId: payment.user_id,
-                  amount: payment.amount,
-                  paid: payment.paid
-                });
-              }
-              bills.push({
-                id: id,
-                name: name,
-                amount: amount,
-                createDate: createDate,
-                dueDate: dueDate,
-                frequency: frequency,
-                resolved: resolved,
-                creatorId: creatorId,
-                payTo: payTo,
-                payments: payments
-              });
-              callback();
-            })
-            .otherwise(function(error) {
-              callback('Database error.');
+          var payments = [];
+          var payModels = model.models[i].relations.payment;
+          for (var j = 0; j < payModels.length; j++) {
+            var payment = payModels.models[j].attributes
+            payments.push({
+              userId: payment.user_id,
+              amount: payment.amount,
+              paid: payment.paid
             });
-        }, function(error) {
-          if (error) {
-            res.json(503, {error: error});
-          } else {
-            res.json({bills: bills});
           }
-        });
+          bills.push({
+            id: id,
+            name: name,
+            amount: amount,
+            createDate: createDate,
+            dueDate: dueDate,
+            frequency: frequency,
+            resolved: resolved,
+            creatorId: creatorId,
+            payTo: payTo,
+            payments: payments
+          });
+        }
+        res.json({bills: bills});
       })
       .otherwise(function(error) {
+        console.log(error);
         res.json(503, {error: 'Database error'});
       });    
   });
