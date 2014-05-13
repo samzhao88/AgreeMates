@@ -4,6 +4,7 @@ angular.module('main.chores', []);
 
 // Angular controller for chores
 angular.module('main.chores').controller('ChoresCtrl',
+<<<<<<< HEAD
   function ($scope, $http) {
   	//holds all chores for apartment
     $scope.chores = [];
@@ -166,5 +167,13 @@ angular.module('main.chores').controller('ChoresCtrl',
     	$scope.chore.name = '';
     	console.log("reset");
     };
+=======
+  function ($http, $scope) {
+
+    $scope.get('/chores').
+      success(function(data) {
+        $scope.title = data.title;
+      });
+>>>>>>> 046f6f240e993332b0be66b674c2e2930307fe65
 
 });
