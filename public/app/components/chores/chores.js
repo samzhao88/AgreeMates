@@ -124,6 +124,16 @@ angular.module('main.chores').controller('ChoresCtrl',
     	$scope.chore.users = $scope.chore.users.map(function(any){return {name: any, isChecked: true }});
 
 
+      for( var i = 0; i < $scope.chores.length; i++ )
+      {
+      if (!$scope.chore.users[i].isChecked)
+      {
+          $scope.chore.users[i].splice(index, 1);
+      }
+      //console.log($scope.chores[i].name);
+      }
+
+
     	console.log($scope.chore.users);	
 
       	console.log($scope.chore);
