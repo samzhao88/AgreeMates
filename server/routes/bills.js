@@ -4,8 +4,10 @@
 
 var BillModel = require('../models/bill').model;
 var BillCollection = require('../models/bill').collection;
+var UserModel = require('../models/user').model;
 var PaymentModel = require('../models/payment').model;
 var PaymentCollection = require('../models/payment').collection;
+var async = require("async");
 
 var bills = function(app) {
 
@@ -22,42 +24,62 @@ var bills = function(app) {
       .fetch()
       .then(function(model) {
         var bills = [];
-        for(var i = 0; i < model.length; i++) {
-          var bill = model.models[i].attributes;
-          var payments = [];
+        async.each(model.models, function(bill, callback) {
+          var id = bill.attributes.id;
+          var name = bill.attributes.name;
+          var amount = bill.attributes.amount;
+          var createDate = bill.attributes.createdate;
+          var dueDate = bill.attributes.duedate;
+          var frequency = bill.attributes.interval;
+          var resolved = bill.attributes.paid;
+          var creatorId = bill.attributes.user_id;
+          var payTo = bill.attributes.user_id;
 
-          // get all the payments for each bill
-          new PaymentCollection({bill_id: bill.id})
+          new PaymentCollection()
+            .query('where', 'bill_id', '=', id)
             .fetch()
-            .then(function(payModel) {
-              for(var j = 0; j < payModel.length; j++) {
-                var payment = payModel.models[j].attributes;
+            .then(function(model) {
+              var payments = [];
+
+              for (var i = 0; i < model.length; i++) {
+                var payment = model.models[i].attributes;
                 payments.push({
-                  user_id: payment.user_id,
+                  userId: payment.user_id,
                   amount: payment.amount,
                   paid: payment.paid
                 });
               }
-            }).otherwise(function() {
-              res.json(503, {error: 'Database error.'});
+              bills.push({
+                id: id,
+                name: name,
+                amount: amount,
+                createDate: createDate,
+                dueDate: dueDate,
+                frequency: frequency,
+                resolved: resolved,
+                creatorId: creatorId,
+                payTo: payTo,
+                payments: payments
+              });
+              callback();
+            })
+            .otherwise(function(error) {
+              callback('Database error.');
             });
-          bills.push({
-            id: bill.id,
-            name: bill.name,
-            date: bill.duedate,
-            freq: bill.interval,
-            resolved: bill.paid,
-            creator_id: bill.user_id,
-            payments: payments
-          });
-        }
-        res.json({bills: bills});
-      }).otherwise(function() {
-        res.json(503, {error: 'Database error.'});
-      });       
+        }, function(error) {
+          if (error) {
+            res.json(503, {error: error});
+          } else {
+            res.json({bills: bills});
+          }
+        });
+      })
+      .otherwise(function(error) {
+        res.json(503, {error: 'Database error'});
+      });    
   });
 
-  //Get the details of selected bill information
+  // Get the details of selected bill information
   app.get('/bills/:bill', function(req, res) {
     res.end();
   });
@@ -75,11 +97,12 @@ var bills = function(app) {
     var total = req.body.total;
     var interval = req.body.interval;
     var duedate = req.body.date;
-    var roommates = req.body.roommates;
     var date = new Date();
     var createdate = (date.getMonth() + 1) + '/' + date.getDate() +
       '/' + date.getFullYear();
+    var roommates = JSON.parse(req.body.roommates);
 
+    // Check if the fields are acceptable
     if (!isValidName(name)) {
       res.json(400, {error: 'Invalid bill name.'});
       return;
@@ -91,6 +114,7 @@ var bills = function(app) {
       return;
     }
 
+    // Create a new bill model
     new BillModel({apartment_id: apartmentId, name: name,
       user_id: userId, amount: total, paid: false, 
       interval: interval, duedate: duedate, createdate: createdate})
@@ -114,12 +138,53 @@ var bills = function(app) {
 
   // Process edit bill form, modify database
   app.put('/bills/:bill', function(req, res) {
-    res.end();
   });
 
   app.delete('/bills/:bill', function(req, res) {
-    res.end();
+    if(req.user === undefined) {
+      res.json(401, {error: 'Unauthorized user.'});
+      return;
+    }
+ 
+    var apartmentId = req.user.attributes.apartment_id;
+    var billId = req.params.bill;
+ 
+    if(!isValidId(billId)) {
+      res.json(400, {error: 'Invalid bill ID.'});
+      return;
+    }
+ 
+    // Destroy all the payments for a bill and then destroy
+    // the bill.
+    new PaymentModel()
+      .query('where', 'bill_id', '=', billId)
+      .destroy()
+      .then(function(payModel) { 
+        new BillModel()
+          .query('where', 'id', '=',  billId, 'AND', 
+                 'apartment_id', '=', apartmentId)
+          .destroy()
+          .then(function(model) {
+            res.json(200);
+          }).otherwise(function(error) {
+            res.json(503, {error: 'Delete payment error'})
+          }); 
+      }).otherwise(function(error) {
+        console.log(error);
+        res.json(503, {error: error});
+      });
+    
   });
+ 
+  // Checks if a bill ID is valid
+  function isValidId(id) {
+    return isInt(id) && id > 0;
+  }
+ 
+  // Checks if a value is an integer
+  function isInt(value) {
+    return !isNaN(value) && parseInt(value) == value;
+  }
  
   // Checks if a bill name is valid
   function isValidName(name) {
