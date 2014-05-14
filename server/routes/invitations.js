@@ -41,14 +41,14 @@ var invitations = function(app) {
   app.post('/invitations', function(req, res) {
     /*jshint camelcase: false*/
     if (req.user === null || req.body === null) {
-      res.json(400, {msg: 'Missing user or body'});
+      res.json(400, {error: 'Missing user or body'});
       return;
     }
 
     var email = req.body.email;
     var apartmentId = req.user.attributes.apartment_id;
     if (apartmentId === null) {
-      res.json(404, {msg: 'could not fetch id'});
+      res.json(404, {error: 'could not fetch id'});
       return;
     }
 
@@ -69,7 +69,7 @@ var invitations = function(app) {
           });
       })
       .otherwise(function() {
-        res.json(404, {msg: 'error getting apartment'});
+        res.json(404, {error: 'error getting apartment'});
       });
   });
 
@@ -82,6 +82,7 @@ var invitations = function(app) {
     new InvitationModel({id: req.params.invite})
       .fetch()
       .then(function(model) {
+        /*jshint camelcase: false*/
         new ApartmentModel({id: model.attributes.apartment_id})
           .fetch()
           .then(function(model2) {
@@ -94,12 +95,12 @@ var invitations = function(app) {
           })
           .otherwise(function(error) {
             console.log(error);
-            res.json(404, {msg: 'failed to fetch aparment'});
+            res.json(404, {error: 'failed to fetch aparment'});
           });
       })
       .otherwise(function(error) {
         console.log(error);
-        res.json(404, {msg: 'error getting invitation'});
+        res.json(404, {error: 'error getting invitation'});
       });
   });
 
