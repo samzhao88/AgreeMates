@@ -53,11 +53,14 @@ function ($scope, $http) {
   	
    	var chore = angular.copy($scope.chore);
 
-    chore.roommates = [123, 142, 1231];
+    chore.roommates = [{id: 123} , {id: 142}, {id:1231}];
+    chore.interval = 7;
+    chore.duedate = "15/12/2000";
+    chore.name = "hello";
     //chore.roomates[0].name = "name";
     console.log(chore);
 
-      	$http.post('/chores', chore)
+      	$http.post('/chores/supertest', chore)
         .success(function(data) {
 
           if(data.result=="success"){
