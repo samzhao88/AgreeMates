@@ -6,7 +6,7 @@ angular.module('main.chores', []);
 angular.module('main.chores').controller('ChoresCtrl',
   function ($http, $scope) {
 
-    $scope.get('/chores').
+    $http.get('/chores').
       success(function(data) {
         $scope.title = data.title;
       });

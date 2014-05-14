@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+	"async": "^0.8.0",
+	"asynch": "^0.5.2",
     "express": "4.x",
     "rcfinder": "~0.1.6",
     "knex": "^0.5.13",
