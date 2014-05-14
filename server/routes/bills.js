@@ -7,7 +7,7 @@ var BillCollection = require('../models/bill').collection;
 var UserModel = require('../models/user').model;
 var PaymentModel = require('../models/payment').model;
 var PaymentCollection = require('../models/payment').collection;
-var async = require("async");
+var async = require('async');
 
 var bills = function(app) {
 
@@ -20,11 +20,14 @@ var bills = function(app) {
 
     var apartmentId = req.user.attributes.apartment_id;
 
+    // Fetch all the apartments bills and their corresponding
+    // payments
     new BillCollection({apartment_id: apartmentId})
       .fetch({withRelated: ['payment']})
       .then(function(model) {
         var bills = [];
         for(var i = 0; i < model.length; i++) {
+          // Copy all the needed fields
           var bill = model.models[i].attributes;
           var id = bill.id;
           var name = bill.name;
@@ -36,6 +39,8 @@ var bills = function(app) {
           var creatorId = bill.user_id;
           var payTo = bill.user_id;
 
+          // Push all the payments for the current bill onto 
+          // a payment array
           var payments = [];
           var payModels = model.models[i].relations.payment;
           for (var j = 0; j < payModels.length; j++) {
@@ -46,6 +51,7 @@ var bills = function(app) {
               paid: payment.paid
             });
           }
+          // Push the current bill on the bills array
           bills.push({
             id: id,
             name: name,
@@ -74,11 +80,14 @@ var bills = function(app) {
 
   // Create a new bill
   app.post('/bills', function(req, res) {
+
+    // Check that user is authorized
     if(req.user === undefined) {
       res.json(401, {error: 'Unauthorized user.'});
       return;
     }
 
+    // Copy over fields from request
     var apartmentId = req.user.attributes.apartment_id;
     var userId = req.user.attributes.id;
     var name = req.body.name;
@@ -126,6 +135,58 @@ var bills = function(app) {
 
   // Process edit bill form, modify database
   app.put('/bills/:bill', function(req, res) {
+
+    // Check if user is authorized
+    if(req.user === undefined) {
+      res.json(401, {error: 'Unauthorized user.'});
+      return;
+    }
+
+    // Copy over fields from the request
+    var apartmentId = req.user.attributes.apartment_id;
+    var billId = req.params.bill;
+    var name = req.body.name;
+    var total = req.body.total;
+    var interval = req.body.interval;
+    var date = req.body.date;
+    var roommates = JSON.parse(req.body.roommates);
+
+    // Check for validity of fields
+    if (!isValidId(billId)) {
+      res.json(400, {error: 'Invalid bill ID.'});
+      return;
+    } else if (!isValidName(name)) {
+      res.json(400, {error: 'Invalid bill name.'});
+      return;
+    } 
+
+    // Destroy all the payments which are references to the billId
+    // This must be done since the roommates paying on a bill could be
+    // different.
+    new PaymentModel()
+      .query('where', 'bill_id', '=', billId)
+      .destroy()
+      .then(function() {
+        // Edit the bill
+        new BillModel({id: billId, apartment_id: apartmentId})
+          .save({name: name, amount: total, duedate: date, interval: interval})
+          .then(function() {
+            // Add new payments for all the users who need to pay
+            for(var i = 0; i < roommates.length; i++) {
+              new PaymentModel({paid: false, amount: roommates[i].amount,
+                               user_id: roommates[i].id, bill_id: billId})
+                .save()
+                .otherwise(function(error) {
+                  res.json(503, {error: error});
+                });
+            }
+            res.json({result: 'success'});
+          }).otherwise(function(error) {
+            res.json(503, {error: error});
+          });
+      }).otherwise(function(error) {
+        res.json(503, {error: error});
+      });
   });
 
   app.delete('/bills/:bill', function(req, res) {
