@@ -57,7 +57,7 @@ var apartment = function(app) {
 		var apartmentId = req.user.attributes.apartment_id;
 
 		if (!isValidId(req.params.apt)) {
-			res.json(401, {error: 'Invalid apartment ID.'});
+			res.json(400, {error: 'Invalid apartment ID.'});
 			return;
 		}
 
@@ -85,6 +85,16 @@ var apartment = function(app) {
 
 		var apartmentId = req.user.attributes.apartment_id;
 
+		if (!isValidId(req.params.apt)) {
+			res.json(400, {error: 'Invalid apartment ID.'});
+			return;
+		}
+
+		if (apartmentId !== parseInt(req.params.apt)) {
+			res.json(401, {error: 'User unauthorized to view this apartment.'});
+			return;
+		}
+
 		Bookshelf.DB.knex('users')
 			.select('id', 'first_name', 'last_name', 'email', 'phone')
 			.where('apartment_id', '=', apartmentId)
@@ -96,38 +106,41 @@ var apartment = function(app) {
 			});
 	});
 
-	  // Edit apartment in database
+	// Edits an apartment's information
 	app.put('/apartment/:apt', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
 		}
-		if(req.user != null && req.body != null) {
-			var apartment_id = req.user.attributes.apartment_id;
-			var user_id = req.user.id;
-			if(user_id != null && apartment_id != null) {
-				if(apartment_id != req.params.apt) {
-					res.json(400, {msg: 'unauthorized'});
-					return;
-				}
-				new ApartmentModel({id : apartment_id})
-						.fetch()
-						//alter aparmtent attributes with parameters from the body
-						.then(function(apartment) {
-							apartment.attributes.name = req.body.name;
-							apartment.attributes.address = req.body.address;
-							apartment.save();
-							res.json({result : 'success'});
-						})
-						.otherwise(function(error) {
-							res.json(400, {msg: 'error getting apartment'});
-						});
-			} else {
-				res.json(401, {msg: 'could not fetch id'});
-			}
-		} else {
-			res.json(401, {msg: 'could not fetch user'});
+
+		var apartmentId = req.user.attributes.apartment_id;
+		var apartmentName = req.body.name;
+		var apartmentAddress = req.body.address;
+
+		if (!isValidId(req.params.apt)) {
+			res.json(400, {error: 'Invalid apartment ID.'});
+			return;
+		} else if (!isValidName(apartmentName)) {
+			res.json(400, {error: 'Invalid apartment name.'});
+			return;
+		} else if (!isValidName(apartmentAddress)) {
+			res.json(400, {error: 'Invalid apartment address.'});
+			return;
 		}
+
+		if (apartmentId !== parseInt(req.params.apt)) {
+			res.json(401, {error: 'User unauthorized to view this apartment'});
+			return;
+		}
+
+		new ApartmentModel({id: apartmentId})
+			.save({name: apartmentName.trim(), address: apartmentAddress.trim()}, {patch: true})
+			.then(function() {
+				res.json(200);
+			})
+			.otherwise(function() {
+				res.json(504, {error: 'Database error.'});
+			});
 	});
 
 	  // Removes apartment from the database
