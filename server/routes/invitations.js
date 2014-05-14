@@ -87,10 +87,17 @@ var invitations = function(app) {
         new ApartmentModel({id: model.attributes.apartment_id})
           .fetch()
           .then(function(model2) {
+            console.log(model);
             result = {title: 'Invitation',
-                     id: model.attributes.id,
+                     invId: model.attributes.id,
                      aptName: model2.attributes.name,
                      aptAddress: model2.attributes.address};
+            var user = req.user;
+            if (user != null) {
+              res.render('components/invitations/index.ejs', result);
+            } else {
+              res.render('components/invitations/login.html', result);
+            }
           })
           .otherwise(function(error) {
             console.log(error);
@@ -104,12 +111,6 @@ var invitations = function(app) {
         result = {error: 'error getting invitation'};
       });
 
-      var user = req.user;
-      if (user != null) {
-        res.render('components/invitations/index', result);
-      } else {
-        res.render('components/login/index', result);
-      }
   });
 
   // Removes invitation from the database
