@@ -49,7 +49,7 @@ var chores = function(app) {
 					});
 				}
 			}).otherwise(function(){
-				res.json(503, 'Database error');
+				res.json(503, {error: 'Database error'});
 			});
 			
 			chores.push({
@@ -67,7 +67,7 @@ var chores = function(app) {
 		}
 		res.json({chores: chores});
 	}).otherwise(function(){
-		res.json(503, 'Database error');
+		res.json(503,{error: 'Database error'});
 	});
   });
 
@@ -117,7 +117,7 @@ var chores = function(app) {
 						.then(function(choremodel){
 						})
 						.otherwise(function(){
-							res.json(503,'Database error');
+							res.json(503, {error:'Database error'});
 						});
 						
 						if(i === roommates.length-1){
@@ -126,7 +126,7 @@ var chores = function(app) {
 					}
 					
 					}).otherwise(function(){
-					res.json(503,'DataBase error');
+					res.json(503,{error: 'DataBase error'});
 				});
   });
 
@@ -181,7 +181,7 @@ var chores = function(app) {
 				.then(function(choremodel){
 				})
 				.otherwise(function(){
-					res.json(503,'Database error');
+					res.json(503,{error: 'Database error'});
 				});
 				
 				if(i === roommates.length-1){
@@ -189,11 +189,11 @@ var chores = function(app) {
 				}
 			}
 		}).otherwise(function(){
-			res.json(503,'Database error');
+			res.json(503,{error: 'Database error'});
 		});
 	})
 	.otherwise(function(){
-		res.json(400, 'Database error');
+		res.json(400, {error: 'Database error'});
 	});
   });
 
