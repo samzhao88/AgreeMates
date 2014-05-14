@@ -43,10 +43,15 @@ var bills = function(app) {
           res.json({bills: bills});
           return;
         }
+
+        // set lastBillId to invalid Id so algorithm will work
         var lastBillId = -1;
         var name, amount, createDate, dueDate;
         var frequency, resolved, creatorId, payTo;
         for(var i = 0; i < rows.length; i++) {
+
+          // If billid is different, then all payments for the current
+          // bill have been pushed on payments. We push the bill then
           if(rows[i].bill_id !== lastBillId) {
             if(lastBillId !== -1) {
               bills.push({
@@ -62,6 +67,8 @@ var bills = function(app) {
                 payments: payments
               });
             }
+            // empty payments since bill is done and set all fields for the
+            // new bill
             payments = [];
             lastBillId = rows[i].bill_id;
             name = rows[i].name;
@@ -82,6 +89,7 @@ var bills = function(app) {
             paid: rows[i].userPaid
           });
         }
+        // Push the last bill onto the bills array
         bills.push({
               id: lastBillId,
               name: name,
