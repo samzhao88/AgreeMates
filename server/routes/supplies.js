@@ -18,7 +18,8 @@ var supplies = function(app) {
 
     var apartmentId = req.user.attributes.apartment_id;
 
-    new SupplyCollection({apartment_id: apartmentId})
+    new SupplyCollection()
+      .query('where', 'apartment_id', '=', apartmentId)
       .fetch()
       .then(function(model) {
         var supplies = [];
