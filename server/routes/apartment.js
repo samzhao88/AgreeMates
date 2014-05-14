@@ -8,6 +8,7 @@ var Users = require('../models/user').collection;
 var Bills = require('../models/bill').collection;
 var Chores = require('../models/chore').collection;
 var Messages = require('../models/message').collection;
+var Bookshelf = require('bookshelf');
 
 var apartment = function(app) {
 
@@ -88,6 +89,26 @@ var apartment = function(app) {
 		}
 	});
 
+	// Gets all users in an apartment
+	app.get('/apartment/:apt/users', function(req, res) {
+		if (req.user === undefined) {
+			res.json(401, {error: 'Unauthorized user.'});
+			return;
+		}
+
+		var apartmentId = req.user.attributes.apartment_id;
+
+		Bookshelf.DB.knex('users')
+			.select('id', 'first_name', 'last_name', 'email', 'phone')
+			.where('apartment_id', '=', apartmentId)
+			.then(function(users) {
+				res.json({users: users});
+			})
+			.otherwise(function(error) {
+				res.json(503, {error: 'Database error.'});
+			});
+	});
+
 	  // Edit apartment in database
 	app.put('/apartment/:apt', function(req, res) {
 		if (req.user === undefined) {
@@ -149,8 +170,8 @@ var apartment = function(app) {
 					users.models[i].attributes.apartment_id = null;
 					users.models[i].save().then(function(x){});
 				}
-				
-				
+
+
 				//delete associated bills
 				new Bills({apartment_id : apartment_id})
 				.fetch().then(function(bills) {
@@ -158,7 +179,7 @@ var apartment = function(app) {
 						bills.models[i].attributes.apartment_id = null;
 						bills.models[i].save();
 					}
-					
+
 					//delete associated messages
 					new Messages({apartment_id : apartment_id})
 					.fetch().then(function(messages) {
@@ -166,7 +187,7 @@ var apartment = function(app) {
 							messages.models[i].attributes.apartment_id = null;
 							messages.models[i].save();
 						}
-					
+
 						//delete associated chores
 						new Chores({apartment_id : apartment_id})
 						.fetch().then(function(chores) {
@@ -190,7 +211,7 @@ var apartment = function(app) {
 					return;
 				});
 				//delete
-				var apartment = new ApartmentModel({id : apartment_id});	
+				var apartment = new ApartmentModel({id : apartment_id});
 				apartment.destroy()
 				.then(function(apartment) {
 					res.json({result : 'success'});
