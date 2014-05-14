@@ -210,3 +210,7 @@ html, body {
   border-top: none !important;
   background: white !important;
 }
+
+.messages .message .comments .comment {
+  background: #f6f7f8 !important;
+}
