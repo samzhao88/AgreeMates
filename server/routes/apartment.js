@@ -1,7 +1,7 @@
 // Apartment routes
 
 'use strict';
-//load apartment models and collections
+
 var ApartmentModel = require('../models/apartment').model;
 var UserModel = require('../models/user').model;
 var Users = require('../models/user').collection;
@@ -12,42 +12,39 @@ var Bookshelf = require('bookshelf');
 
 var apartment = function(app) {
 
-	  // Add apartment to database
+	// Adds an apartment to the database
 	app.post('/apartment', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
 		}
-		if(req.body != null && req.user != null) {
-			if(req.user.id == null) {
-				res.json(400, {msg: 'invalid id'});
-				return;
-			}
-			//name and address from post body
-			var name = req.body.name;
-			var address = req.body.address;
-			if(name == null || address == null) {
-				res.json(400, {msg: 'invalid request parameters'});
-				return;
-			}
-			//create apartment
-			new ApartmentModel({name: name, address: address})
-			  .save()
-			  .then(function(model) {
-				//update user's apartment
-				new UserModel({id: req.user.id})
-				  /*jshint camelcase: false */
-				  .save({apartment_id: model.id}, {patch: true})
-				  .then(function() {
-					res.json({result : 'success'});
-				});
-			  })
-			  .otherwise(function(error) {
-				res.json(401, {msg: 'error adding apartment'});
-			  });
-		} else {
-			res.json(400, {msg: 'couldnt fetch request parameters'});
+
+		var apartmentName = req.body.name;
+		var apartmentAddress = req.body.address;
+
+		if (!isValidName(apartmentName)) {
+			res.json(400, {error: 'Invalid apartment name.'});
+			return;
+		} else if (!isValidName(apartmentAddress)) {
+			res.json(400, {error: 'Invalid apartment address.'});
+			return;
 		}
+
+		new ApartmentModel({name: apartmentName.trim(), address: apartmentAddress.trim()})
+			.save()
+			.then(function(model) {
+				new UserModel({id: req.user.id})
+					.save({apartment_id: model.attributes.id}, {patch: true})
+					.then(function() {
+						res.json(200);
+					})
+					.otherwise(function() {
+						res.json(400, {error: 'Error adding user to the new apartment.'});
+					});
+			})
+			.otherwise(function() {
+				res.json(400, {error: 'Error adding new apartment'});
+			});
 	});
 
 	  // Get edit apartment page information
@@ -229,6 +226,11 @@ var apartment = function(app) {
 			res.json(401, {msg: 'could not fetch id'});
 		}
 	});
+
+	// Checks if a name is valid
+	function isValidName(name) {
+		return name !== undefined && name !== null && name !== '';
+	}
 };
 
 module.exports = apartment;
