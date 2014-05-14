@@ -79,6 +79,7 @@ var invitations = function(app) {
 
   // Get invitation information
   app.get('/invitations/:invite', function(req, res) {
+    var result;
     new InvitationModel({id: req.params.invite})
       .fetch()
       .then(function(model) {
@@ -86,22 +87,29 @@ var invitations = function(app) {
         new ApartmentModel({id: model.attributes.apartment_id})
           .fetch()
           .then(function(model2) {
-            console.log(model);
-            console.log(model2);
-            res.json({title: 'Invitation',
+            result = {title: 'Invitation',
                      id: model.attributes.id,
                      aptName: model2.attributes.name,
-                     aptAddress: model2.attributes.address});
+                     aptAddress: model2.attributes.address};
           })
           .otherwise(function(error) {
             console.log(error);
-            res.json(404, {error: 'failed to fetch aparment'});
+            res.status(404);
+            result = {error: 'failed to fetch aparment'};
           });
       })
       .otherwise(function(error) {
         console.log(error);
-        res.json(404, {error: 'error getting invitation'});
+        res.status(404);
+        result = {error: 'error getting invitation'};
       });
+
+      var user = req.user;
+      if (user != null) {
+        res.render('components/invitations/index', result);
+      } else {
+        res.render('components/login/index', result);
+      }
   });
 
   // Removes invitation from the database
