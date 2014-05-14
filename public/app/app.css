@@ -214,3 +214,7 @@ html, body {
 .messages .message .comments .comment {
   background: #f6f7f8 !important;
 }
+
+.messages .list-group-item {
+  border-radius: 0;
+}

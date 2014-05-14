@@ -6,25 +6,37 @@
 		<div class="pull-right alert alert-danger" ng-show="error">{{errormsg}}</div>
 	</div>
   	<hr>
-  	<form class="navbar-form navbar-left">
-	 	<input type="text" class="form-control" autofocus ng-model="newMessage.subject" placeholder="Subject" required><br>
-	 	<textarea class="form-control" ng-model="newMessage.body" placeholder="Message" required></textarea>
-	 	<input type="submit" class="btn btn-default" id="submit" ng-click="addMessage()" value="Post" />
-	</form>
 
 	<ul class="list-group messages">
-	  	<li data-ng-repeat="message in messages" class="list-group-item">
-	  		<h3>{{message.subject}}</h3> - {{message.author}}
-	  		{{message.body}}
+		<li class="list-group-item clearfix">
+			<div class="clearfix">
+				<form class="navbar-form navbar-left">
+					<input type="text" class="form-control" autofocus ng-model="newMessage.subject" placeholder="Subject" required><br>
+	 				<textarea class="form-control" ng-model="newMessage.body" placeholder="Message" required></textarea>
+	 				<input type="submit" ng-disabled="!postButton()" class="btn btn-default" id="submit" ng-click="addMessage()" value="Post message" />
+	 			</form>
+			</div>
+			<div>
+	  			{{message.body}}
+	  		</div>
+		</li>
+	  	<li data-ng-repeat="message in messages" class="list-group-item clearfix message">
+	  		<div class="clearfix">
+				<h3 class="pull-left">{{message.subject}}</h3> <p class="pull-left">- {{message.author}}</p>
+			</div>
+			<div>
+	  			{{message.body}}
+	  		</div>
 	  		<br>
-	  		<ul class="list-group">
-	  			<li data-ng-repeat="comment in message.comments" class="list-group-item">{{comment.subject}}<br>{{comment.body}}
+	  		<ul class="list-group comments">
+	  			<li data-ng-repeat="comment in message.comments" class="list-group-item comment">{{comment.subject}}<br>{{comment.body}}
 	  			</li>
+	  			<li class="list-group-item comment clearfix">
+	  				<form ng-submit="(addComment($index))" class="navbar-form navbar-left">
+	 					<input type="text" class="form-control" ng-model="message.newComment.body" placeholder="Comment" required />
+					</form>
+				</li>
 	  		</ul>
-	  		<form class="navbar-form navbar-left">
-	 			<textarea class="form-control" ng-model="message.newComment.body" placeholder="Message" required></textarea>
-	 			<input type="submit" class="btn btn-default" id="submit" ng-click="addComment($index)" value="Post" />
-			</form>
 	  	</li>
 	</ul>
 </div>

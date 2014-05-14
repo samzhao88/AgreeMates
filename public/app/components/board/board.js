@@ -6,9 +6,11 @@ angular.module('main.board', []);
 angular.module('main.board').controller('BoardCtrl',
   function ($scope, $http, $timeout) {
 
+    $scope.newMessage = {};
+
   	var dummy = {"messages": [
   		{"id": 1, "subject": "subject1", "body": "body1", "author": "user1", "comments": [{"body": "comment1"},{"body": "comment1"}]}, 
-  		{"id": 2, "subject": "subject1", "body": "body1", "author": "user2"}, 
+  		{"id": 2, "subject": "subject1", "body": "body1", "author": "user2", "comments": []}, 
   	]};
 
     //$http.get('/board/0/10').
@@ -18,12 +20,16 @@ angular.module('main.board').controller('BoardCtrl',
         	$scope.messages = dummy.messages;
       	});
 
+    //add a message
     $scope.addMessage = function(){
     	
     	var message = angular.copy($scope.newMessage);
 
-    	$http.post('/', message).
+    	//$http.post('/messages', message).
+      $http.get('/').
 	      	success(function(data) {
+            data = message;
+            data.comments = [];
 	        	$scope.messages.splice(0,0,data);
 	        	$scope.reset();
 	      	}).
@@ -63,20 +69,23 @@ angular.module('main.board').controller('BoardCtrl',
 
     };
 
+    //get previous comments: TODO
     $scope.getPrevious = function(){
 
     };
 
+    //add a comment: TODO
     $scope.addComment = function(msg_ind, msg_id){
 
     	var comment = angular.copy($scope.messages[msg_ind].newComment);
     	comment.msg_id = $scope.messages[msg_ind].id;
 
-    	console.log(comment);
-
-    	$http.post('/comment/', comment).
+    	//$http.post('/comment/', comment).
+      $http.get('/').
 	      	success(function(data) {
-	        	$scope.messages[msg_ind].push(data);
+            data = comment;
+	        	$scope.messages[msg_ind].comments.push(data);
+            $scope.messages[msg_ind].newComment = {};
 	      	}).
         	error(function(data, status, headers, config){
           		console.log(data);
@@ -84,6 +93,7 @@ angular.module('main.board').controller('BoardCtrl',
         	});
     };
 
+    //delete a comment: TODO
     $scope.deleteComment = function(id, index){
 
     	$http.delete('/comment/'+id).
@@ -98,6 +108,10 @@ angular.module('main.board').controller('BoardCtrl',
 
     $scope.reset = function(){
     	$scope.newMessage = {};
+    };
+
+    $scope.postButton = function(){
+      return 1;//return (($scope.newMessage.subject  == '') || ($scope.newMessage.body == '')) ? true : false;
     };
 
 });
