@@ -13,19 +13,19 @@ var config = {
     db: {
       host: '127.0.0.1',
       user: 'postgres',
-      password: 'agreemates',
+      password: 'agreemaets',
       database: 'postgres',
-      port: '5432',
+      port: 5432,
     }
   },
   production: {
     root: root,
     port: process.env.PORT,
     db: {
-      host: 'HOST',
-      user: 'USER',
-      password: 'PASSWORD',
-      database: 'DB_NAME'
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_DATABASE,
     }
   }
 };
