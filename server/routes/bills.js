@@ -161,12 +161,12 @@ var bills = function(app) {
             .save()
             .then(function(model) { })
             .otherwise(function(error) {
-              res.json(503, {error: error});
+              res.json(503, {error: 'Database error.'});
             });
         }
         res.json({result: 'success'});
       }).otherwise(function(error) {
-        res.json(503, {error: error});
+        res.json(503, {error: 'Database error.'});
       });
   });
 
@@ -217,15 +217,15 @@ var bills = function(app) {
                                user_id: roommates[i].id, bill_id: billId})
                 .save()
                 .otherwise(function(error) {
-                  res.json(503, {error: error});
+                  res.json(503, {error: 'Database error'});
                 });
             }
             res.json({result: 'success'});
           }).otherwise(function(error) {
-            res.json(503, {error: error});
+            res.json(503, {error: 'Database error.'});
           });
       }).otherwise(function(error) {
-        res.json(503, {error: error});
+        res.json(503, {error: 'Database error.'});
       });
   });
 
@@ -260,7 +260,7 @@ var bills = function(app) {
           }); 
       }).otherwise(function(error) {
         console.log(error);
-        res.json(503, {error: error});
+        res.json(503, {error: 'Database error.'});
       });
     
   });
