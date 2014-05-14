@@ -150,7 +150,7 @@ html, body {
 }
 
 .supplies .supplybuttons {
-  float: right;
+  
 }
 
 .supplies .name {
@@ -168,6 +168,14 @@ html, body {
 
 .supplies .delete {
   float: right;
+}
+
+.supplies .deleteCol {
+  width: 10px;
+}
+
+.supplies .statusCol {
+  width: 190px;
 }
 
 .supplyAddButton {
