@@ -3,7 +3,7 @@
 'use strict';
 
 var FacebookStrategy = require('passport-facebook').Strategy;
- var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var UserModel = require('./models/user').model;
 var configAuth = require('./auth');
 
