@@ -33,12 +33,14 @@ var app = angular.module('main',
     'main.profile',
     'main.nav',
     'main.apartment',
+    'main.invitations',
+    'LocalStorageModule',
     'ngRoute'
   ]
 );
 
 // Register all routes
-app.config(function($routeProvider, $locationProvider) {
+app.config(function($routeProvider) {
   $routeProvider.
     when('/', {
     templateUrl: 'components/calendar/calendar.html',
@@ -74,6 +76,11 @@ app.config(function($routeProvider, $locationProvider) {
     templateUrl: 'components/profile/profile.html',
     module: 'main.profile',
     controller: 'ProfileCtrl'
+  }).
+    when('/invitations/:invite', {
+    templateUrl: 'components/invitations/invitations.html',
+    module: 'main.invitations',
+    controller: 'InviteCtrl'
   }).
     otherwise({
     redirectTo: '/'

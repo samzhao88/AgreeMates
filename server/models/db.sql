@@ -977,6 +977,27 @@ ALTER TABLE ONLY users_chores
 ALTER TABLE ONLY users_chores
     ADD CONSTRAINT users_chores_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
 
+CREATE TABLE invitations (
+  id integer NOT NULL,
+  email character varying(255) NOT NULL,
+  apartment_id integer NOT NULL
+);
+
+
+CREATE SEQUENCE invitations_id_seq
+  START WITH 1
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 1;
+
+ALTER SEQUENCE invitations_id_seq OWNED BY invitations.id;
+
+ALTER TABLE ONLY invitations
+  ALTER COLUMN id SET DEFAULT nextval('invitations_id_seq'::regclass);
+
+ALTER TABLE ONLY invitations
+    ADD CONSTRAINT invitations_pkey PRIMARY KEY (id);
 
 -- Completed on 2014-05-05 13:48:19
 

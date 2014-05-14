@@ -1,4 +1,4 @@
-/* 
+/*
  * This is the model representation for a single apartment
  * attributes: id			int,
  *  		   name         string, the apartment's name
@@ -15,6 +15,7 @@ var SupplyModel = require('./supply').model;
 var ChoreModel = require('./chore').model;
 var BillModel = require('./bill').model;
 var UserModel = require('./user').model;
+var InvitationModel = require('./invitation').model;
 
 exports.model = Bookshelf.Model.extend({
 	tableName: 'apartments',
@@ -33,6 +34,9 @@ exports.model = Bookshelf.Model.extend({
 	users: function() {
 		return this.hasMany(UserModel);
 	},
+  invitations: function() {
+    return this.hasMany(InvitationModel);
+  },
 });
 
 exports.collection = Bookshelf.Collection.extend({
