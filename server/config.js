@@ -13,7 +13,7 @@ var config = {
     db: {
       host: '127.0.0.1',
       user: 'postgres',
-      password: 'agreemaets',
+      password: 'agreemates',
       database: 'postgres',
       port: 5432,
     }
