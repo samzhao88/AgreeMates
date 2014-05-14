@@ -13,8 +13,8 @@ var chores = function(app) {
   //Get all chores for an apartment
   app.get('/chores', function(req, res) {
 
-    // res.json({chores: [{name: "dishes", interval: 7, users: ["alice" , "bob" ] },
-    //  {name: "garbage", interval: 1, users: "bob"} ] });
+    res.json({chores: [{name: "dishes", interval: 7, users: ["alice" , "bob" ] },
+    {name: "garbage", interval: 1, users: "bob"} ] });
 
 	if (req.user === undefined) {
 		res.json(401, {error: 'Unauthorized user.'});

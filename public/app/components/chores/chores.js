@@ -4,33 +4,28 @@ angular.module('main.chores', []);
 
 // Angular controller for chores
 angular.module('main.chores').controller('ChoresCtrl',
-<<<<<<< HEAD
-  function ($scope, $http) {
+
+function ($scope, $http) {
   	//holds all chores for apartment
     $scope.chores = [];
 
     $scope.chore = {name: ''};
-    //get chores
-    // $http.get('/chores/').
-    // 	success(function(data) {
-    //     	$scope.title = data.title;
-    //   	});
 
+    //get chores
     $http.get('/chores').
     	success(function(data) {
         	$scope.chores = data.chores;
         	//console.log(data);
         	//console.log("hello");
-			for( var i = 0; i < $scope.chores.length; i++ )
-      		{
-      			$scope.chores[i].isSelected = false;
+			//for( var i = 0; i < $scope.chores.length; i++ )
+      		//{
+      		//	$scope.chores[i].isSelected = false;
       			//console.log($scope.chores[i].name);
-      		}
+      		//}
 
       	}).
       	error(function(data, status, headers, config){
         	//console.log(data);
-
     });
 
 
@@ -49,49 +44,18 @@ angular.module('main.chores').controller('ChoresCtrl',
       	, {name: "cameron", isChecked: false}];
 
       	// console.log($scope.users[0].name);
-      	// for( var i = 0; i < $scope.users.length; i++ )
-      	// {
-      	// 	console.log($scope.users[i].name);
-      	// 	$scope.users.newproperty = "hello";
-      	// }	
-
-      	// console.log($scope.users.newproperty);
-      	// for(var i in $scope.users)
-      	// {
-      	// 	i.isChecked = true;
-      	// 	console.log("test");
-      	// 	console.log(i.name);
-      	// }
-
-        //console.log("grabbing users");
-        //console.log($scope.users);
     });	
 
 
 
   	//adding a chore
   	$scope.addChore = function() {
-  		//chore.user_id = [];
- 	var chore = angular.copy($scope.chore);
-  		//add responsible persons
-  // 		angular.forEach($scope.users, function(s){
-		// 	if (s.isChecked){chore.user_id.push(s.user_id)
-		// 		console.log(chore);
-		// 	}
-		// });
-  		//chore.interval = 10; 
+  	
+   	var chore = angular.copy($scope.chore);
 
-  		//console.log(chore);
-
-  		chore.createdate = "10-2-14";
-  		chore.userid = 5;
-
-  // 		var myDate= chore.duedate;
-		// myDate=myDate.split("-");
-		// var newDate=myDate[1]+"/"+myDate[0]+"/"+myDate[2];
-		// chore.duedate = new Date(newDate).getTime();
-
-		// console.log(chore.duedate);
+    chore.roommates = [123, 142, 1231];
+    //chore.roomates[0].name = "name";
+    console.log(chore);
 
       	$http.post('/chores', chore)
         .success(function(data) {
@@ -117,12 +81,10 @@ angular.module('main.chores').controller('ChoresCtrl',
 
     //edit chore
     $scope.editChore = function(index) {
-    	var chore = $scope.chores[index];
-    	$scope.chore = angular.copy(chore);
     	console.log($scope.chore);
     	console.log($scope.chore.users);
-    	$scope.chore.users = [].concat($scope.chore.users);
-    	$scope.chore.users = $scope.chore.users.map(function(any){return {name: any, isChecked: true }});
+    	//$scope.chore.users = [].concat($scope.chore.users);
+    	//$scope.chore.users = $scope.chore.users.map(function(any){return {name: any, isChecked: true }});
 
 
       for( var i = 0; i < $scope.chores.length; i++ )
@@ -150,6 +112,7 @@ angular.module('main.chores').controller('ChoresCtrl',
     	$scope.cancel;
     };
 
+    //deletes chore
     $scope.deleteChore = function(index)
     {
     	$scope.chores.splice(index, 1);
@@ -167,13 +130,18 @@ angular.module('main.chores').controller('ChoresCtrl',
     	$scope.chore.name = '';
     	console.log("reset");
     };
-=======
-  function ($http, $scope) {
 
-    $http.get('/chores').
-      success(function(data) {
-        $scope.title = data.title;
-      });
->>>>>>> 046f6f240e993332b0be66b674c2e2930307fe65
+    //sets the edit chore menu to the selected chore
+    $scope.setChore = function(index){
+    var chore = angular.copy($scope.chores[index]);
+    chore.users = [].concat(chore.users);
+    chore.users = chore.users.map(function(any){return {name: any, isChecked: true }});
+    //$scope.chore.users = [].concat($scope.chore.users);
+    //$scope.chore.users = $scope.chore.users.map(function(any){return {name: any, isChecked: true }});
+    console.log(chore);
+    $scope.chore = chore;
+    
+    console.log($scope.chore);
+    };
 
 });
