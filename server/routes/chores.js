@@ -105,9 +105,7 @@ var chores = function(app) {
 					})
 					.save()
 					.then(function(model){
-					console.log('test');
 					for(var i = 0; i  < roommates.length; i++){
-					console.log('test');
 						new UserChoreModel({
 							user_id: roommates[i].id,
 							chore_id: model.id,
@@ -121,7 +119,7 @@ var chores = function(app) {
 						});
 						
 						if(i === roommates.length-1){
-						res.send(200);
+							res.send(201);
 						}
 					}
 					
@@ -131,18 +129,45 @@ var chores = function(app) {
   });
 
   // Get the chore information
+ // Get the chore information
   app.get('/chores/:chore', function(req, res) {
+  	if (req.user === undefined) {
+		res.json(401, {error: 'Unauthorized user.'});
+		return;
+	}
     var apartmentId = req.user.attributes.apartment_id;
 	var choreId = req.params.chore;
+	
 	if (!isValidId(choreId)) {
       res.json(400, {error: 'Invalid supply ID.'});
       return;
     }
 	
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
-		.fetch().then(function(model){
+		.fetch()
+		.then(function(model){
 			var chore = model.attributes;
-			res.json(chore);
+			console.log(chore)
+			var userChores = [];
+			new UserChoreModel({chore_id: chore.id})
+			.fetch()
+			.then(function(ucModel){
+			console.log(ucModel);
+				for(var j = 0; j <ucModel.length; j++){
+					var userChore = ucModel.models[i].attributes;
+					console.log('sanity1');
+					userChores.push({
+						user_id: userChore.user_id,
+						order_index: userChore.oder_index
+					});
+					if(j === ucModel.length - 1){
+						res.json({chore: chore, users: userChores});
+					}
+				}
+				console.log('fail');
+			}).otherwise(function(){
+				res.json(503, {error:'Database error'});
+			});
 		}).otherwise(function(){
 			res.json(503,{error: 'Database error.'});
 		});
@@ -185,7 +210,7 @@ var chores = function(app) {
 				});
 				
 				if(i === roommates.length-1){
-					res.send(200);
+					res.send(201);
 				}
 			}
 		}).otherwise(function(){
@@ -208,17 +233,23 @@ var chores = function(app) {
 	
 	var choreId = req.params.chore;
 	
-	if (!isValidId(input.id)) {
+	if (!isValidId(choreId)) {
       res.json(400, {error: 'Invalid supply ID.'});
       return;
     }
 	
-	new ChoreModel({id: input.id, apartment_id: apartmentId})
-		.destry()
-		.then(function(){
-			res.send(200);
+	new UserChoreModel().query('where', 'chore_id', '=', choreId)
+		.destroy()
+		.then(function(choremodel){
+			new ChoreModel({id: choreId, apartment_id: apartmentId})
+			.destroy()
+			.then(function(){
+				res.send(200);
+			}).otherwise(function() {
+				res.json(503, {error: 'Database error'});
+			});				
 		}).otherwise(function() {
-			res.json(503, {error: 'Database error.'});
+			res.json(503, {error: 'Database error'})
 		});
   });
   
