@@ -1,10 +1,15 @@
 <!-- view for message board -->
 <div class="col-lg-12">
-  	<h1>Message board</h1>
+  	<div class="boardHeader clearfix">
+	 	<h1 class="pull-left">Message Board</h1>
+	 	<div class="pull-right alert alert-success" ng-show="success">{{successmsg}}</div>
+		<div class="pull-right alert alert-danger" ng-show="error">{{errormsg}}</div>
+	</div>
   	<hr>
   	<form class="navbar-form navbar-left">
-	 	<input type="text" class="form-control" autofocus au-model="message.subject" placeholder="Subject" required><br>
-	 	<textarea class="form-control" au-model="message.body" placeholder="Message" required></textarea>
+	 	<input type="text" class="form-control" autofocus ng-model="newMessage.subject" placeholder="Subject" required><br>
+	 	<textarea class="form-control" ng-model="newMessage.body" placeholder="Message" required></textarea>
+	 	<input type="submit" class="btn btn-default" id="submit" ng-click="addMessage()" value="Post" />
 	</form>
 
 	<ul class="list-group messages">
@@ -16,6 +21,10 @@
 	  			<li data-ng-repeat="comment in message.comments" class="list-group-item">{{comment.subject}}<br>{{comment.body}}
 	  			</li>
 	  		</ul>
+	  		<form class="navbar-form navbar-left">
+	 			<textarea class="form-control" ng-model="message.newComment.body" placeholder="Message" required></textarea>
+	 			<input type="submit" class="btn btn-default" id="submit" ng-click="addComment($index)" value="Post" />
+			</form>
 	  	</li>
 	</ul>
 </div>
