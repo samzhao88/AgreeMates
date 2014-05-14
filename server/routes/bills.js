@@ -7,7 +7,6 @@ var BillCollection = require('../models/bill').collection;
 var UserModel = require('../models/user').model;
 var PaymentModel = require('../models/payment').model;
 var PaymentCollection = require('../models/payment').collection;
-var async = require('async');
 
 var bills = function(app) {
 
