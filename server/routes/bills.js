@@ -149,6 +149,7 @@ var bills = function(app) {
     var total = req.body.total;
     var interval = req.body.interval;
     var date = req.body.date;
+    var paid = req.body.paid;
     var roommates = JSON.parse(req.body.roommates);
 
     // Check for validity of fields
@@ -169,11 +170,13 @@ var bills = function(app) {
       .then(function() {
         // Edit the bill
         new BillModel({id: billId, apartment_id: apartmentId})
-          .save({name: name, amount: total, duedate: date, interval: interval})
+          .save({name: name, amount: total, duedate: date, 
+                paid: paid, interval: interval})
           .then(function() {
             // Add new payments for all the users who need to pay
             for(var i = 0; i < roommates.length; i++) {
-              new PaymentModel({paid: false, amount: roommates[i].amount,
+              new PaymentModel({paid: roommates[i].paid, 
+                               amount: roommates[i].amount,
                                user_id: roommates[i].id, bill_id: billId})
                 .save()
                 .otherwise(function(error) {
