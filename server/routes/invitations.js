@@ -79,7 +79,6 @@ var invitations = function(app) {
 
   // Get invitation information
   app.get('/invitations/:invite', function(req, res) {
-    var result;
     new InvitationModel({id: req.params.invite})
       .fetch()
       .then(function(model) {
@@ -88,27 +87,27 @@ var invitations = function(app) {
           .fetch()
           .then(function(model2) {
             console.log(model);
-            result = {title: 'Invitation',
-                     invId: model.attributes.id,
-                     aptName: model2.attributes.name,
-                     aptAddress: model2.attributes.address};
             var user = req.user;
             if (user != null) {
-              res.render('components/invitations/index.ejs', result);
+              res.render('components/invitations/index.html', {
+                invId: model.attributes.id,
+                aptName: model2.attributes.name,
+                aptAddress: model2.attributes.address
+              });
             } else {
-              res.render('components/invitations/login.html', result);
+              res.render('components/invitations/login.html', {
+                invId: model.attributes.id
+              });
             }
           })
           .otherwise(function(error) {
             console.log(error);
-            res.status(404);
-            result = {error: 'failed to fetch aparment'};
+            res.json(404, {error: 'failed to fetch apartment'});
           });
       })
       .otherwise(function(error) {
         console.log(error);
-        res.status(404);
-        result = {error: 'error getting invitation'};
+        res.json(404, {error: 'error getting invitation'});
       });
 
   });

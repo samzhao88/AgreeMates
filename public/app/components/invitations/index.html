@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app="main" lang="en">
 <head>
   <meta charset="utf-8">
   <title>AgreeMates</title>
   <link rel="stylesheet" href="../vendor/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="../app.css">
 </head>
-<body>
+<body ng-controller="InviteIndexCtrl">
 
   <div class="container">
     <div class="jumbotron">
@@ -17,11 +17,11 @@
 
       <div class="row">
         <p>You have been invited to the apartment {{aptName}} at
-        addresss {{aptAddress}}.</p>
+        address {{aptAddress}}.</p>
       </div>
 
       <div class="row">
-        <a class="btn btn-primary btn-lg" href="#">Accept Invitation</a>
+        <a class="btn btn-primary btn-lg" ng-click="accept()" ng-href="#accept">Accept Invitation</a>
       </div>
 
     </div>
@@ -29,6 +29,23 @@
   </div>
 
   <script src="../vendor/jquery/dist/jquery.min.js"></script>
+  <script src="../vendor/angular/angular.min.js"></script>
+  <script src="../vendor/angular-route/angular-route.min.js"></script>
+  <script src="../vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="../vendor/angular-bootstrap/ui-bootstrap.min.js"></script>
+  <script src="../vendor/angular-local-storage/angular-local-storage.min.js"></script>
+  <script src="../app.js"></script>
+
+  <script src="../components/bills/bills.js"></script>
+  <script src="../components/board/board.js"></script>
+  <script src="../components/calendar/calendar.js"></script>
+  <script src="../components/chores/chores.js"></script>
+  <script src="../components/supplies/supplies.js"></script>
+  <script src="../components/navbar/navbar.js"></script>
+  <script src="../components/settings/settings.js"></script>
+  <script src="../components/profile/profile.js"></script>
+  <script src="../components/apartment/apartment.js"></script>
+  <script src="../components/invitations/invitations.js"></script>
 
 </body>
 </html>
