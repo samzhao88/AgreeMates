@@ -7,12 +7,15 @@ angular.module('main.bills').controller('BillsCtrl',
   function($http, $scope) {
   	$scope.hideAddBox = true;
   	$scope.bill = {};
+    $scope.balance = 0;
+    $scope.selectedRoommates = [];
 
   	//get all unresolved bills
     $http.get('/bills').
     success(function(data) {
       $scope.unresolvedBills = data.bills;
       $scope.bills = $scope.unresolvedBills;
+      $scope.balance = $scope.bills.amount;
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -69,7 +72,7 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //delete a bill
     $scope.deleteBill = function(id, index) {
-      	$http.delete('/bills/', {'id': id}). //need to test this with real API
+      	$http.delete('/bills/'+id). //need to test this with real API
   	      success(function(data) {
   	        $scope.supplies.splice(index, 1);
   	      }).
