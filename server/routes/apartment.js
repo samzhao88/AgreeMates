@@ -39,51 +39,41 @@ var apartment = function(app) {
 						res.json(200);
 					})
 					.otherwise(function() {
-						res.json(400, {error: 'Error adding user to the new apartment.'});
+						res.json(503, {error: 'Error adding user to the new apartment.'});
 					});
 			})
 			.otherwise(function() {
-				res.json(400, {error: 'Error adding new apartment'});
+				res.json(503, {error: 'Error adding new apartment'});
 			});
 	});
 
-	  // Get edit apartment page information
-	  app.get('/apartment/:apt', function(req, res) {
+	// Gets an apartment's information
+	app.get('/apartment/:apt', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
 		}
-		if(req.user != null && req.query != null) {
-			var id = req.user.attributes.apartment_id;
-			console.log(id);
-			if(id != null) {
-				if(id != req.params.apt) {
-					res.json(400, {msg: 'unauthorized'});
-					return;
-				}
-				var u;
-				new Users({apartment_id : id})
-				.fetch()
-				.then(function(users) {
-						u = users;
-				})
-				.otherwise(function(users) {
-					res.json(401,{msg: 'error getting users'});
-				});
-				new ApartmentModel({id : id})
-					.fetch()
-					.then(function(apartment) {
-							res.json(200, {apartment : apartment, users : u});
-							})
-					.otherwise(function(error) {
-						res.json(400, {msg: 'error getting apartment'});
-					});
-			} else {
-				res.json(401, {msg:'could not fetch id'});
-			}
-		} else {
-			res.json(400, {msg: 'could not fetch user'});
+
+		var apartmentId = req.user.attributes.apartment_id;
+
+		if (!isValidId(req.params.apt)) {
+			res.json(401, {error: 'Invalid apartment ID.'});
+			return;
 		}
+
+		if (apartmentId !== parseInt(req.params.apt)) {
+			res.json(401, {error: 'User unauthorized to view this apartment.'});
+			return;
+		}
+
+		Bookshelf.DB.knex('apartments')
+			.where('apartments.id', '=', apartmentId)
+			.then(function(rows) {
+				res.json(rows[0]);
+			})
+			.otherwise(function() {
+				res.json(503, {error: 'Database error.'});
+			});
 	});
 
 	// Gets all users in an apartment
@@ -231,6 +221,18 @@ var apartment = function(app) {
 	function isValidName(name) {
 		return name !== undefined && name !== null && name !== '';
 	}
+
+	// Checks if an ID is valid
+	function isValidId(id) {
+		return isInt(id) && id > 0;
+	}
+
+	// Checks if a value is an integer
+	function isInt(value) {
+		/* jshint eqeqeq: false */
+		return !isNaN(value) && parseInt(value) == value;
+	}
+
 };
 
 module.exports = apartment;
