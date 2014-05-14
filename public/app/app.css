@@ -150,7 +150,7 @@ html, body {
 }
 
 .supplies .supplybuttons {
-  float: right;
+  
 }
 
 .supplies .name {
@@ -168,6 +168,14 @@ html, body {
 
 .supplies .delete {
   float: right;
+}
+
+.supplies .deleteCol {
+  width: 10px;
+}
+
+.supplies .statusCol {
+  width: 190px;
 }
 
 .supplyAddButton {
@@ -201,4 +209,12 @@ html, body {
 .tableHeader {
   border-top: none !important;
   background: white !important;
+}
+
+.messages .message .comments .comment {
+  background: #f6f7f8 !important;
+}
+
+.messages .list-group-item {
+  border-radius: 0;
 }

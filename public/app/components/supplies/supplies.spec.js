@@ -19,7 +19,7 @@ describe('supplies module', function() {
       httpMock = $httpBackend;
 
       scope = $rootScope.$new();
-      httpMock.when('GET', '/supplies').respond({title: 'supplies title'});
+      httpMock.when('GET', '/supplies').respond({supplies: [{'id': 1, 'name': 'toilet paper', 'status': 1},{'id': 2, 'name': 'oranges', 'status': 0}]});
 
       ctrl = $controller;
       ctrl('SuppliesCtrl', {
