@@ -1,125 +1,146 @@
 // Apartment routes
 
 'use strict';
-//load apartment models and collections
+
 var ApartmentModel = require('../models/apartment').model;
 var UserModel = require('../models/user').model;
 var Users = require('../models/user').collection;
 var Bills = require('../models/bill').collection;
 var Chores = require('../models/chore').collection;
 var Messages = require('../models/message').collection;
+var Bookshelf = require('bookshelf');
 
 var apartment = function(app) {
 
-	  // Add apartment to database
+	// Adds an apartment to the database
 	app.post('/apartment', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
 		}
-		if(req.body != null && req.user != null) {
-			if(req.user.id == null) {
-				res.json(400, {msg: 'invalid id'});
-				return;
-			}
-			//name and address from post body
-			var name = req.body.name;
-			var address = req.body.address;
-			if(name == null || address == null) {
-				res.json(400, {msg: 'invalid request parameters'});
-				return;
-			}
-			//create apartment
-			new ApartmentModel({name: name, address: address})
-			  .save()
-			  .then(function(model) {
-				//update user's apartment
-				new UserModel({id: req.user.id})
-				  /*jshint camelcase: false */
-				  .save({apartment_id: model.id}, {patch: true})
-				  .then(function() {
-					res.json({result : 'success'});
-				});
-			  })
-			  .otherwise(function(error) {
-				res.json(401, {msg: 'error adding apartment'});
-			  });
-		} else {
-			res.json(400, {msg: 'couldnt fetch request parameters'});
+
+		var apartmentName = req.body.name;
+		var apartmentAddress = req.body.address;
+
+		if (!isValidName(apartmentName)) {
+			res.json(400, {error: 'Invalid apartment name.'});
+			return;
+		} else if (!isValidName(apartmentAddress)) {
+			res.json(400, {error: 'Invalid apartment address.'});
+			return;
 		}
+
+		new ApartmentModel({name: apartmentName.trim(), address: apartmentAddress.trim()})
+			.save()
+			.then(function(model) {
+				new UserModel({id: req.user.id})
+					.save({apartment_id: model.attributes.id}, {patch: true})
+					.then(function() {
+						res.json(200);
+					})
+					.otherwise(function() {
+						res.json(503, {error: 'Error adding user to the new apartment.'});
+					});
+			})
+			.otherwise(function() {
+				res.json(503, {error: 'Error adding new apartment'});
+			});
 	});
 
-	  // Get edit apartment page information
-	  app.get('/apartment/:apt', function(req, res) {
+	// Gets an apartment's information
+	app.get('/apartment/:apt', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
 		}
-		if(req.user != null && req.query != null) {
-			var id = req.user.attributes.apartment_id;
-			console.log(id);
-			if(id != null) {
-				if(id != req.params.apt) {
-					res.json(400, {msg: 'unauthorized'});
-					return;
-				}
-				var u;
-				new Users({apartment_id : id})
-				.fetch()
-				.then(function(users) {
-						u = users;
-				})
-				.otherwise(function(users) {
-					res.json(401,{msg: 'error getting users'});
-				});
-				new ApartmentModel({id : id})
-					.fetch()
-					.then(function(apartment) {
-							res.json(200, {apartment : apartment, users : u});
-							})
-					.otherwise(function(error) {
-						res.json(400, {msg: 'error getting apartment'});
-					});
-			} else {
-				res.json(401, {msg:'could not fetch id'});
-			}
-		} else {
-			res.json(400, {msg: 'could not fetch user'});
+
+		var apartmentId = req.user.attributes.apartment_id;
+
+		if (!isValidId(req.params.apt)) {
+			res.json(400, {error: 'Invalid apartment ID.'});
+			return;
 		}
+
+		if (apartmentId !== parseInt(req.params.apt)) {
+			res.json(401, {error: 'User unauthorized to view this apartment.'});
+			return;
+		}
+
+		Bookshelf.DB.knex('apartments')
+			.where('apartments.id', '=', apartmentId)
+			.then(function(rows) {
+				res.json(rows[0]);
+			})
+			.otherwise(function() {
+				res.json(503, {error: 'Database error.'});
+			});
 	});
 
-	  // Edit apartment in database
+	// Gets all users in an apartment
+	app.get('/apartment/:apt/users', function(req, res) {
+		if (req.user === undefined) {
+			res.json(401, {error: 'Unauthorized user.'});
+			return;
+		}
+
+		var apartmentId = req.user.attributes.apartment_id;
+
+		if (!isValidId(req.params.apt)) {
+			res.json(400, {error: 'Invalid apartment ID.'});
+			return;
+		}
+
+		if (apartmentId !== parseInt(req.params.apt)) {
+			res.json(401, {error: 'User unauthorized to view this apartment.'});
+			return;
+		}
+
+		Bookshelf.DB.knex('users')
+			.select('id', 'first_name', 'last_name', 'email', 'phone')
+			.where('apartment_id', '=', apartmentId)
+			.then(function(users) {
+				res.json({users: users});
+			})
+			.otherwise(function(error) {
+				res.json(503, {error: 'Database error.'});
+			});
+	});
+
+	// Edits an apartment's information
 	app.put('/apartment/:apt', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
 		}
-		if(req.user != null && req.body != null) {
-			var apartment_id = req.user.attributes.apartment_id;
-			var user_id = req.user.id;
-			if(user_id != null && apartment_id != null) {
-				if(apartment_id != req.params.apt) {
-					res.json(400, {msg: 'unauthorized'});
-					return;
-				}
-				new ApartmentModel({id : apartment_id})
-						.fetch()
-						//alter aparmtent attributes with parameters from the body
-						.then(function(apartment) {
-							apartment.attributes.name = req.body.name;
-							apartment.attributes.address = req.body.address;
-							apartment.save();
-							res.json({result : 'success'});
-						})
-						.otherwise(function(error) {
-							res.json(400, {msg: 'error getting apartment'});
-						});
-			} else {
-				res.json(401, {msg: 'could not fetch id'});
-			}
-		} else {
-			res.json(401, {msg: 'could not fetch user'});
+
+		var apartmentId = req.user.attributes.apartment_id;
+		var apartmentName = req.body.name;
+		var apartmentAddress = req.body.address;
+
+		if (!isValidId(req.params.apt)) {
+			res.json(400, {error: 'Invalid apartment ID.'});
+			return;
+		} else if (!isValidName(apartmentName)) {
+			res.json(400, {error: 'Invalid apartment name.'});
+			return;
+		} else if (!isValidName(apartmentAddress)) {
+			res.json(400, {error: 'Invalid apartment address.'});
+			return;
 		}
+
+		if (apartmentId !== parseInt(req.params.apt)) {
+			res.json(401, {error: 'User unauthorized to view this apartment'});
+			return;
+		}
+
+		new ApartmentModel({id: apartmentId})
+			.save({name: apartmentName.trim(), address: apartmentAddress.trim()}, {patch: true})
+			.then(function() {
+				res.json(200);
+			})
+			.otherwise(function() {
+				res.json(504, {error: 'Database error.'});
+			});
 	});
 
 	  // Removes apartment from the database
@@ -149,8 +170,8 @@ var apartment = function(app) {
 					users.models[i].attributes.apartment_id = null;
 					users.models[i].save().then(function(x){});
 				}
-				
-				
+
+
 				//delete associated bills
 				new Bills({apartment_id : apartment_id})
 				.fetch().then(function(bills) {
@@ -158,7 +179,7 @@ var apartment = function(app) {
 						bills.models[i].attributes.apartment_id = null;
 						bills.models[i].save();
 					}
-					
+
 					//delete associated messages
 					new Messages({apartment_id : apartment_id})
 					.fetch().then(function(messages) {
@@ -166,7 +187,7 @@ var apartment = function(app) {
 							messages.models[i].attributes.apartment_id = null;
 							messages.models[i].save();
 						}
-					
+
 						//delete associated chores
 						new Chores({apartment_id : apartment_id})
 						.fetch().then(function(chores) {
@@ -190,7 +211,7 @@ var apartment = function(app) {
 					return;
 				});
 				//delete
-				var apartment = new ApartmentModel({id : apartment_id});	
+				var apartment = new ApartmentModel({id : apartment_id});
 				apartment.destroy()
 				.then(function(apartment) {
 					res.json({result : 'success'});
@@ -208,6 +229,23 @@ var apartment = function(app) {
 			res.json(401, {msg: 'could not fetch id'});
 		}
 	});
+
+	// Checks if a name is valid
+	function isValidName(name) {
+		return name !== undefined && name !== null && name !== '';
+	}
+
+	// Checks if an ID is valid
+	function isValidId(id) {
+		return isInt(id) && id > 0;
+	}
+
+	// Checks if a value is an integer
+	function isInt(value) {
+		/* jshint eqeqeq: false */
+		return !isNaN(value) && parseInt(value) == value;
+	}
+
 };
 
 module.exports = apartment;
