@@ -2,6 +2,7 @@
 
 'use strict';
 
+var UserModel = require('../models/user').model;
 var ApartmentModel = require('../models/apartment').model;
 var InvitationModel = require('../models/invitation').model;
 
@@ -114,7 +115,26 @@ var invitations = function(app) {
 
   // Removes invitation from the database
   app.delete('/invitations/:invite', function(req, res) {
-    res.end();
+    new InvitationModel({id: req.params.invite})
+      .fetch()
+      .then(function(model) {
+        new UserModel({id: req.user.id})
+          .save({apartment_id: model.attributes.apartment_id}, {path: true})
+          .then(function() {
+            new InvitationModel({id: req.params.invite})
+            .destroy()
+            .then(function() {res.send(200);})
+            .otherwise(function() {
+              res.json(503, {error: 'failed to destroy invitation'});
+            });
+          })
+          .otherwise(function() {
+            res.json(503, {error: 'failed to add user to apartment'});
+          });
+      })
+      .otherwise(function() {
+        res.json(503, {error: 'failed to get invitation'});
+      });
   });
 
 };
