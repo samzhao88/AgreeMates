@@ -13,13 +13,13 @@
  		<tbody>
  			<tr>
  				<th class="tableHeader">Name</th>
- 				<th class="tableHeader">Status</th>
- 				<th class="tableHeader"></th>
+ 				<th class="tableHeader statusCol">Status</th>
+ 				<th class="tableHeader deleteCol"></th>
  			</tr>
- 			<tr ng-class="{'hide': hideAddBox}">	
+ 			<tr ng-class="{'hide': hideAddBox}">
  				<td>
  					<form ng-submit="addSupply()" class="navbar-form navbar-left supplyAddForm">
- 						<div class="newSupply">	
+ 						<div class="newSupply">
 	 						<input type="text" class="form-control" autofocus ng-model="supply.name" placeholder="Supply name" required>
 	 					</div>
 	 					<div class="supplyAdd">
@@ -29,7 +29,7 @@
 	 				</form>
  				</td>
  				<td></td>
- 				<td width="100">
+ 				<td>
 				</td>
  			</tr>
 
@@ -40,18 +40,18 @@
  					</div>
  					<div ng-show="supply.edit" class="edit">
  						<form ng-submit="updateSupply($index)">
- 							<input type="text" style="width: 200px;" class="form-control" ng-model="supply.name"  required>
+ 							<input type="text" style="width: 200px;" class="form-control" ng-model="supply.name" required>
  						</form>
  					</div>
  				</td>
- 				<td width="300">
+ 				<td>
 				  	<div class="btn-group supplybuttons">
 				        <label class="btn btn-default" ng-class="{ 'active' : supply.status == '0' }" ng-change="updateSupply($index)"  ng-model="supply.status" btn-radio="'0'">Empty </label>
-				        <label class="btn btn-default" ng-class="{ 'active' : supply.status == '1' }" ng-change="updateSupply($index)" ng-model="supply.status" btn-radio="'1'">Running low</label>
-				        <label class="btn btn-default" ng-class="{ 'active' : supply.status == '2' }"  ng-change="updateSupply($index)" ng-model="supply.status" btn-radio="'2'">Fully-stocked</label>
+				        <label class="btn btn-default" ng-class="{ 'active' : supply.status == '1' }" ng-change="updateSupply($index)" ng-model="supply.status" btn-radio="'1'">Low</label>
+				        <label class="btn btn-default" ng-class="{ 'active' : supply.status == '2' }"  ng-change="updateSupply($index)" ng-model="supply.status" btn-radio="'2'">Full</label>
 				    </div>
 				</td>
-				<td width="100">
+				<td>
 					<div class="delete">
 				    	<span class="glyphicon glyphicon-remove" ng-click="deleteSupply(supply.id, $index)"></span>
 					</div>
