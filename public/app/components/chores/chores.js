@@ -115,18 +115,19 @@ function ($scope, $http) {
     	$scope.cancel;
     };
 
-    //deletes chore
-    $scope.deleteChore = function(index)
+     //deletes chore
+    $scope.deleteChore = function(id, index)
     {
-    	$scope.chores.splice(index, 1);
-    	$http.delete('/chores/').
-  	    success(function(data) {
-  	    $scope.chores.splice(index, 1);
-  	    }).
-        error(function(data, status, headers, config){
+     	//$scope.chores.splice(index, 1);
+    	$http.delete('/chores/'+id).
+   	    success(function(data) {
+   	    $scope.chores.splice(index, 1);
+   	    }).
+         error(function(data, status, headers, config){
         console.log(data);
         });
     }
+
 
     $scope.cancel = function() {
     	console.log($scope.chore.name);

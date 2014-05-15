@@ -24,7 +24,7 @@ var chores = function(app) {
 		.join('users', 'users_chores.user_id', '=', 'users.id')
 		.where('chores.apartment_id', '=', apartmentId)
 		.select( 'chores.interval','chores.createdate', 
-				'chores.duedate', 'users.first_name',
+				'chores.duedate', 'users.first_name','users.last_name',
 				'chores.name','chores.reocurring_id',
 				'users_chores.user_id', 'users_chores.chore_id',
 				'users_chores.order_index', 'chores.completed')
@@ -47,14 +47,14 @@ var chores = function(app) {
 						chores.push({
 							id: lastChoreId,
 							name: name,
-							createDate: createDate,
-							dueDate: dueDate,
+							createdate: createDate,
+							duedate: dueDate,
 							interval: interval,
 							completed: completed,
 							//reocurring_id: chore.reocurring_id,
 							//user_id: chore.user_id,
 							//apartment_id: chore.apartment_id,
-							users_chores: users_chores
+							users: users_chores
 						});
 					}
 				//empty users_chores
@@ -70,18 +70,19 @@ var chores = function(app) {
 				
 				users_chores.push({
 					userId: rows[i].users_id,
-					name: rows[i].first_name,
+					first_name: rows[i].first_name,
+					last_name: rows[i].last_name,
 					order_index: rows[i].order_index
 				});
 			}
 				chores.push({
 					id: lastChoreId,
 					name: name,
-					createDate: createDate,
-					dueDate: dueDate,
+					createdate: createDate,
+					duedate: dueDate,
 					interval: interval,
 					completed: completed,
-					users_chores: users_chores
+					users: users_chores
 				});
 				res.json({chores: chores});
 		})
@@ -161,7 +162,8 @@ var chores = function(app) {
 			return;
 		}
 		// Call service class here that creates new chore (chore service)
-		// choreservice.create
+		// choreservice.create(params)
+		// returns a response 
 		
 		// Need to check that date is valid ie on or after date created
 		
@@ -180,12 +182,12 @@ var chores = function(app) {
 					// Build up user to chore mapping to write to the database
 					// work around do to model representation not working
 					for(var i = 0; i  < roommates.length; i++){
-					console.log('creating new userchore');
-					userChore[i] = new UserChoreModel({
-							user_id: roommates[i],
-							chore_id: choreModel.id,
-							order_index: i
-						});
+						console.log('creating new userchore');
+						userChore[i] = new UserChoreModel({
+								user_id: roommates[i],
+								chore_id: choreModel.id,
+								order_index: i
+							});
 						
 					}
 					console.log('For loop complete')
@@ -204,32 +206,29 @@ var chores = function(app) {
 							return new UserModel({id: model.get('user_id')})
 							.fetch()
 							.then(function(userM){
-								return modelToUser(userM);
+								return modelToUser(userM, model.get('order_index'));
 							});
 						});
 					}).then(function(resp){
-						console.log(resp);
-						console.log(choreModel);
 						
-						var response = {chore: choreModel.attributes, assignedUsers: resp};
+						var response = {chore: choreModel.attributes, users: resp};
 						if(resp.length !== userChore.length){
 							res.json(503,{error: 'DataBase error'});
 						}else{
-							res.send(201, response);
+							res.send(200, response);
 						}
 					})
 					
-					console.log('outside collection');
-					
-					}).otherwise(function(error){
-						res.json(503,{error: error});
+					}).otherwise(function(){
+						res.json(503,{error: 'DataBaser error'});
 				});
   });
 
- function modelToUser(userModel){
+ function modelToUser(userModel, order_index){
 	return {id: userModel.get('id'), fist_name: userModel.get('first_name'),
-			last_name: userModel.get('last_name')};
+			last_name: userModel.get('last_name'), order_index: order_index};
  }
+ 
  
   // Update the chore
   app.put('/chores/:chore', function(req, res) {
@@ -243,33 +242,51 @@ var chores = function(app) {
 	var choreId = req.params.chore;
 	var name = req.body.name;
 	var dueDate = req.body.duedate;
-	var roommates = JSON.parse(req.body.roommates);
+	var roommates = req.body.roommates;
+	
+	console.log(choreId + "   " + apartmentId);
 	
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
 	.save({name: name.trim(), duedate: dueDate},{patch: true})
-	.then(function(model) {
+	.then(function(choreModel) {
 	// Go through users_chores assocaited with chore
 		new UserChoreModel().query('where', 'chore_id', '=', choreId)
 		.destroy()
-		.then(function(choremodel){
-			for(var i = 0; i  < roommates.length; i++){
-	
-				new UserChoreModel({
-					user_id: roommates[i].id,
-					chore_id: model.id,
-					order_index: i
-				})
-				.save()
-				.then(function(choremodel){
-				})
-				.otherwise(function(){
-					res.json(503,{error: 'Database error'});
-				});
-				
-				if(i === roommates.length-1){
-					res.send(201);
-				}
-			}
+		.then(function(ucmodel){
+			/*Make this a function call*/
+			console.log(choreModel);
+			var userChore = [];
+					// Build up user to chore mapping to write to the database
+					// work around do to model representation not working
+					for(var i = 0; i  < roommates.length; i++){
+						console.log('creating new userchore');
+						userChore[i] = new UserChoreModel({
+								user_id: roommates[i],
+								chore_id: choreModel.id,
+								order_index: i
+							});
+					}
+					/*Save away our array of users to new chore
+					mapThen :Function to call for each element in the collection
+					Collects the return value of all of the function calls into a single response
+					then(function(resp)): takes the response built by the mapThen and verify 
+					that the size of the array is equal to the number of user ids giving in the request.
+					*/
+					new UserChoreCollection(userChore)
+					.mapThen(function(model){				
+					console.log('model about to be saved'); 
+						return model.save()
+						.then(function(){
+						});
+					}).then(function(resp){
+						var response = {chore: choreModel.attributes, assignedUsers: resp};
+						if(resp.length !== userChore.length){
+							res.json(503,{error: 'DataBase error'});
+						}else{
+							res.send(200, response);
+						}
+					})
+					
 		}).otherwise(function(){
 			res.json(503,{error: 'Database error'});
 		});
