@@ -3,18 +3,18 @@
 // expose our config directly to our application using module.exports
 module.exports = {
 
-	/* jslint maxlen: 130 */
+  /* jslint maxlen: 130 */
 
-	'facebookAuth' : {
-		'clientID' 		: '286368104863121', // your App ID
-		'clientSecret' 	: 'afe259278751cc567fa4a969e8c87fc5', // your App Secret
-		'callbackURL' 	: 'http://localhost:3000/auth/facebook/callback'
-	},
+  'facebookAuth' : {
+    'clientID'      : process.env.FB_ID, // your App ID
+    'clientSecret'  : process.env.FB_SECRET, // your App Secret
+    'callbackURL'   : process.env.FB_CALLBACK
+  },
 
-	'googleAuth' : {
-		'clientID' 		: '731732236492-0p1ngaeqevalm3c9fg95iht42obr4ojm.apps.googleusercontent.com',
-		'clientSecret' 	: 's0iCD_xMDfwQlqEMzvdrZNcc',
-		'callbackURL' 	: 'http://localhost:3000/auth/google/callback'
-	}
+  'googleAuth' : {
+    'clientID'      : process.env.GOOG_ID,
+    'clientSecret'  : process.env.GOOG_SECRET,
+    'callbackURL'   : process.env.GOOG_CALLBACK
+  }
 
 };

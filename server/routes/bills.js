@@ -20,6 +20,7 @@ var bills = function(app) {
     if(req.query.type === undefined || (req.query.type !== 'resolved' &&
        req.query.type !== 'unresolved')) {
       res.json(400, {error: 'Unexpected type parameter.'});
+      return;
     }
     var apartmentId = req.user.attributes.apartment_id;
 
@@ -30,7 +31,7 @@ var bills = function(app) {
       .join('users', 'payments.user_id', '=', 'users.id')
       .where('bills.apartment_id', '=', apartmentId)
       .where('bills.paid', '=', (req.query.type === 'resolved'))
-      .select('bills.amount as total', 'payments.user_id', 
+      .select('bills.amount as total', 'payments.user_id',
               'bills.paid as billPaid', 'payments.paid as userPaid',
               'bills.createdate', 'bills.duedate', 'bills.name',
               'bills.interval', 'users.first_name', 'users.id',
@@ -110,11 +111,6 @@ var bills = function(app) {
       });
   });
 
-  // Get the details of selected bill information
-  app.get('/bills/?type=', function(req, res) {
-    console.log(req.params);
-  });
-
   // Create a new bill
   app.post('/bills', function(req, res) {
 
@@ -150,7 +146,7 @@ var bills = function(app) {
 
     // Create a new bill model
     new BillModel({apartment_id: apartmentId, name: name,
-      user_id: userId, amount: total, paid: false, 
+      user_id: userId, amount: total, paid: false,
       interval: interval, duedate: duedate, createdate: createdate})
       .save()
       .then(function(model) {
@@ -166,6 +162,38 @@ var bills = function(app) {
         }
         res.json({result: 'success'});
       }).otherwise(function(error) {
+        res.json(503, {error: 'Database error.'});
+      });
+  });
+
+  // Marks that a user has paid their payment of a bill
+  app.put('/bills/:bill/payment', function(req, res) {
+    if (req.user === undefined) {
+      res.json(401, {error: 'Unauthorized user.'});
+      return;
+    }
+
+    var apartmentId = req.user.attributes.apartment_id;
+    var userId = req.user.attributes.id;
+    var billId = req.params.bill;
+    var paid = req.body.paid;
+
+    if (!isValidId(billId)) {
+      res.json(400, {error: 'Invalid bill ID.'});
+      return;
+    } else if (paid !== 'true' && paid !== 'false') {
+      res.json(400, {error: 'Invalid paid parameter.'});
+      return;
+    }
+
+    Bookshelf.DB.knex('payments')
+      .where('user_id', '=', userId)
+      .where('bill_id', '=', billId)
+      .update({paid: paid})
+      .then(function() {
+        res.send(200);
+      })
+      .otherwise(function() {
         res.json(503, {error: 'Database error.'});
       });
   });
@@ -196,7 +224,7 @@ var bills = function(app) {
     } else if (!isValidName(name)) {
       res.json(400, {error: 'Invalid bill name.'});
       return;
-    } 
+    }
 
     // Destroy all the payments which are references to the billId
     // This must be done since the roommates paying on a bill could be
@@ -207,12 +235,12 @@ var bills = function(app) {
       .then(function() {
         // Edit the bill
         new BillModel({id: billId, apartment_id: apartmentId})
-          .save({name: name, amount: total, duedate: date, 
+          .save({name: name, amount: total, duedate: date,
                 paid: paid, interval: interval})
           .then(function() {
             // Add new payments for all the users who need to pay
             for(var i = 0; i < roommates.length; i++) {
-              new PaymentModel({paid: roommates[i].paid, 
+              new PaymentModel({paid: roommates[i].paid,
                                amount: roommates[i].amount,
                                user_id: roommates[i].id, bill_id: billId})
                 .save()
@@ -234,47 +262,52 @@ var bills = function(app) {
       res.json(401, {error: 'Unauthorized user.'});
       return;
     }
- 
+
     var apartmentId = req.user.attributes.apartment_id;
     var billId = req.params.bill;
- 
+
     if(!isValidId(billId)) {
       res.json(400, {error: 'Invalid bill ID.'});
       return;
     }
- 
+
     // Destroy all the payments for a bill and then destroy
     // the bill.
     new PaymentModel()
       .query('where', 'bill_id', '=', billId)
       .destroy()
-      .then(function(payModel) { 
+      .then(function(payModel) {
         new BillModel()
-          .query('where', 'id', '=',  billId, 'AND', 
+          .query('where', 'id', '=',  billId, 'AND',
                  'apartment_id', '=', apartmentId)
           .destroy()
           .then(function(model) {
             res.json(200);
           }).otherwise(function(error) {
             res.json(503, {error: 'Delete payment error'})
-          }); 
+          });
       }).otherwise(function(error) {
         console.log(error);
         res.json(503, {error: 'Database error.'});
       });
-    
+
   });
- 
+
   // Checks if a bill ID is valid
   function isValidId(id) {
     return isInt(id) && id > 0;
   }
- 
+
+  // Checks if a paid parameter is valid
+  function isValidPaid(paid) {
+
+  }
+
   // Checks if a value is an integer
   function isInt(value) {
     return !isNaN(value) && parseInt(value) == value;
   }
- 
+
   // Checks if a bill name is valid
   function isValidName(name) {
     return name !== undefined && name !== null && name !== '';
