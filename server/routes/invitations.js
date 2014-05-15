@@ -25,7 +25,7 @@ var invitations = function(app) {
       subject: 'You have been invited to an AgreeMates apartment',
       generateTextFromHTML: true,
       html: 'You have been invited to ' + aptName + '! Click this ' +
-        '<a href="http://agreemates.com/invitations/' +
+        '<a href="' + process.env.MANDRILL_INVURL +
         id + '">link</a> to join'
     };
 
@@ -74,10 +74,6 @@ var invitations = function(app) {
       });
   });
 
-  app.get('/invitations', function(req, res) {
-    res.json({title: 'title'});
-  });
-
   // Get invitation information
   app.get('/invitations/:invite', function(req, res) {
     new InvitationModel({id: req.params.invite})
@@ -123,7 +119,9 @@ var invitations = function(app) {
           .then(function() {
             new InvitationModel({id: req.params.invite})
             .destroy()
-            .then(function() {res.send(200);})
+            .then(function() {
+              res.send(200);
+            })
             .otherwise(function() {
               res.json(503, {error: 'failed to destroy invitation'});
             });
