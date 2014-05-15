@@ -7,7 +7,7 @@ angular.module('main.bills').controller('BillsCtrl',
   function($http, $scope) {
     //add bill form
   	$scope.hideAddBox = true;
-    //?
+    //new bill being added
   	$scope.bill = {};
     //balance when adding a bill
     $scope.balance = 0;
@@ -19,7 +19,6 @@ angular.module('main.bills').controller('BillsCtrl',
     success(function(data) {
       $scope.unresolvedBills = data.bills;
       $scope.bills = $scope.unresolvedBills;
-      $scope.balance = $scope.bills.amount;
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -44,13 +43,14 @@ angular.module('main.bills').controller('BillsCtrl',
     }
 
     //get all roommates, need to get apt id!
-    $http.get('/apartment/' + 'apt' + '/users',).
-    success(function(data) {
-      $scope.roommates = data.roommates;
-    }).
-    error(function(data, status, headers, config){
-        console.log(data);
-    });    
+    // $http.get('/apartment/' + 'apt' + '/users').
+    // success(function(data) {
+    //   $scope.roommates = data.roommates;
+    // }).
+    // error(function(data, status, headers, config){
+    //     console.log(data);
+    // });    
+    $scope.roommates = [{id: 1, name: 'john'}, {id: 2, name: 'Jesse'}];
 
     //show the form when add button is clicked.
   	$scope.showAdd = function(){
@@ -60,7 +60,13 @@ angular.module('main.bills').controller('BillsCtrl',
     //add a new bill
     $scope.addBill = function() {
     	var bill = angular.copy($scope.bill);
+      //process each roommate's payment amount
       bill.roommates = [];
+      for (var i = 0; i < $scope.roommates.length; i++) {
+        if ($scope.selectedRoommates.indexOf($scope.roommates[i].id) > -1) {
+          bill.roommates.push($scope.roommates[i].id, $scope.roommates[i].amount);
+        };       
+      };
       console.log(bill);
       	$http.post('/bills/', bill).
   	      success(function(data) {
@@ -73,6 +79,17 @@ angular.module('main.bills').controller('BillsCtrl',
             console.log(data);
           });
     };
+
+    $scope.toggleSelection = function toggleSelection(roommateID) {
+      var idx = $scope.selectedRoommates.indexOf(roommateID);
+
+      //is currently selected
+      if (idx > -1) {
+        $scope.selectedRoommates.splice(idx, 1);
+      } else {
+        $scope.selectedRoommates.push(roommateID);
+      }
+    }
 
     //delete a bill
     $scope.deleteBill = function(id, index) {
