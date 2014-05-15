@@ -53,9 +53,9 @@ function ($scope, $http) {
   	
    	var chore = angular.copy($scope.chore);
 
-    chore.roommates = [{"id": 123} , {"id": 142}, {"id":1231}];
+    chore.roommates = [3,4];
     chore.interval = 7;
-    chore.duedate = 11/12/2000;
+    chore.duedate = "11/12/2000";
     chore.name = "hello";
     //chore.roomates[0].name = "name";
     console.log(chore);

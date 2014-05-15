@@ -5,7 +5,9 @@ var ChoreModel = require('../models/chore').model;
 var ChoreCollection = require('../models/chore').collection;
 var UserChoreModel = require('../models/users_chores').model;
 var UserChoreCollection = require('../models/users_chores').collection;
+var UserModel = require('../models/user').model;
 var Bookshelf = require('bookshelf'); 
+
 var chores = function(app) {
 
   //Get all chores for an apartment
@@ -38,7 +40,7 @@ var chores = function(app) {
 			var lastChoreId = -1;
 			var name, dueDate, createDate, interval, completed;
 			for(var i = 0; i < rows.length; i++){
-				//If choreid is differnet, then all users_chores for the current
+				//If choreid is differt, then all users_chores for the current
 				// chore have been pushed on users_chores. we push the chore then
 				if(rows[i].chore_id != lastChoreId){
 					if(lastChoreId !== -1){
@@ -152,12 +154,14 @@ var chores = function(app) {
 		var interval = req.body.interval;
 		
 		
-		var roommates = JSON.parse(req.body.roommates);
+		var roommates = req.body.roommates;
 		//var roommates = req.body.roommates;
 		if(!isValidName(name)){
 			res.json(400, {error: 'Invalid chore name.'});
 			return;
 		}
+		// Call service class here that creates new chore (chore service)
+		// choreservice.create
 		
 		// Need to check that date is valid ie on or after date created
 		
@@ -170,30 +174,62 @@ var chores = function(app) {
 					interval: interval,
 					})
 					.save()
-					.then(function(model){
+					.then(function(choreModel){
+					console.log('starting for loop');
+					var userChore = [];
+					// Build up user to chore mapping to write to the database
+					// work around do to model representation not working
 					for(var i = 0; i  < roommates.length; i++){
-						new UserChoreModel({
-							user_id: roommates[i].id,
-							chore_id: model.id,
+					console.log('creating new userchore');
+					userChore[i] = new UserChoreModel({
+							user_id: roommates[i],
+							chore_id: choreModel.id,
 							order_index: i
-						})
-						.save()
-						.then(function(choremodel){
-						})
-						.otherwise(function(){
-							res.json(503, {error:'Database error'});
 						});
 						
-						if(i === roommates.length-1){
-							res.send(201);
-						}
 					}
+					console.log('For loop complete')
+					/*Save away our array of users to new chore
+					mapThen :Function to call for each element in the collection
+					Collects the return value of all of the function calls into a single response
+					then(function(resp)): takes the response built by the mapThen and verify 
+					that the size of the array is equal to the number of user ids giving in the request.
+					*/
+					new UserChoreCollection(userChore)
+					.mapThen(function(model){				
+					console.log('model about to be saved'); 
+						return model.save()
+						.then(function(){
+							console.log(model);
+							return new UserModel({id: model.get('user_id')})
+							.fetch()
+							.then(function(userM){
+								return modelToUser(userM);
+							});
+						});
+					}).then(function(resp){
+						console.log(resp);
+						console.log(choreModel);
+						
+						var response = {chore: choreModel.attributes, assignedUsers: resp};
+						if(resp.length !== userChore.length){
+							res.json(503,{error: 'DataBase error'});
+						}else{
+							res.send(201, response);
+						}
+					})
 					
-					}).otherwise(function(){
-					res.json(503,{error: 'DataBase error'});
+					console.log('outside collection');
+					
+					}).otherwise(function(error){
+						res.json(503,{error: error});
 				});
   });
 
+ function modelToUser(userModel){
+	return {id: userModel.get('id'), fist_name: userModel.get('first_name'),
+			last_name: userModel.get('last_name')};
+ }
  
   // Update the chore
   app.put('/chores/:chore', function(req, res) {

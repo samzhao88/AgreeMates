@@ -2,11 +2,11 @@
  * This is the model representation for a single assignee.
  * attributes:
  *   id           int, 
- *   completed         boolean, true if the chore has been completed
+ *   order_index   int,
  *   user_id      int, 
  *   chore_id      int,  
  * invariant:
- * 		No attributes can be null, user_id and apartment_id reference an 
+ * 		No attributes can be null, user_id
  * 		id in users and apartment respectively.
  */
 
