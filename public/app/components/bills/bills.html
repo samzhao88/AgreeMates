@@ -39,7 +39,7 @@
 	    <label class="col-sm-2 control-label">Responsible</label>
 	    <div class="col-sm-2">
 			<ul class="list-unstyled" ng-repeat="roommate in roommates">
-			  <li><input type="checkbox">{{roommate.name}}<input type="text" ng-model="bill.roommates[$index].amount"></li>
+			  <li><input type="checkbox" value={{roommate.id}}>{{roommate.name}}<input type="text" ng-model="bill.roommates[$index].amount"></li>
 			</ul>	    	
 	    </div>
 	  </div>
@@ -78,9 +78,14 @@
 			<td>{{bill.name}}</td>	
 			<td>{{bill.amount}}</td>
 			<td>owned</td>		
-			<td>payto</td>
-			<td>{{bill.date}}</td>
+			<td>{{bill.payTo}}</td>
+			<td>{{bill.dueDate}}</td>
 			<td><input type="checkbox"></td>
+			<td width="100">
+				<div class="">
+			    	<span class="glyphicon glyphicon-edit" ng-click="deleteBill(bill.id, $index)"></span>
+				</div>
+			</td>
 			<td width="100">
 				<div class="delete">
 			    	<span class="glyphicon glyphicon-remove" ng-click="deleteBill(bill.id, $index)"></span>
