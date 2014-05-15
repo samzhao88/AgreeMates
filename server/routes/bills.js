@@ -110,7 +110,7 @@ var bills = function(app) {
         res.json(503, {error: 'Database error.'});
       });
   });
-  
+
   // Create a new bill
   app.post('/bills', function(req, res) {
 
@@ -162,6 +162,38 @@ var bills = function(app) {
         }
         res.json({result: 'success'});
       }).otherwise(function(error) {
+        res.json(503, {error: 'Database error.'});
+      });
+  });
+
+  // Marks that a user has paid their payment of a bill
+  app.put('/bills/:bill/payment', function(req, res) {
+    if (req.user === undefined) {
+      res.json(401, {error: 'Unauthorized user.'});
+      return;
+    }
+
+    var apartmentId = req.user.attributes.apartment_id;
+    var userId = req.user.attributes.id;
+    var billId = req.params.bill;
+    var paid = req.body.paid;
+
+    if (!isValidId(billId)) {
+      res.json(400, {error: 'Invalid bill ID.'});
+      return;
+    } else if (paid !== 'true' && paid !== 'false') {
+      res.json(400, {error: 'Invalid paid parameter.'});
+      return;
+    }
+
+    Bookshelf.DB.knex('payments')
+      .where('user_id', '=', userId)
+      .where('bill_id', '=', billId)
+      .update({paid: paid})
+      .then(function() {
+        res.send(200);
+      })
+      .otherwise(function() {
         res.json(503, {error: 'Database error.'});
       });
   });
@@ -264,6 +296,11 @@ var bills = function(app) {
   // Checks if a bill ID is valid
   function isValidId(id) {
     return isInt(id) && id > 0;
+  }
+
+  // Checks if a paid parameter is valid
+  function isValidPaid(paid) {
+
   }
 
   // Checks if a value is an integer
