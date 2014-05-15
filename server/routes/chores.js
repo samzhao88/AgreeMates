@@ -190,7 +190,7 @@ var chores = function(app) {
     var choreId = req.params.chore;
     var name = req.body.name;
     var dueDate = req.body.duedate;
-    var roommates = JSON.parse(req.body.roommates);
+    var roommates = req.body.roommates;
 
     new ChoreModel({apartment_id: apartmentId, id: choreId})
     .save({name: name.trim(), duedate: dueDate},{patch: true})
@@ -210,6 +210,7 @@ var chores = function(app) {
                 .then(function(choremodel){
                 })
                 .otherwise(function(){
+                    console.log("a");
                     res.json(503,{error: 'Database error'});
                 });
 
@@ -218,10 +219,12 @@ var chores = function(app) {
                 }
             }
         }).otherwise(function(){
+            console.log("b");
             res.json(503,{error: 'Database error'});
         });
     })
     .otherwise(function(){
+        console.log("c");
         res.json(400, {error: 'Database error'});
     });
   });

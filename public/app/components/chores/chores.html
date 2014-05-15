@@ -4,12 +4,12 @@
 
     Chores <!--<a class="test" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-default" ng-click="cancel()"> Add </a>-->
 	</h1>
-
+<hr>
+<div ng-controller="ChoresCtrl">
 <div class ="supplyAddButton">
-	<button type="button" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-success" ng-click="cancel()"> Add Chores </button>
+	<button type="button" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-success" ng-click="cancel(); chore.interval = 0"> Add Chores </button>
 </div>
 
-<div ng-controller="ChoresCtrl">
 
 	<!-- (bootstrap modal) pop-up UI for adding chores --> 
 	<div class="modal fade" id="chores_add_modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -31,7 +31,7 @@
             	<div class="modal-body">
 
               <!--<h4 class="modal-title" id="myModalLabel">Add Chores</h4>-->
-            <!-- get chore name from user -->
+            <!--Add Chores Modal -->
             	<div class="row">
                   <div class="col-md-4">
               			<input type="text" ng-model="chore.name" class="form-control" placeholder="Chore Name">
@@ -127,7 +127,7 @@
             	</div>
             		<div class="modal-footer">
                 	<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-                	<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="editChore($index)">Edit</button>
+                	<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="editChore()">Edit</button>
 
         			</div>
          	 	</div>
@@ -161,7 +161,7 @@
  				<span class="responsible">{{chore.users}}</span>
  			</td>
  			<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
- 				<span class="recurring"> {{weekly[$index]}} </span>
+ 				<span class="recurring"> {{chore.interval}} </span>
  			</td >
  			<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  				<span class="due date"> {{chore.duedate}}</span>
