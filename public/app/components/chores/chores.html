@@ -1,8 +1,13 @@
 <!-- view for chores -->
 <div class="col-lg-12">
 	<h1> 
-    Chores <a class="test" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-default" ng-click="cancel()"> Add </a>
+
+    Chores <!--<a class="test" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-default" ng-click="cancel()"> Add </a>-->
 	</h1>
+
+<div class ="supplyAddButton">
+	<button type="button" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-success" ng-click="cancel()"> Add Chores </button>
+</div>
 
 <div ng-controller="ChoresCtrl">
 
@@ -35,8 +40,8 @@
 
                 <div class="col-md-4">
         			<form action="">
-						<input type="radio" name="interval" value="0" ng-model = "chore.interval" ng-true-value="0"> One-Time<br>
-						<input type="radio" name="interval" value="7" ng-model = "chore.interval" ng-true-value="7"> Weekly <br><br>
+						<input type="radio" name="interval" value="0" ng-model = "chore.interval" > One-Time<br>
+						<input type="radio" name="interval" value="7" ng-model = "chore.interval" > Weekly <br><br>
 
 					</form>
 				</div>
@@ -45,7 +50,7 @@
 				<!-- get all users in apartment -->
                 <div class="col-md-4" data-ng-repeat="user in users">
                     <label>
-						<input type="checkbox" ng-model="user.isChecked" />  <span>{{ user.name }} </span>
+						<input type="checkbox" ng-model="user.isChecked"/>  <span>{{ user.name }} </span>
                     </label>
                       
                   </div>
@@ -98,7 +103,7 @@
 
                 <div class="col-md-4">
         			<form action="">
-						<input type="radio" name="interval" value="1" ng-model = "chore.interval" > One-Time<br>
+						<input type="radio" name="interval" value="0" ng-model = "chore.interval" > One-Time<br>
 						<input type="radio" name="interval" value="7" ng-model = "chore.interval" > Weekly <br><br>
 
 					</form>
@@ -137,24 +142,18 @@
 
 
 <!-- view for chores list from apartment -->
-<table class="table table-striped">
-    	<th>
-    		<span class ="name"> Chore Name </span>
-    	</th>
-    	<th>
-    		<span class ="responsible"> Responsible </span>
-    	</th>
-    	<th>
-    		<span class ="recurring"> Frequency </span>
-    	</th>
-    	<th>
-    		<span class ="due date"> Due Date </span>
-    	</th>
-</table>
 
 <table class="table table-striped table-hover supplies">
     <tbody>
-    	<tr ng-repeat ="chore in chores" >
+    	<tr>
+ 			<th class="tableHeader" width="150">Name</th>
+ 			<th class="tableHeader">Responsible</th>
+ 			<th class="tableHeader">Frequency</th>
+ 			<th class="tableHeader">Due Date </th>
+ 		</tr>
+
+
+    	<tr data-ng-repeat ="chore in chores" >
     		<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  				<span class="name">{{chore.name}}</span> 
  			</td>
@@ -162,7 +161,7 @@
  				<span class="responsible">{{chore.users}}</span>
  			</td>
  			<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
- 				<span class="recurring"> {{chore.interval}} </span>
+ 				<span class="recurring"> {{weekly[$index]}} </span>
  			</td >
  			<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  				<span class="due date"> {{chore.duedate}}</span>
@@ -173,9 +172,6 @@
 			</div>
 			</td>
     	</tr>
-
-				
-			
 	</tbody>  
 </table>
 
