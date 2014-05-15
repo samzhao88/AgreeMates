@@ -47,6 +47,26 @@ var apartment = function(app) {
 			});
 	});
 
+	// Gets all users in the apartment
+	app.get('/apartment/users', function(req, res) {
+		if (req.user === undefined) {
+			res.json(401, {error: 'Unauthorized user.'});
+			return;
+		}
+
+		var apartmentId = req.user.attributes.apartment_id;
+
+		Bookshelf.DB.knex('users')
+			.select('id', 'first_name', 'last_name', 'email', 'phone')
+			.where('apartment_id', '=', apartmentId)
+			.then(function(users) {
+				res.json({users: users});
+			})
+			.otherwise(function(error) {
+				res.json(503, {error: 'Database error.'});
+			});
+	});
+
 	// Gets an apartment's information
 	app.get('/apartment/:apt', function(req, res) {
 		if (req.user === undefined) {
@@ -72,36 +92,6 @@ var apartment = function(app) {
 				res.json(rows[0]);
 			})
 			.otherwise(function() {
-				res.json(503, {error: 'Database error.'});
-			});
-	});
-
-	// Gets all users in an apartment
-	app.get('/apartment/:apt/users', function(req, res) {
-		if (req.user === undefined) {
-			res.json(401, {error: 'Unauthorized user.'});
-			return;
-		}
-
-		var apartmentId = req.user.attributes.apartment_id;
-
-		if (!isValidId(req.params.apt)) {
-			res.json(400, {error: 'Invalid apartment ID.'});
-			return;
-		}
-
-		if (apartmentId !== parseInt(req.params.apt)) {
-			res.json(401, {error: 'User unauthorized to view this apartment.'});
-			return;
-		}
-
-		Bookshelf.DB.knex('users')
-			.select('id', 'first_name', 'last_name', 'email', 'phone')
-			.where('apartment_id', '=', apartmentId)
-			.then(function(users) {
-				res.json({users: users});
-			})
-			.otherwise(function(error) {
 				res.json(503, {error: 'Database error.'});
 			});
 	});
