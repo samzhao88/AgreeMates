@@ -5,13 +5,17 @@ angular.module('main.bills', []);
 // Angular controller for bills
 angular.module('main.bills').controller('BillsCtrl',
   function($http, $scope) {
+    //add bill form
   	$scope.hideAddBox = true;
+    //?
   	$scope.bill = {};
+    //balance when adding a bill
     $scope.balance = 0;
+    //selected roommates and their amount when adding a bill
     $scope.selectedRoommates = [];
 
   	//get all unresolved bills
-    $http.get('/bills').
+    $http.get('/bills', {params: {type: 'unresolved'}}).
     success(function(data) {
       $scope.unresolvedBills = data.bills;
       $scope.bills = $scope.unresolvedBills;
@@ -21,14 +25,14 @@ angular.module('main.bills').controller('BillsCtrl',
         console.log(data);
     });;
 
-    //get all unresolved bills
-    // $http.get('/bills?type=resolved').
-    // success(function(data) {
-    //   $scope.resolvedBills = [{'name': 'water', 'total': 120, 'owned': 20, 'payto': 'John', 'date': '1/1', 'paid': 'yes'}]; //test data
-    // }).
-    // error(function(data, status, headers, config){
-    //     console.log(data);
-    // });
+    //get all resolved bills
+    $http.get('/bills', {params: {type: 'resolved'}}).
+    success(function(data) {
+      $scope.resolvedBills = data.bills;
+    }).
+    error(function(data, status, headers, config){
+        console.log(data);
+    });
 
     //select unresolved bills or resolved bills
     $scope.setTable = function(table) {
@@ -39,10 +43,10 @@ angular.module('main.bills').controller('BillsCtrl',
     	}   	
     }
 
-    //get all roommates, need to update
-    $http.get('/bills?type=template').
+    //get all roommates, need to get apt id!
+    $http.get('/apartment/' + 'apt' + '/users',).
     success(function(data) {
-      $scope.roommates = [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jessica'}]; //test data
+      $scope.roommates = data.roommates;
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -83,7 +87,7 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //update a bill, not done yet.
     $scope.updateBill = function(id, index) {
-      	$http.put('/bills/', bill).
+      	$http.put('/bills/'+id).
   	      success(function(data) {
   	        
   	      }).
@@ -98,7 +102,7 @@ angular.module('main.bills').controller('BillsCtrl',
     }
 
     $scope.reset = function() {
-		$scope.hideAddBox = true;
+		  $scope.hideAddBox = true;
     };
 
 });
