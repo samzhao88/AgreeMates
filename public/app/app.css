@@ -150,7 +150,7 @@ html, body {
 }
 
 .supplies .supplybuttons {
-  float: right;
+  
 }
 
 .supplies .name {
@@ -161,28 +161,60 @@ html, body {
   margin-left: 6px;
 }
 
-.table  tbody tr th {
+.table  tbody tr td {
   height: 51px;
   vertical-align: middle;
 }
 
 .supplies .delete {
   float: right;
-  margin-left: 10px;
+}
+
+.supplies .deleteCol {
+  width: 10px;
+}
+
+.supplies .statusCol {
+  width: 190px;
 }
 
 .supplyAddButton {
   float: right;
-  margin-bottom: 5px;
-  margin-right: 9px;
+  margin-bottom: 15px;
 }
 
 .newSupply {
-  margin-left: 20px;
   float: left;
 }
 
 .supplyAdd {
   float: left;
   margin-left: 10px;
+}
+
+.supplyAddForm {
+  margin: 0;
+  padding: 0;
+}
+
+.messages {
+  clear: both;
+}
+
+.alert {
+  margin-top: 15px;
+  margin-bottom: 0px;
+}
+
+.tableHeader {
+  border-top: none !important;
+  background: white !important;
+}
+
+.messages .message .comments .comment {
+  background: #f6f7f8 !important;
+}
+
+.messages .list-group-item {
+  border-radius: 0;
 }

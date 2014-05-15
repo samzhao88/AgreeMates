@@ -27,6 +27,8 @@ bower_components
 node_modules
 build
 
+.env
+
 # Vagrant Stuff
 .vagrant
 installation/tmp
