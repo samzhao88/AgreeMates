@@ -35,7 +35,7 @@ var bills = function(app) {
               'bills.paid as billPaid', 'payments.paid as userPaid',
               'bills.createdate', 'bills.duedate', 'bills.name',
               'bills.interval', 'users.first_name', 'users.id',
-              'payments.bill_id', 'payments.amount')
+              'payments.bill_id', 'payments.amount', 'bills.user_id as creatorId')
       .orderBy('payments.bill_id')
       .then(function(rows) {
         var bills = [];
@@ -75,13 +75,13 @@ var bills = function(app) {
             name = rows[i].name;
             amount = rows[i].total;
             createDate = rows[i].createdate;
-            if(rows[i].id === rows[i].user_id) {
+            if(rows[i].creatorId === rows[i].user_id) {
               payTo = rows[i].first_name;
             }
             dueDate = rows[i].duedate;
             resolved = rows[i].billPaid;
             frequency = rows[i].interval;
-            creatorId = rows[i].id;
+            creatorId = rows[i].creatorId;
           }
           payments.push({
             userId: rows[i].user_id,
