@@ -69,7 +69,7 @@ var chores = function(app) {
 				}
 				
 				users_chores.push({
-					userId: rows[i].users_id,
+					user_id: rows[i].users_id,
 					first_name: rows[i].first_name,
 					last_name: rows[i].last_name,
 					order_index: rows[i].order_index
@@ -215,7 +215,7 @@ var chores = function(app) {
   });
 
  function modelToUser(userModel, order_index){
-	return {id: userModel.get('id'), fist_name: userModel.get('first_name'),
+	return {user_id: userModel.get('id'), first_name: userModel.get('first_name'),
 			last_name: userModel.get('last_name'), order_index: order_index};
  }
  
@@ -269,7 +269,7 @@ var chores = function(app) {
 						if(resp.length !== userChore.length){
 							res.json(503,{error: 'DataBase error'});
 						}else{
-							res.send(200, response);
+							res.send(200);
 						}
 					})
 					
