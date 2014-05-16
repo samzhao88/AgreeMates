@@ -168,10 +168,10 @@
         </div>
  			</td>
  			<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
- 				<span class="recurring"> {{chore.interval}} </span>
+ 				<span class="recurring"> {{convertfrequency(chore.interval)}} </span>
  			</td >
  			<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
- 				<span class="due date"> {{chore.duedate}}</span>
+ 				<span class="due date"> {{convertdate(chore.duedate)}}</span>
  			</td>
  			<td width = "100">
  			<div class="delete">

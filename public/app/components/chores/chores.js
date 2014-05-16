@@ -21,23 +21,8 @@ function ($scope, $http, $timeout) {
     $http.get('/chores').
     	success(function(data) {
             console.log(data);
-            var tempchores = data.chores;
 
-            for( var i = 0; i < tempchores.length; i++ )
-            {
-                var x = tempchores[i].duedate.split("T");
-                tempchores[i].duedate = x[0];
-                if (tempchores[i].interval == 0)
-                {
-                    tempchores[i].interval = "One-Time";
-                }
-                else
-                {
-                    tempchores[i].interval = "Weekly";
-                }
-
-            }
-        	$scope.chores = tempchores;
+        	$scope.chores = data.chores;
             
       	}).
       	error(function(data, status, headers, config){
@@ -115,16 +100,7 @@ function ($scope, $http, $timeout) {
 
       	$http.post('/chores', chore)
         .success(function(data) {
-            console.log("hi");
 
-            if (data.chore.interval == 0)
-                {
-                    data.chore.interval = "One-Time";
-                }
-            else
-                {
-                    data.chore.interval = "Weekly";
-                }
 
             chore = data.chore;
             chore.users = [];
@@ -204,15 +180,6 @@ function ($scope, $http, $timeout) {
             console.log("OMFG");
             console.log(data);
 
-            if ($scope.chore.interval == 0)
-                {
-                    $scope.chore.interval = "One-Time";
-                }
-                else
-                {
-                    $scope.chore.interval = "Weekly";
-                }
-                //console.log($scope.chore.users);
                 $scope.chores[$scope.gindex] = $scope.chore;
                 //console.log($scope.chores[$scope.gindex]);
             }).
@@ -278,18 +245,6 @@ function ($scope, $http, $timeout) {
         temp2.map(function(user){user.isChecked = true;});
     }
 
-
-    if(chore.interval == "One-Time")
-    {
-        chore.interval = 0;
-    }
-    else
-    {
-        chore.interval = 7;
-    }
-    console.log("hi");
-    console.log(chore);
-
     chore.users.map(function(user){user.isChecked = false});
 
     $scope.chore = chore;
@@ -305,5 +260,23 @@ function ($scope, $http, $timeout) {
         $scope.success = true;
         $timeout(function(){$scope.success=false;},alertLength);
     }
+
+    $scope.convertdate = function(date){
+        var x = date.split("T");
+        return x[0];
+    };
+
+    $scope.convertfrequency = function(freq){
+        if (freq == 0)
+        {
+            return "One-Time";
+        }
+        else
+        {
+            return "Weekly";
+        }
+
+
+    };
 
 });
