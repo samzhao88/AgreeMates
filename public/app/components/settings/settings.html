@@ -1,8 +1,85 @@
 <!-- view for settings -->
 <div class="col-lg-12">
-  <h1>{{title}}</h1>
+
+  <div class="clearfix">
+    <h1 class="pull-left">Settings</h1>
+    <div class="pull-right alert alert-success" ng-show="success">{{successmsg}}</div>
+    <div class="pull-right alert alert-danger" ng-show="error">{{errormsg}}</div>
+  </div>
+
   <hr>
-  <p>
-    Some settings go here...
-  </p>
+
+  <button type="button" data-toggle="modal" ng-click="populateInfo()" data-target="#change-info-modal" class="btn btn-primary pull-right">Edit Info</button>
+  <h2>My Apartment</h2><br>
+
+  <p><strong>Name</strong>: {{apartment.name}}</p>
+  <p><strong>Address</strong>: {{apartment.address}}</p>
+
+  <button type="button" data-toggle="modal" data-target="#invite-modal" class="btn btn-primary pull-right">Invite Roommates</button>
+  <h2>Roommates</h2><br>
+
+  <div class="row">
+    <div class="col-sm-4 roommate-info" ng-repeat="roommate in roommates">
+      <strong>{{roommate.first_name}} {{roommate.last_name}}</strong><br>
+      <em>Email</em>: {{roommate.email}}<br>
+      <em>Phone</em>: {{roommate.phone}}
+    </div>
+  </div>
+
+  <div class="modal fade" id="invite-modal" tabindex="-1" role="dialog" aria-labelledby="inviteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="inviteModalLabel">Invite Roommates</h4>
+        </div>
+        <form role="form" class="form-horizontal">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="inputEmail" class="control-label col-sm-2">Email</label>
+              <div class="col-sm-10">
+                <input type="email" class="form-control" id="inputEmail" ng-model="email" placeholder="first@last.com">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button ng-click="sendInvite()" type="submit" data-dismiss="modal" class="btn btn-primary">Invite</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<div class="modal fade" id="change-info-modal" tabindex="-1" role="dialog" aria-labelledby="changeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="changeModalLabel">Edit Apartment Info</h4>
+      </div>
+      <form role="form" class="form-horizontal">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="inputName" class="control-label col-sm-2">Name</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputName" ng-model="name">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputAddress" class="control-label col-sm-2">Address</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputAddress" ng-model="address">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button ng-click="editApartment()" type="submit" data-dismiss="modal" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 </div>
