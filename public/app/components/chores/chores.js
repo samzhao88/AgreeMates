@@ -29,8 +29,6 @@ function ($scope, $http, $timeout) {
 
     });
 
-
-
   	//global variable to hold users in apartment
   	$scope.users = [];
 
@@ -40,7 +38,6 @@ function ($scope, $http, $timeout) {
         console.log(data);
       	$scope.users = data.users;
 
-      	// console.log($scope.users[0].name);
     }).error(function(data, status, headers, config){
         $scope.users = [ {name: "alice", id: 12} , {name: "bob", id: 13} 
         , {name: "cameron", id: 14}];
@@ -77,12 +74,15 @@ function ($scope, $http, $timeout) {
     //check for date
     if(!chore.duedate)
     {
+        showErr("You do not have a valid date");
     }
     else
     {
+
     if(at_least_one_user == 0)
     {
         //some error here
+        showErr("You do not have at least one user");
     }
     else
     {
@@ -123,9 +123,9 @@ function ($scope, $http, $timeout) {
           console.log(status, headers, config);
       	});
         }
+    }
         //resets the add chore modal to defaults
-      	$scope.cancel;
-    }  
+      	$scope.cancel;  
 
     };
 
@@ -137,11 +137,42 @@ function ($scope, $http, $timeout) {
         
         $scope.chore.roommates = [];
 
-        //console.log("hello");
-        //console.log($scope.users);
-        //console.log($scope.chore.users);
         var temp = [];
         
+        var at_least_one_user = 0;
+
+                //checks to see that at lesat one user is checked
+        for(var x = 0; x < $scope.users.length; x++)
+        {
+            console.log($scope.users[x].isChecked);
+            if($scope.users[x].isChecked)
+            {
+
+                at_least_one_user = at_least_one_user + 1;
+            }
+        }
+
+        //check for date
+        if(!$scope.chore.duedate)
+        {
+            showErr("You do not have a valid date");
+        }
+        else
+        {
+            if(at_least_one_user == 0)
+            {
+                //some error here
+                showErr("You do not have at least one user");
+            }
+            else
+            {
+
+
+
+
+
+
+
             //populate roommates field and remove unchecked users from view
             for( var i = 0; i < $scope.users.length; i++ )
             {
@@ -165,30 +196,31 @@ function ($scope, $http, $timeout) {
                 console.log($scope.users[i].isChecked);
                 if($scope.users[i].isChecked)
                     {
-                        temp.push(angular.copy($scope.users[i]));
+                        temp.push($scope.users[i]);
                     }
             }
+            console.log(temp);
 
-            //console.log($scope.chore.users);
             $scope.chore.users = temp;
-            //console.log($scope.chore.roommates);
+            console.log("hello");
+            console.log($scope.chore);
 
-            //console.log("hello");
-            //console.log($scope.chore);
             $http.put('/chores/'+$scope.chore.id, $scope.chore).
             success(function(data) {
-            console.log("OMFG");
-            console.log(data);
+            //console.log("OMFG");
+            //console.log(data);
 
                 $scope.chores[$scope.gindex] = $scope.chore;
+                //console.log($scope.chore.users);
                 //console.log($scope.chores[$scope.gindex]);
             }).
             error(function(data, status, headers, config){
-            console.log(data);
-            console.log($scope.chore);
+                console.log(data);
+                //console.log($scope.chore);
             });
-
-            $scope.cancel;
+        }
+    }
+        $scope.cancel;
     };
 
     //deletes chore from the database then deletes chore from view
@@ -222,8 +254,6 @@ function ($scope, $http, $timeout) {
     $scope.setChore = function(index){
     $scope.gindex = index;
     var chore = angular.copy($scope.chores[index]);
-    //console.log(chore);
-    //console.log($scope.users);
     chore.duedate = $scope.convertdate(chore.duedate);
 
     //set everything to false
@@ -231,26 +261,32 @@ function ($scope, $http, $timeout) {
     {
         $scope.users[i].isChecked = false;
     }
-
+    console.log($scope.users);
     var temp2 = {};
     
+    //searches the list of users for users that are in the chore and sets those checkboxes to true
+
+
+    //finds all users that are in the chore.users field and checkes them in $scope.users
     for( var i = 0; i < chore.users.length; i++ )
     {
         temp2 = $scope.users.filter(function(user){
-            console.log(user.id);
-            console.log(chore.users);
-            console.log(chore.users[i].user_id);
+
             return user.id == chore.users[i].user_id;
         });
+        //console.log(temp2);
         temp2.map(function(user){user.isChecked = true;});
+        //console.log(temp2);
+        //console.log($scope.users[i]);
     }
-
-    chore.users.map(function(user){user.isChecked = false});
+    console.log($scope.users);
+    console.log("hello");
+    //chore.users.map(function(user){user.isChecked = false});
 
     $scope.chore = chore;
     
-    console.log($scope.chore);
     //console.log($scope.chore);
+
     };
 
     function showSucc(msg){
@@ -259,6 +295,30 @@ function ($scope, $http, $timeout) {
         $scope.successmsg = msg;
         $scope.success = true;
         $timeout(function(){$scope.success=false;},alertLength);
+    }
+
+    //show and hide an error msg
+    function showErr(msg){
+        //console.log(data);
+        $scope.errormsg = msg;
+        $scope.error = true;
+        $timeout(function(){$scope.error=false;},alertLength);
+    }
+
+    function at_least_one_user()
+    {
+        for( var i = 0; i < $scope.users.length; i++ )
+        {
+
+            if($scope.users[i].isChecked)
+            { 
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
     $scope.convertdate = function(date){
