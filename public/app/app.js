@@ -78,7 +78,6 @@ app.config(function($routeProvider) {
     controller: 'ProfileCtrl'
   }).
     when('/invitations/:invite', {
-    templateUrl: 'components/invitations/invitations.html',
     module: 'main.invitations',
     controller: 'InviteCtrl'
   }).
