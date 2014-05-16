@@ -131,6 +131,8 @@ var bills = function(app) {
       '/' + date.getFullYear();
     var roommates = req.body.roommates;
 
+    // If there is no payment for the creator, we add one
+    // with a balance of 0
     var creatorpayment = false;
     for(var i = 0; i < roommates.length; i++) {
       if(roommates[i].id === userId) {
