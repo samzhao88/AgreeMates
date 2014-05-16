@@ -1,11 +1,12 @@
 'use strict';
 
-angular.module('main.chores', []);
+angular.module('main.chores', ['ui.bootstrap']);
 
 // Angular controller for chores
 angular.module('main.chores').controller('ChoresCtrl',
 
-function ($scope, $http) {
+function ($scope, $http, $timeout) {
+    var alertLength = 4000;
   	//holds all chores for apartment
     //$scope.chores = [];
     //global variable for the current index of edit
@@ -48,12 +49,11 @@ function ($scope, $http) {
   	//global variable to hold users in apartment
   	$scope.users = [];
 
-	$http.get('/user/:user').
+	$http.get('/apartment/:apt/users').
       	success(function(data) { 
-
-
       	//get users in apartment
       	$scope.users = data;
+        console.log(data);
 
       	//dummy users
       	$scope.users = [ {name: "alice", id: 12} , {name: "bob", id: 13} 
@@ -65,7 +65,11 @@ function ($scope, $http) {
         }
 
       	// console.log($scope.users[0].name);
-    });	
+    }).error(function(data, status, headers, config){
+        $scope.users = [ {name: "alice", id: 12} , {name: "bob", id: 13} 
+        , {name: "cameron", id: 14}];
+    }
+    );	
 
 
 
@@ -80,6 +84,7 @@ function ($scope, $http) {
     var any = {name: '', id: 0};
     var at_least_one_user = 0;
 
+    //checks to see that at lesat one user is checked
     for(var x = 0; x < $scope.users.length; x++)
     {
         if($scope.users[x].isChecked)
@@ -90,12 +95,12 @@ function ($scope, $http) {
 
     if(at_least_one_user == 0)
     {
-
+        //some error here
     }
     else
     {
         for( var i = 0; i < $scope.users.length; i++ )
-            {
+        {
             console.log($scope.users[i].isChecked);
             if($scope.users[i].isChecked)
             { 
@@ -106,34 +111,48 @@ function ($scope, $http) {
             any.id = $scope.users[i].id;
             chore.roommates.push(any);
             }
-            }
+        }
          //chore.roomates[0].name = "name";
         console.log(chore);
 
       	$http.post('/chores', chore)
         .success(function(data) {
             console.log("hi");
-           // console.log(data);
+            //console.log(data);
             //var mockdata = {};
             //mockdata.name = "hello";
             //mockdata.users = ["hello", "hello"];
             //mockdata.duedate = "5-21-2014";
             //mockdata.interval = 0;
             console.log(chore.interval);
+
+            //convert interval to One-Time or Weekly
+            if (chore.interval == 0)
+                {
+                    chore.interval = "One-Time";
+                }
+            else
+                {
+                    chore.interval = "Weekly";
+                }
+
+            //updates view
             $scope.chores.push(chore);
-            //$scope.chores.push(mockdata);
-            //console.log(data);
+        
+            showSucc("Chore "+chore.name+" successfully added!");
+
+
         })
         .error(function(data, status, headers, config) {
           console.log(status, headers, config);
       	});
-
+        //resets the add chore modal to defaults
       	$scope.cancel;
     }  
 
     };
 
-    //edit chore
+    //edits chore in db then updates the view
     $scope.editChore = function(index) {
     	//console.log($scope.chore);
     	//console.log($scope.chore.users);
@@ -174,7 +193,7 @@ function ($scope, $http) {
     	$scope.cancel;
     };
 
-    //deletes chore
+    //deletes chore from the database then deletes chore from view
     $scope.deleteChore = function(id, index)
     {
     	//$scope.chores.splice(index, 1);
@@ -187,8 +206,8 @@ function ($scope, $http) {
         });
     }
 
+    //resets the add chore modal to defaults
     $scope.cancel = function() {
-    	//console.log($scope.chore.name);
     	$scope.chore.name = '';
         $scope.chore.duedate = null;
     	console.log("reset");
@@ -215,5 +234,13 @@ function ($scope, $http) {
     
     console.log($scope.chore);
     };
+
+    function showSucc(msg){
+        console.log($timeout);
+        console.log(msg);
+        $scope.successmsg = msg;
+        $scope.success = true;
+        $timeout(function(){$scope.success=false;},alertLength);
+    }
 
 });

@@ -296,7 +296,6 @@ var chores = function(app) {
         res.json(503, {error: error});
       });
     });
-
   
 				
 };

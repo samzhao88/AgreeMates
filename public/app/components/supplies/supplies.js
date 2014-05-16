@@ -18,6 +18,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
   	//get apll supplies
     $http.get('/supplies/').
       success(function(data) {
+        console.log("hi");
         $scope.supplies = data.supplies;
       }).
       error(function(data, status, headers, config){
