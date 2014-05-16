@@ -68,23 +68,13 @@ var apartment = function(app) {
 	});
 
 	// Gets an apartment's information
-	app.get('/apartment/:apt', function(req, res) {
+	app.get('/apartment', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
 		}
 
 		var apartmentId = req.user.attributes.apartment_id;
-
-		if (!isValidId(req.params.apt)) {
-			res.json(400, {error: 'Invalid apartment ID.'});
-			return;
-		}
-
-		if (apartmentId !== parseInt(req.params.apt)) {
-			res.json(401, {error: 'User unauthorized to view this apartment.'});
-			return;
-		}
 
 		Bookshelf.DB.knex('apartments')
 			.where('apartments.id', '=', apartmentId)
@@ -97,7 +87,7 @@ var apartment = function(app) {
 	});
 
 	// Edits an apartment's information
-	app.put('/apartment/:apt', function(req, res) {
+	app.put('/apartment', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
@@ -135,7 +125,7 @@ var apartment = function(app) {
 
 	  // Removes apartment from the database
 	  // Needs to delete all the other models not just break ties
-	app.delete('/apartment/:apt', function(req, res) {
+	app.delete('/apartment', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;

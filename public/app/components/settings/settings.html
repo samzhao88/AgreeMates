@@ -1,8 +1,43 @@
 <!-- view for settings -->
 <div class="col-lg-12">
-  <h1>{{title}}</h1>
+
+  <h1>Settings</h1>
   <hr>
-  <p>
-    Some settings go here...
-  </p>
+
+  <button type="button" ng-click="showAdd()" class="btn btn-info pull-right">Edit Info</button>
+  <h2>My Apartment</h2>
+  <br>
+
+  <p><strong>Name</strong>: {{apartment.name}}</p>
+  <p><strong>Address</strong>: {{apartment.address}}</p>
+
+  <button type="button" data-toggle="modal" data-target="#invite-modal" class="btn btn-info pull-right">Invite Roommates</button>
+  <h2>Roommates</h2><br>
+
+  <div class="row">
+    <div class="col-sm-4 roommate-info" ng-repeat="roommate in roommates">
+      <strong>{{roommate.first_name}} {{roommate.last_name}}</strong><br>
+      <em>Email</em>: {{roommate.email}}<br>
+      <em>Phone</em>: {{roommate.phone}}
+    </div>
+  </div>
+
+  <div class="modal fade" id="invite-modal" tabindex="-1" role="dialog" aria-labelledby="inviteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="inviteModalLabel">Invite Roommates</h4>
+        </div>
+        <div class="modal-body">
+          <p>One fine body&hellip;</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Invite</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
