@@ -131,6 +131,19 @@ var bills = function(app) {
       '/' + date.getFullYear();
     var roommates = req.body.roommates;
 
+    // If there is no payment for the creator, we add one
+    // with a balance of 0
+    var creatorpayment = false;
+    for(var i = 0; i < roommates.length; i++) {
+      if(roommates[i].id === userId) {
+        creatorpayment = true;
+        break;
+      }
+    }
+    if(!creatorpayment) {
+      roommates.push({id: userId, amount: 0});
+    }
+
     // Check if the fields are acceptable
     if (!isValidName(name)) {
       res.json(400, {error: 'Invalid bill name.'});
