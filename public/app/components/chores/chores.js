@@ -52,12 +52,8 @@ function ($scope, $http, $timeout) {
 	$http.get('/apartment/users').
       	success(function(data) { 
       	//get users in apartment
+        console.log(data);
       	$scope.users = data.users;
-
-        for( var i = 0; i < $scope.users.length; i++ )
-        {
-            $scope.users[i].isChecked = false;
-        }
 
       	// console.log($scope.users[0].name);
     }).error(function(data, status, headers, config){
@@ -71,6 +67,9 @@ function ($scope, $http, $timeout) {
   	//adding a chore
   	$scope.addChore = function() {
   	
+
+    //uncheck all users
+
    	var chore = angular.copy($scope.chore);
     chore.roommates = [ ];
     chore.interval = parseInt(chore.interval);
@@ -82,8 +81,10 @@ function ($scope, $http, $timeout) {
     //checks to see that at lesat one user is checked
     for(var x = 0; x < $scope.users.length; x++)
     {
+        console.log($scope.users[x].isChecked);
         if($scope.users[x].isChecked)
         {
+
             at_least_one_user = at_least_one_user + 1;
         }
     }
@@ -125,10 +126,15 @@ function ($scope, $http, $timeout) {
                     data.chore.interval = "Weekly";
                 }
 
-            
             chore = data.chore;
             chore.users = [];
             chore.users = data.users;
+
+            for( var i = 0; i < chore.users.length; i++ )
+            {
+                chore.users[i].isChecked = true;
+            }
+
             $scope.chores.push(chore);
             
             
@@ -152,17 +158,51 @@ function ($scope, $http, $timeout) {
     	
       	console.log($scope.chore);
         console.log($scope.gindex);
+        
         $scope.chore.roommates = [];
-        for( var i = 0; i < $scope.chore.users.length; i++ )
-        {
-            console.log(i);
 
-            $scope.chore.roommates.push($scope.chore.users[i].user_id);
-        }
+        //console.log("hello");
+        //console.log($scope.users);
+        //console.log($scope.chore.users);
+        var temp = [];
+        
+            //populate roommates field and remove unchecked users from view
+            for( var i = 0; i < $scope.users.length; i++ )
+            {
+                //console.log($scope.users[i].isChecked);
 
-        console.log($scope.chore);
-      	$http.put('/chores/'+$scope.chore.id, $scope.chore).
-  	    success(function(data) {
+                if($scope.users[i].isChecked)
+                {
+                    $scope.chore.roommates.push($scope.users[i].id);
+                }
+                else
+                {
+                    $scope.chore.users = $scope.chore.users.filter(function(user){
+                        return !($scope.users[i].id == user.user_id);
+                    });
+                }
+            }
+
+            //check if checked user is in view, if not add checked user
+            for( var i = 0; i < $scope.users.length; i++ )
+            {
+                console.log($scope.users[i].isChecked);
+                if($scope.users[i].isChecked)
+                    {
+                        temp.push(angular.copy($scope.users[i]));
+                    }
+            }
+
+            //console.log($scope.chore.users);
+            $scope.chore.users = temp;
+            //console.log($scope.chore.roommates);
+
+            //console.log("hello");
+            //console.log($scope.chore);
+            $http.put('/chores/'+$scope.chore.id, $scope.chore).
+            success(function(data) {
+            console.log("OMFG");
+            console.log(data);
 
             if ($scope.chore.interval == 0)
                 {
@@ -172,22 +212,16 @@ function ($scope, $http, $timeout) {
                 {
                     $scope.chore.interval = "Weekly";
                 }
+                //console.log($scope.chore.users);
+                $scope.chores[$scope.gindex] = $scope.chore;
+                //console.log($scope.chores[$scope.gindex]);
+            }).
+            error(function(data, status, headers, config){
+            console.log(data);
+            console.log($scope.chore);
+            });
 
-
-        $scope.chores[$scope.gindex] = $scope.chore;
-  	    console.log($scope.chores[$scope.gindex]);
-
-  	    }).
-        error(function(data, status, headers, config){
-        console.log(data);
-        console.log($scope.chore);
-        $scope.chores[$scope.gindex] = angular.copy($scope.chore);
-        //$scope.$apply();
-        console.log($scope.gindex);
-        console.log($scope.chores[$scope.gindex]);
-        });
-
-    	$scope.cancel;
+            $scope.cancel;
     };
 
     //deletes chore from the database then deletes chore from view
@@ -208,20 +242,31 @@ function ($scope, $http, $timeout) {
     	$scope.chore.name = '';
         $scope.chore.duedate = null;
     	console.log("reset");
+        for( var i = 0; i < $scope.users.length; i++ )
+        {
+        $scope.users[i].isChecked = false;
+        }
     };
+
+    
+
 
     //sets the edit chore menu to the selected chore, maps all responsible as well
     $scope.setChore = function(index){
     $scope.gindex = index;
     var chore = angular.copy($scope.chores[index]);
-    console.log(chore);
-    console.log($scope.users);
+    //console.log(chore);
+    //console.log($scope.users);
+
+
     //set everything to false
     for( var i = 0; i < $scope.users.length; i++ )
-        {
-            $scope.users[i].isChecked = false;
-        }
+    {
+        $scope.users[i].isChecked = false;
+    }
+
     var temp2 = {};
+    
     for( var i = 0; i < chore.users.length; i++ )
     {
         temp2 = $scope.users.filter(function(user){
@@ -242,8 +287,14 @@ function ($scope, $http, $timeout) {
     {
         chore.interval = 7;
     }
+    console.log("hi");
+    console.log(chore);
+
+    chore.users.map(function(user){user.isChecked = false});
+
     $scope.chore = chore;
     
+    console.log($scope.chore);
     //console.log($scope.chore);
     };
 
