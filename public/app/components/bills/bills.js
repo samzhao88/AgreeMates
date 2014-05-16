@@ -71,14 +71,11 @@ angular.module('main.bills').controller('BillsCtrl',
           bill.roommates.push({"id": $scope.roommates[i].id, "amount": $scope.roommates[i].amount});
         };       
       };
-      console.log(bill.roommates);
-      console.log(bill);
       	$http.post('/bills/', bill).
   	      success(function(data) {
   	        //$scope.bills.push(data);
   	       	$scope.reset();
             //need to show new bill on the page, need to get id of new bill
-            console.log(data);
   	      }).
           error(function(data, status, headers, config){
             console.log(data);
@@ -180,8 +177,6 @@ angular.module('main.bills').controller('BillsCtrl',
           $scope.oldBill = angular.copy($scope.bills[i]);
         }
       };
-      console.log("prepare");
-      console.log($scope.oldBill);
     }
 
     //clear the bill
