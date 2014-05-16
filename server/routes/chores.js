@@ -87,7 +87,6 @@ var chores = function(app) {
 				res.json({chores: chores});
 		})
 		.otherwise(function(error){
-			console.log(error);
 			res.json(503, {error: 'Database error.'});
 		});
   });
@@ -111,15 +110,12 @@ var chores = function(app) {
 		.fetch()
 		.then(function(model){
 			var chore = model.attributes;
-			console.log(chore)
 			var userChores = [];
 			new UserChoreModel({chore_id: chore.id})
 			.fetch()
 			.then(function(ucModel){
-			console.log(ucModel);
 				for(var j = 0; j <ucModel.length; j++){
 					var userChore = ucModel.models[i].attributes;
-					console.log('sanity1');
 					userChores.push({
 						user_id: userChore.user_id,
 						order_index: userChore.oder_index
@@ -128,7 +124,6 @@ var chores = function(app) {
 						res.json({chore: chore, users: userChores});
 					}
 				}
-				console.log('fail');
 			}).otherwise(function(){
 				res.json(503, {error:'Database error'});
 			});
@@ -177,12 +172,10 @@ var chores = function(app) {
 					})
 					.save()
 					.then(function(choreModel){
-					console.log('starting for loop');
 					var userChore = [];
 					// Build up user to chore mapping to write to the database
 					// work around do to model representation not working
 					for(var i = 0; i  < roommates.length; i++){
-						console.log('creating new userchore');
 						userChore[i] = new UserChoreModel({
 								user_id: roommates[i],
 								chore_id: choreModel.id,
@@ -190,7 +183,6 @@ var chores = function(app) {
 							});
 						
 					}
-					console.log('For loop complete')
 					/*Save away our array of users to new chore
 					mapThen :Function to call for each element in the collection
 					Collects the return value of all of the function calls into a single response
@@ -199,10 +191,8 @@ var chores = function(app) {
 					*/
 					new UserChoreCollection(userChore)
 					.mapThen(function(model){				
-					console.log('model about to be saved'); 
 						return model.save()
 						.then(function(){
-							console.log(model);
 							return new UserModel({id: model.get('user_id')})
 							.fetch()
 							.then(function(userM){
@@ -244,7 +234,6 @@ var chores = function(app) {
 	var dueDate = req.body.duedate;
 	var roommates = req.body.roommates;
 	
-	console.log(choreId + "   " + apartmentId);
 	
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
 	.save({name: name.trim(), duedate: dueDate},{patch: true})
@@ -254,12 +243,10 @@ var chores = function(app) {
 		.destroy()
 		.then(function(ucmodel){
 			/*Make this a function call*/
-			console.log(choreModel);
 			var userChore = [];
 					// Build up user to chore mapping to write to the database
 					// work around do to model representation not working
 					for(var i = 0; i  < roommates.length; i++){
-						console.log('creating new userchore');
 						userChore[i] = new UserChoreModel({
 								user_id: roommates[i],
 								chore_id: choreModel.id,
@@ -273,8 +260,7 @@ var chores = function(app) {
 					that the size of the array is equal to the number of user ids giving in the request.
 					*/
 					new UserChoreCollection(userChore)
-					.mapThen(function(model){				
-					console.log('model about to be saved'); 
+					.mapThen(function(model){				 
 						return model.save()
 						.then(function(){
 						});

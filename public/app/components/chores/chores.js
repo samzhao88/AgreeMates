@@ -35,7 +35,6 @@ function ($scope, $http, $timeout) {
 	$http.get('/apartment/users').
       	success(function(data) { 
       	//get users in apartment
-        console.log(data);
       	$scope.users = data.users;
 
     }).error(function(data, status, headers, config){
@@ -63,7 +62,6 @@ function ($scope, $http, $timeout) {
     //checks to see that at lesat one user is checked
     for(var x = 0; x < $scope.users.length; x++)
     {
-        console.log($scope.users[x].isChecked);
         if($scope.users[x].isChecked)
         {
 
@@ -169,7 +167,6 @@ function ($scope, $http, $timeout) {
             //populate roommates field and remove unchecked users from view
             for( var i = 0; i < $scope.users.length; i++ )
             {
-                //console.log($scope.users[i].isChecked);
 
                 if($scope.users[i].isChecked)
                 {
@@ -195,21 +192,14 @@ function ($scope, $http, $timeout) {
             console.log(temp);
 
             $scope.chore.users = temp;
-            console.log("hello");
             console.log($scope.chore);
 
             $http.put('/chores/'+$scope.chore.id, $scope.chore).
             success(function(data) {
-            //console.log("OMFG");
-            //console.log(data);
 
                 $scope.chores[$scope.gindex] = $scope.chore;
-                //console.log($scope.chore.users);
-                //console.log($scope.chores[$scope.gindex]);
             }).
             error(function(data, status, headers, config){
-                console.log(data);
-                //console.log($scope.chore);
             });
         }
     }
@@ -225,7 +215,6 @@ function ($scope, $http, $timeout) {
   	    $scope.chores.splice(index, 1);
   	    }).
         error(function(data, status, headers, config){
-        console.log(data);
         });
     }
 
@@ -267,10 +256,7 @@ function ($scope, $http, $timeout) {
 
             return user.id == chore.users[i].user_id;
         });
-        //console.log(temp2);
         temp2.map(function(user){user.isChecked = true;});
-        //console.log(temp2);
-        //console.log($scope.users[i]);
     }
     console.log($scope.users);
     console.log("hello");
@@ -278,7 +264,6 @@ function ($scope, $http, $timeout) {
 
     $scope.chore = chore;
     
-    //console.log($scope.chore);
 
     };
 
@@ -292,7 +277,6 @@ function ($scope, $http, $timeout) {
 
     //show and hide an error msg
     function showErr(msg){
-        //console.log(data);
         $scope.errormsg = msg;
         $scope.error = true;
         $timeout(function(){$scope.error=false;},alertLength);
