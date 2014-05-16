@@ -166,13 +166,6 @@ function ($scope, $http, $timeout) {
             }
             else
             {
-
-
-
-
-
-
-
             //populate roommates field and remove unchecked users from view
             for( var i = 0; i < $scope.users.length; i++ )
             {
