@@ -50,7 +50,7 @@
                   <!-- get all users in apartment -->
                   <div class="col-lg-4" data-ng-repeat="user in users">
                     <label>
-                    <div><input type="checkbox" id="xthree" ng-model="user.isChecked"/>  <span>{{ user.name }} </span></div>
+                    <div><input type="checkbox" id="xthree" ng-model="user.isChecked"/>  <span>{{ user.first_name }} </span></div>
                     </label>
                     <br>  
                   </div>
@@ -115,9 +115,9 @@
  
 
 				<!-- get all users in chore -->
-                <div class="col-md-4" ng-repeat="i in chore.users">
+                <div class="col-md-4" ng-repeat="i in users">
                     <label>
-						<input type="checkbox" ng-model="i.isChecked"/>  <span> {{ i.name }} </span>
+						          <input type="checkbox" ng-model="i.isChecked"/>  <span> {{ i.first_name }} </span>
                     </label>
                       
                   </div>
@@ -162,7 +162,10 @@
  				<span class="name">{{chore.name}}</span> 
  			</td>
  			<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
- 				<span class="responsible">{{chore.users}}</span>
+ 				
+        <div ng-repeat="responsible in chore.users">
+          <span class="responsible">{{responsible.first_name}}</span>
+        </div>
  			</td>
  			<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  				<span class="recurring"> {{chore.interval}} </span>

@@ -9,17 +9,18 @@ function ($scope, $http, $timeout) {
     var alertLength = 4000;
   	//holds all chores for apartment
     //$scope.chores = [];
+
     //global variable for the current index of edit
     $scope.gindex = 0;
 
     $scope.chore = {name: ''};
-    $scope.choresDummy = [{name: "hello", users: ["bob", "alice"], interval: 7, duedate: "5/20/2014"}];
+    
     $scope.weekly = [];
 
     //get chores
     $http.get('/chores').
     	success(function(data) {
-            
+            console.log(data);
             var tempchores = data.chores;
 
             for( var i = 0; i < tempchores.length; i++ )
@@ -34,11 +35,10 @@ function ($scope, $http, $timeout) {
                 {
                     tempchores[i].interval = "Weekly";
                 }
+
             }
-            //console.log($scope.chores);
         	$scope.chores = tempchores;
-            console.log($scope.chores);
-            //$scope.chores = $scope.choresDummy;
+            
       	}).
       	error(function(data, status, headers, config){
 
@@ -49,15 +49,10 @@ function ($scope, $http, $timeout) {
   	//global variable to hold users in apartment
   	$scope.users = [];
 
-	$http.get('/apartment/:apt/users').
+	$http.get('/apartment/users').
       	success(function(data) { 
       	//get users in apartment
-      	$scope.users = data;
-        console.log(data);
-
-      	//dummy users
-      	$scope.users = [ {name: "alice", id: 12} , {name: "bob", id: 13} 
-      	, {name: "cameron", id: 14}];
+      	$scope.users = data.users;
 
         for( var i = 0; i < $scope.users.length; i++ )
         {
@@ -79,7 +74,7 @@ function ($scope, $http, $timeout) {
    	var chore = angular.copy($scope.chore);
     chore.roommates = [ ];
     chore.interval = parseInt(chore.interval);
-    console.log(chore);
+
 
     var any = {name: '', id: 0};
     var at_least_one_user = 0;
@@ -93,6 +88,12 @@ function ($scope, $http, $timeout) {
         }
     }
 
+    //check for date
+    if(!chore.duedate)
+    {
+    }
+    else
+    {
     if(at_least_one_user == 0)
     {
         //some error here
@@ -101,44 +102,37 @@ function ($scope, $http, $timeout) {
     {
         for( var i = 0; i < $scope.users.length; i++ )
         {
-            console.log($scope.users[i].isChecked);
+
             if($scope.users[i].isChecked)
             { 
-            console.log($scope.users[i].name);
-            //console.log($scope.users[i].id);
-
-            any.name = $scope.users[i].name;
             any.id = $scope.users[i].id;
-            chore.roommates.push(any);
+            chore.roommates.push(any.id);
             }
         }
-         //chore.roomates[0].name = "name";
+
         console.log(chore);
 
       	$http.post('/chores', chore)
         .success(function(data) {
             console.log("hi");
-            //console.log(data);
-            //var mockdata = {};
-            //mockdata.name = "hello";
-            //mockdata.users = ["hello", "hello"];
-            //mockdata.duedate = "5-21-2014";
-            //mockdata.interval = 0;
-            console.log(chore.interval);
 
-            //convert interval to One-Time or Weekly
-            if (chore.interval == 0)
+            if (data.chore.interval == 0)
                 {
-                    chore.interval = "One-Time";
+                    data.chore.interval = "One-Time";
                 }
             else
                 {
-                    chore.interval = "Weekly";
+                    data.chore.interval = "Weekly";
                 }
 
-            //updates view
+            
+            chore = data.chore;
+            chore.users = [];
+            chore.users = data.users;
             $scope.chores.push(chore);
-        
+            
+            
+            console.log($scope.chores);
             showSucc("Chore "+chore.name+" successfully added!");
 
 
@@ -146,6 +140,7 @@ function ($scope, $http, $timeout) {
         .error(function(data, status, headers, config) {
           console.log(status, headers, config);
       	});
+        }
         //resets the add chore modal to defaults
       	$scope.cancel;
     }  
@@ -154,29 +149,30 @@ function ($scope, $http, $timeout) {
 
     //edits chore in db then updates the view
     $scope.editChore = function(index) {
-    	//console.log($scope.chore);
-    	//console.log($scope.chore.users);
-    	//$scope.chore.users = [].concat($scope.chore.users);
-    	//$scope.chore.users = $scope.chore.users.map(function(any){return {name: any, isChecked: true }});
-
-
-    for( var i = 0; i < $scope.chores.length; i++ )
-    {
-        if (!$scope.chore.users[i].isChecked)
-        {
-            $scope.chore.users[i].splice(index, 1);
-        }
-        //console.log($scope.chores[i].name);
-    }
-
-
-    	//console.log($scope.chore.users);	
-
+    	
       	console.log($scope.chore);
         console.log($scope.gindex);
+        $scope.chore.roommates = [];
+        for( var i = 0; i < $scope.chore.users.length; i++ )
+        {
+            console.log(i);
 
+            $scope.chore.roommates.push($scope.chore.users[i].user_id);
+        }
+
+        console.log($scope.chore);
       	$http.put('/chores/'+$scope.chore.id, $scope.chore).
   	    success(function(data) {
+
+            if ($scope.chore.interval == 0)
+                {
+                    $scope.chore.interval = "One-Time";
+                }
+                else
+                {
+                    $scope.chore.interval = "Weekly";
+                }
+
 
         $scope.chores[$scope.gindex] = $scope.chore;
   	    console.log($scope.chores[$scope.gindex]);
@@ -190,6 +186,7 @@ function ($scope, $http, $timeout) {
         console.log($scope.gindex);
         console.log($scope.chores[$scope.gindex]);
         });
+
     	$scope.cancel;
     };
 
@@ -217,11 +214,26 @@ function ($scope, $http, $timeout) {
     $scope.setChore = function(index){
     $scope.gindex = index;
     var chore = angular.copy($scope.chores[index]);
-    chore.users = [].concat(chore.users);
-    chore.users = chore.users.map(function(any){return {name: any, isChecked: true }});
-    //$scope.chore.users = [].concat($scope.chore.users);
-    //$scope.chore.users = $scope.chore.users.map(function(any){return {name: any, isChecked: true }});
     console.log(chore);
+    console.log($scope.users);
+    //set everything to false
+    for( var i = 0; i < $scope.users.length; i++ )
+        {
+            $scope.users[i].isChecked = false;
+        }
+    var temp2 = {};
+    for( var i = 0; i < chore.users.length; i++ )
+    {
+        temp2 = $scope.users.filter(function(user){
+            console.log(user.id);
+            console.log(chore.users);
+            console.log(chore.users[i].user_id);
+            return user.id == chore.users[i].user_id;
+        });
+        temp2.map(function(user){user.isChecked = true;});
+    }
+
+
     if(chore.interval == "One-Time")
     {
         chore.interval = 0;
@@ -232,7 +244,7 @@ function ($scope, $http, $timeout) {
     }
     $scope.chore = chore;
     
-    console.log($scope.chore);
+    //console.log($scope.chore);
     };
 
     function showSucc(msg){
