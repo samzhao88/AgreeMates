@@ -75,13 +75,13 @@ var bills = function(app) {
             name = rows[i].name;
             amount = rows[i].total;
             createDate = rows[i].createdate;
-            if(rows[i].creatorId === rows[i].user_id) {
-              payTo = rows[i].first_name;
-            }
             dueDate = rows[i].duedate;
             resolved = rows[i].billPaid;
             frequency = rows[i].interval;
             creatorId = rows[i].creatorId;
+            if(rows[i].creatorId === rows[i].user_id) {
+              payTo = rows[i].first_name;
+            }
           }
           payments.push({
             userId: rows[i].user_id,
