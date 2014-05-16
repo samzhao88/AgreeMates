@@ -35,7 +35,8 @@ var bills = function(app) {
               'bills.paid as billPaid', 'payments.paid as userPaid',
               'bills.createdate', 'bills.duedate', 'bills.name',
               'bills.interval', 'users.first_name', 'users.id',
-              'payments.bill_id', 'payments.amount')
+              'payments.bill_id', 'payments.amount', 
+              'bills.user_id as creatorId')
       .orderBy('payments.bill_id')
       .then(function(rows) {
         var bills = [];
@@ -75,13 +76,13 @@ var bills = function(app) {
             name = rows[i].name;
             amount = rows[i].total;
             createDate = rows[i].createdate;
-            if(rows[i].id === rows[i].user_id) {
-              payTo = rows[i].first_name;
-            }
             dueDate = rows[i].duedate;
             resolved = rows[i].billPaid;
             frequency = rows[i].interval;
-            creatorId = rows[i].id;
+            creatorId = rows[i].creatorId;
+          }
+          if(rows[i].creatorId === rows[i].user_id) {
+            payTo = rows[i].first_name;
           }
           payments.push({
             userId: rows[i].user_id,
@@ -130,6 +131,19 @@ var bills = function(app) {
     var createdate = (date.getMonth() + 1) + '/' + date.getDate() +
       '/' + date.getFullYear();
     var roommates = req.body.roommates;
+
+    // If there is no payment for the creator, we add one
+    // with a balance of 0
+    var creatorpayment = false;
+    for(var i = 0; i < roommates.length; i++) {
+      if(roommates[i].id === userId) {
+        creatorpayment = true;
+        break;
+      }
+    }
+    if(!creatorpayment) {
+      roommates.push({id: userId, amount: 0});
+    }
 
     // Check if the fields are acceptable
     if (!isValidName(name)) {
@@ -220,7 +234,7 @@ var bills = function(app) {
     var interval = req.body.interval;
     var date = req.body.date;
     var paid = req.body.paid;
-    var roommates = JSON.parse(req.body.roommates);
+    var roommates = req.body.roommates;
 
     // Check for validity of fields
     if (!isValidId(billId)) {
@@ -229,6 +243,19 @@ var bills = function(app) {
     } else if (!isValidName(name)) {
       res.json(400, {error: 'Invalid bill name.'});
       return;
+    }
+
+    // If there is no payment for the creator, we add one
+    // with a balance of 0
+    var creatorpayment = false;
+    for(var i = 0; i < roommates.length; i++) {
+      if(roommates[i].id === userId) {
+        creatorpayment = true;
+        break;
+      }
+    }
+    if(!creatorpayment) {
+      roommates.push({id: userId, amount: 0});
     }
 
     // Destroy all the payments which are references to the billId
