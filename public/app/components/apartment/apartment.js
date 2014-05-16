@@ -22,6 +22,7 @@ angular.module('main.apartment').controller('AptAddCtrl',
             });
           }
           window.location.href = './';
+
         })
         .error(function(data, status, headers, config) {
           console.log(status, headers, config);

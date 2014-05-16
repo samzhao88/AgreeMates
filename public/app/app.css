@@ -130,6 +130,7 @@ html, body {
   padding: 0 15px;
   background-color: #fff;
   height: 100%;
+  overflow: scroll;
 }
 
 @media(min-width:768px) {
@@ -140,6 +141,20 @@ html, body {
     min-height: 100%;
   }
 }
+.adjust-width
+{
+    width: 400px;
+}
+/*#chores_add_modal 
+{
+    width: 500px; 
+    margin-top: -300px !important;
+    margin-left:  -350px !important; 
+} */
+
+/*.modal-dialog {
+  width: 400px;
+}*/
 
 .sidebar-search {
   padding: 15px;
