@@ -234,7 +234,7 @@ var bills = function(app) {
     var interval = req.body.interval;
     var date = req.body.date;
     var paid = req.body.paid;
-    var roommates = JSON.parse(req.body.roommates);
+    var roommates = req.body.roommates;
 
     // Check for validity of fields
     if (!isValidId(billId)) {
@@ -243,6 +243,19 @@ var bills = function(app) {
     } else if (!isValidName(name)) {
       res.json(400, {error: 'Invalid bill name.'});
       return;
+    }
+
+    // If there is no payment for the creator, we add one
+    // with a balance of 0
+    var creatorpayment = false;
+    for(var i = 0; i < roommates.length; i++) {
+      if(roommates[i].id === userId) {
+        creatorpayment = true;
+        break;
+      }
+    }
+    if(!creatorpayment) {
+      roommates.push({id: userId, amount: 0});
     }
 
     // Destroy all the payments which are references to the billId
