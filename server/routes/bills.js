@@ -228,7 +228,6 @@ var bills = function(app) {
 
     // Copy over fields from the request
     var apartmentId = req.user.attributes.apartment_id;
-    var userId = req.user.attributes.id;
     var billId = req.params.bill;
     var name = req.body.name;
     var total = req.body.total;
@@ -246,19 +245,6 @@ var bills = function(app) {
       return;
     }
 
-    // If there is no payment for the creator, we add one
-    // with a balance of 0
-    var creatorpayment = false;
-    for(var i = 0; i < roommates.length; i++) {
-      if(roommates[i].id === userId) {
-        creatorpayment = true;
-        break;
-      }
-    }
-    if(!creatorpayment) {
-      roommates.push({id: userId, amount: 0});
-    }
-
     // Destroy all the payments which are references to the billId
     // This must be done since the roommates paying on a bill could be
     // different.
@@ -270,7 +256,21 @@ var bills = function(app) {
         new BillModel({id: billId, apartment_id: apartmentId})
           .save({name: name, amount: total, duedate: date,
                 paid: paid, interval: interval})
-          .then(function() {
+          .then(function(model) {
+            // If there is no payment for the creator, we add one
+            // with a balance of 0
+            var creatorId = model.user_id;
+            var creatorpayment = false;
+            for(var i = 0; i < roommates.length; i++) {
+              if(roommates[i].id === creatorId) {
+                creatorpayment = true;
+                break;
+              }
+            }
+            if(!creatorpayment) {
+              roommates.push({id: creatorId, amount: 0});
+            }
+  
             // Add new payments for all the users who need to pay
             for(var i = 0; i < roommates.length; i++) {
               new PaymentModel({paid: roommates[i].paid,
