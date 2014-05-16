@@ -224,7 +224,7 @@ function ($scope, $http, $timeout) {
     var chore = angular.copy($scope.chores[index]);
     //console.log(chore);
     //console.log($scope.users);
-
+    chore.duedate = $scope.convertdate(chore.duedate);
 
     //set everything to false
     for( var i = 0; i < $scope.users.length; i++ )
