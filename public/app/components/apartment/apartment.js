@@ -6,14 +6,21 @@ angular.module('main.apartment', []);
 angular.module('main.apartment').controller('AptAddCtrl',
   function ($http, $scope) {
 
-    $scope.add = function(apartment, email) {
+    $scope.add = function(apartment, emails) {
       $http.post('/apartment', apartment)
         .success(function() {
-          $http.post('/invitations', {'email': email})
-            .success(function() { })
-            .error(function(data, status, headers, config) {
-              console.log(status, headers, config);
+          function successHandler(){}
+          function errorHandler(data, status, headers, config) {
+            console.log(status, headers, config);
+          }
+          if (emails !== undefined) {
+            var emailList = emails.split(',');
+            angular.forEach(emailList, function(email) {
+              $http.post('/invitations', {'email': email})
+              .success(successHandler())
+              .error(errorHandler());
             });
+          }
           window.location.href = './';
 
         })

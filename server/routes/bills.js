@@ -106,7 +106,6 @@ var bills = function(app) {
         res.json({bills: bills});
       })
       .otherwise(function(error) {
-        console.log(error);
         res.json(503, {error: 'Database error.'});
       });
   });
@@ -130,17 +129,23 @@ var bills = function(app) {
     var date = new Date();
     var createdate = (date.getMonth() + 1) + '/' + date.getDate() +
       '/' + date.getFullYear();
-    var roommates = JSON.parse(req.body.roommates);
+    var roommates = req.body.roommates;
 
     // Check if the fields are acceptable
     if (!isValidName(name)) {
       res.json(400, {error: 'Invalid bill name.'});
       return;
-    } else if (total < 0) {
+    } else if (total === undefined || total < 0) {
       res.json(400, {error: 'Invalid bill total.'});
       return;
-    } else if (interval < 0) {
+    } else if (interval === undefined || interval < 0) {
       res.json(400, {error: 'Invalid bill interval.'});
+      return;
+    } else if (duedate === undefined) {
+      res.json(400, {error: 'Invalid due date.'});
+      return;
+    } else if (roommates === undefined) {
+      res.json(400, {error: 'Invalid roommates.'});
       return;
     }
 
@@ -155,12 +160,12 @@ var bills = function(app) {
           new PaymentModel({paid: false, amount: roommates[i].amount,
             user_id: roommates[i].id, bill_id: model.id})
             .save()
-            .then(function(model) { })
+            .then(function() { })
             .otherwise(function(error) {
               res.json(503, {error: 'Database error.'});
             });
         }
-        res.json({result: 'success'});
+        res.json({id: model.attributes.id});
       }).otherwise(function(error) {
         res.json(503, {error: 'Database error.'});
       });

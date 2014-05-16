@@ -4,6 +4,16 @@
 
 var user = function(app) {
 
+  // Gets your user ID.
+  app.get('/user', function(req, res) {
+    if (req.user === undefined) {
+      res.json(401, {error: 'Unauthorized user.'});
+      return;
+    }
+
+    res.json({id: req.user.attributes.id});
+  });
+
   // Get user
   app.get('/user/:user', function(req, res) {
     res.end();
