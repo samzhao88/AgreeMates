@@ -48,8 +48,6 @@ function ($scope, $http, $timeout) {
 
   	//adding a chore
   	$scope.addChore = function() {
-  	
-
     //uncheck all users
 
    	var chore = angular.copy($scope.chore);
@@ -113,10 +111,8 @@ function ($scope, $http, $timeout) {
 
             $scope.chores.push(chore);
             
-            
             console.log($scope.chores);
             showSucc("Chore "+chore.name+" successfully added!");
-
 
         })
         .error(function(data, status, headers, config) {
@@ -124,8 +120,9 @@ function ($scope, $http, $timeout) {
       	});
         }
     }
-        //resets the add chore modal to defaults
-      	$scope.cancel;  
+    
+    //resets the add chore modal to defaults
+    $scope.cancel;  
 
     };
 
@@ -138,16 +135,14 @@ function ($scope, $http, $timeout) {
         $scope.chore.roommates = [];
 
         var temp = [];
-        
         var at_least_one_user = 0;
 
-                //checks to see that at lesat one user is checked
+        //checks to see that at lesat one user is checked
         for(var x = 0; x < $scope.users.length; x++)
         {
             console.log($scope.users[x].isChecked);
             if($scope.users[x].isChecked)
             {
-
                 at_least_one_user = at_least_one_user + 1;
             }
         }
@@ -192,6 +187,7 @@ function ($scope, $http, $timeout) {
                         temp.push($scope.users[i]);
                     }
             }
+
             console.log(temp);
 
             $scope.chore.users = temp;
@@ -202,14 +198,17 @@ function ($scope, $http, $timeout) {
             success(function(data) {
             //console.log("OMFG");
             //console.log(data);
+                for(var i = 0; i < $scope.chore.users.length; i++)
+                {
+                    $scope.chore.users[i].user_id = $scope.chore.users[i].id;
+                }
 
-                $scope.chores[$scope.gindex] = $scope.chore;
-                //console.log($scope.chore.users);
-                //console.log($scope.chores[$scope.gindex]);
+
+
+                $scope.chores[$scope.gindex] = angular.copy($scope.chore);
             }).
             error(function(data, status, headers, config){
                 console.log(data);
-                //console.log($scope.chore);
             });
         }
     }
@@ -257,8 +256,15 @@ function ($scope, $http, $timeout) {
     console.log($scope.users);
     var temp2 = {};
     
-    //searches the list of users for users that are in the chore and sets those checkboxes to true
 
+
+    
+    //bugfix
+
+    // for(var i = 0; i < chore.users.length; i++)
+    // {
+    //     chore.users[i].id = chore.users[i].id;
+    // }
 
     //finds all users that are in the chore.users field and checkes them in $scope.users
     for( var i = 0; i < chore.users.length; i++ )
@@ -272,9 +278,12 @@ function ($scope, $http, $timeout) {
         //console.log(temp2);
         //console.log($scope.users[i]);
     }
+
     console.log($scope.users);
     console.log("hello");
     //chore.users.map(function(user){user.isChecked = false});
+
+
 
     $scope.chore = chore;
     
