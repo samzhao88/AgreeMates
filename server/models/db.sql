@@ -441,8 +441,10 @@ CREATE TABLE users (
 --
 
 CREATE TABLE users_chores (
-    user_id integer,
-    chore_id integer
+	user_id integer,
+    chore_id integer,
+	id integer,
+	order_index integer
 );
 
 

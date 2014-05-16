@@ -10,6 +10,7 @@ angular.module('main.apartment').controller('AptAddCtrl',
       $http.post('/apartment', apartment)
         .success(function() {
           window.location.href = './';
+
         })
         .error(function() {
 
