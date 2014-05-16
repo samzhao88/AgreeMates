@@ -97,24 +97,19 @@ var apartment = function(app) {
 		var apartmentName = req.body.name;
 		var apartmentAddress = req.body.address;
 
-		if (!isValidId(req.params.apt)) {
-			res.json(400, {error: 'Invalid apartment ID.'});
-			return;
-		} else if (!isValidName(apartmentName)) {
+		if (!isValidName(apartmentName)) {
 			res.json(400, {error: 'Invalid apartment name.'});
-			return;
-		} else if (!isValidName(apartmentAddress)) {
-			res.json(400, {error: 'Invalid apartment address.'});
 			return;
 		}
 
-		if (apartmentId !== parseInt(req.params.apt)) {
-			res.json(401, {error: 'User unauthorized to view this apartment'});
-			return;
+		var update = {};
+		update.name = apartmentName.trim();
+		if (isValidName(apartmentAddress)) {
+			update.address = apartmentAddress.trim();
 		}
 
 		new ApartmentModel({id: apartmentId})
-			.save({name: apartmentName.trim(), address: apartmentAddress.trim()}, {patch: true})
+			.save(update, {patch: true})
 			.then(function() {
 				res.json(200);
 			})
@@ -212,7 +207,7 @@ var apartment = function(app) {
 
 	// Checks if a name is valid
 	function isValidName(name) {
-		return name !== undefined && name !== null && name !== '';
+		return name !== undefined && name !== null && name.trim() !== '';
 	}
 
 	// Checks if an ID is valid
