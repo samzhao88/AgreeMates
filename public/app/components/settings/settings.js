@@ -19,15 +19,35 @@ angular.module('main.settings').controller('SettingsCtrl',
         $scope.roommates = data.users;
       });
 
+    $scope.showInvite = function() {
+        $scope.emails = [{email: ''}];
+    };
+
+    $scope.addNewEmail = function() {
+      $scope.emails.push({email: ''});
+    };
+
     $scope.sendInvite = function() {
-      if ($scope.email === undefined || $scope.email.trim() === '') {
-        showErr('You entered an invalid email address!');
+      if ($scope.emails === undefined) {
+        showErr('You entered invalid email addresses!');
         return;
       }
 
-      $http.post('/invitations', {email: $scope.email})
+      var emails = [];
+      for (var i = 0; i < $scope.emails.length; i++) {
+        var email = $scope.emails[i].email.trim();
+        if (email !== undefined && email !== '') {
+          emails.push(email);
+        }
+      }
+      if (emails.length === 0) {
+        showErr('No Emails Entered');
+        return;
+      }
+
+      $http.post('/invitations', {emails: emails})
         .success(function() {
-          showSucc('Invite sent to ' + $scope.email + '!');
+          showSucc('Invite sent to ' + emails + '!');
         })
         .error(function() {
           showErr('You entered an invalid email address!');
@@ -42,14 +62,14 @@ angular.module('main.settings').controller('SettingsCtrl',
           $scope.apartment.address = $scope.address;
         })
         .error(function() {
-          showErr('Apartment info could not be edited!')
+          showErr('Apartment info could not be edited!');
         });
     };
 
     $scope.populateInfo = function() {
       $scope.name = $scope.apartment.name;
       $scope.address = $scope.apartment.address;
-    }
+    };
 
     //show and hide an error msg
     function showErr(msg){

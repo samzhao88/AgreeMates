@@ -12,7 +12,7 @@ angular.module('main.apartment').controller('AptAddCtrl',
           window.location.href = './';
         })
         .error(function() {
-          
+
         });
     };
 

@@ -1,10 +1,12 @@
 // Invitation routes
+/*jshint camelcase: false*/
 
 'use strict';
 
 var UserModel = require('../models/user').model;
 var ApartmentModel = require('../models/apartment').model;
 var InvitationModel = require('../models/invitation').model;
+var InvitationCollection = require('../models/invitation').collection;
 
 var invitations = function(app) {
 
@@ -40,13 +42,12 @@ var invitations = function(app) {
 
   // Add invitation to database
   app.post('/invitations', function(req, res) {
-    /*jshint camelcase: false*/
     if (req.user === null || req.body === null) {
       res.json(400, {error: 'Missing user or body'});
       return;
     }
 
-    var email = req.body.email;
+    var emails = req.body.emails;
     var apartmentId = req.user.attributes.apartment_id;
     if (apartmentId === null) {
       res.json(404, {error: 'could not fetch id'});
@@ -57,17 +58,31 @@ var invitations = function(app) {
       .fetch()
       .then(function(apartment) {
         var apartmentName = apartment.attributes.name;
-        new InvitationModel({apartment_id: apartmentId, email: email})
-          .save()
-          .then(function(model) {
-            var invitation = model.attributes;
-            sendInvitation(invitation.id, invitation.email, apartmentName);
-            res.json({id: invitation.id, email: invitation.email});
-          })
-          .otherwise(function(error) {
-            console.log(error);
-            res.json(503, {error: 'error creating invitation'});
+        var invitations = [];
+        for (var i = 0; i < emails.length; i++) {
+          invitations[i] = new InvitationModel({
+            apartment_id: apartmentId,
+            email: emails[i]
           });
+        }
+        new InvitationCollection(invitations).mapThen(function(model) {
+          return model.save().then(function() {
+            return {
+              id: model.get('id'),
+              apartment_id: model.get('apartment_id'),
+              email: model.get('email')
+            };
+          });
+        }).then(function(resp) {
+          if (resp.length !== invitations.length) {
+            res.json(503, {error: 'Error creating invitations'});
+          } else {
+            resp.forEach(function(invitation) {
+              sendInvitation(invitation.id, invitation.email, apartmentName);
+            });
+            res.json(resp);
+          }
+        });
       })
       .otherwise(function() {
         res.json(404, {error: 'error getting apartment'});
