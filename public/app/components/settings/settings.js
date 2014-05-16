@@ -25,7 +25,7 @@ angular.module('main.settings').controller('SettingsCtrl',
         return;
       }
 
-      $http.post('/invitations', {email: $scope.email})
+      $http.post('/invitations', {emails: [$scope.email]})
         .success(function() {
           showSucc('Invite sent to ' + $scope.email + '!');
         })
@@ -42,14 +42,14 @@ angular.module('main.settings').controller('SettingsCtrl',
           $scope.apartment.address = $scope.address;
         })
         .error(function() {
-          showErr('Apartment info could not be edited!')
+          showErr('Apartment info could not be edited!');
         });
     };
 
     $scope.populateInfo = function() {
       $scope.name = $scope.apartment.name;
       $scope.address = $scope.apartment.address;
-    }
+    };
 
     //show and hide an error msg
     function showErr(msg){

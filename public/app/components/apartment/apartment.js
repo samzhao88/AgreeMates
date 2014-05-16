@@ -15,11 +15,9 @@ angular.module('main.apartment').controller('AptAddCtrl',
           }
           if (emails !== undefined) {
             var emailList = emails.split(',');
-            angular.forEach(emailList, function(email) {
-              $http.post('/invitations', {'email': email})
+              $http.post('/invitations', {'emails': emailList})
               .success(successHandler())
               .error(errorHandler());
-            });
           }
           window.location.href = './';
         })
