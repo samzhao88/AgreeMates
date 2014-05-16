@@ -4,18 +4,44 @@
   <meta charset="utf-8">
   <title>AgreeMates</title>
   <link rel="stylesheet" href="../vendor/bootstrap/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../app.css">
+  <link rel="stylesheet" href="../apartment.css">
 </head>
 <body>
 
-  <div ng-controller="AptAddCtrl">
-    <form novalidate class="simple-form">
-      Name: <input type="text" ng-model="apartment.name"><br>
-      Address: <input type="text" ng-model="apartment.address"><br>
-      Emails: <input type="text" ng-model="emails"><br>
-      <button ng-click="cancel()">Cancel</button>
-      <button ng-click="add(apartment, emails)">Add</button>
-    </form>
+  <div id="apartment-wrap">
+    <div id="apartment-content">
+      <div class="container">
+        <h1 id="apartment-title">AgreeMates</h1>
+        <h3 id="apartment-description">Create an apartment.</h3>
+
+        <div id="apartment-form" ng-controller="AptAddCtrl">
+          <form class="form-horizontal" role="form">
+            <div class="form-group">
+              <label for="inputName" class="col-sm-2 control-label">Name</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputName" ng-model="apartment.name" placeholder="Home">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputAddress" class="col-sm-2 control-label">Address</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputAddress" ng-model="apartment.address" placeholder="430 256th PL SE Seattle, WA">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="button" ng-click="add(apartment)" class="btn btn-primary">Create</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="apartment-footer" class="container">
+    <a href="https://github.com/AgreeMates/AgreeMates/wiki/Product-Home-Page">User Documentation</a>
   </div>
 
   <script src="vendor/jquery/dist/jquery.min.js"></script>
