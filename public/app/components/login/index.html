@@ -3,29 +3,35 @@
 <head>
   <meta charset="utf-8">
   <title>AgreeMates</title>
+  <link rel="stylehseet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600,700">
+  <link rel="stylesheet" href="../vendor/ionicons/css/ionicons.min.css">
   <link rel="stylesheet" href="../vendor/bootstrap/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../app.css">
+  <link rel="stylesheet" href="login.css">
 </head>
 <body>
 
-  <div class="container">
-    <div class="jumbotron">
+  <div id="login-wrap">
+    <div id="login-top">
+      <div class="container">
+        <h1 id="login-title">AgreeMates</h1>
+        <h3 id="login-description">Make living with roommates easier.</h3>
 
-      <div class="row">
-        <h1>AgreeMates</h1>
+        <div id="login-image" class="hidden-xs">
+          <img src="../img/login.png" alt="AgreeMates" />
+        </div>
       </div>
-
-      <div class="row">
-        <p>Make living with roommates easier.</p>
-      </div>
-
-      <div class="row">
-          <a class="btn btn-primary btn-lg" href="../auth/facebook" role="button">Login with Facebook</a>
-          <a class="btn btn-primary btn-lg" href="../auth/google" role="button">Login with Google</a>
-      </div>
-
     </div>
-  
+
+    <div id="login-middle">
+      <div class="container">
+        <a class="btn btn-primary btn-lg" href="../auth/facebook" role="button"><i class="ion-social-facebook"></i> | Sign in with Facebook</a>
+        <a class="btn btn-danger btn-lg" href="../auth/google" role="button"><i class="ion-social-googleplus"></i> | Sign in with Google</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="login-footer" class="container">
+    <a href="https://github.com/AgreeMates/AgreeMates/wiki/Product-Home-Page">User Documentation</a>
   </div>
 
   <script src="../vendor/jquery/dist/jquery.min.js"></script>

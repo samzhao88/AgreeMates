@@ -2,6 +2,7 @@
 
 'use strict';
 
+var UserModel = require('../models/user').model;
 var ApartmentModel = require('../models/apartment').model;
 var InvitationModel = require('../models/invitation').model;
 
@@ -24,7 +25,7 @@ var invitations = function(app) {
       subject: 'You have been invited to an AgreeMates apartment',
       generateTextFromHTML: true,
       html: 'You have been invited to ' + aptName + '! Click this ' +
-        '<a href="http://agreemates.com/invitations/' +
+        '<a href="' + process.env.MANDRILL_INVURL +
         id + '">link</a> to join'
     };
 
@@ -73,10 +74,6 @@ var invitations = function(app) {
       });
   });
 
-  app.get('/invitations', function(req, res) {
-    res.json({title: 'title'});
-  });
-
   // Get invitation information
   app.get('/invitations/:invite', function(req, res) {
     new InvitationModel({id: req.params.invite})
@@ -87,26 +84,55 @@ var invitations = function(app) {
           .fetch()
           .then(function(model2) {
             console.log(model);
-            console.log(model2);
-            res.json({title: 'Invitation',
-                     id: model.attributes.id,
-                     aptName: model2.attributes.name,
-                     aptAddress: model2.attributes.address});
+            var user = req.user;
+            if (user != null) {
+              res.render('components/invitations/index.html', {
+                invId: model.attributes.id,
+                aptName: model2.attributes.name,
+                aptAddress: model2.attributes.address
+              });
+            } else {
+              res.render('components/invitations/login.html', {
+                invId: model.attributes.id
+              });
+            }
           })
           .otherwise(function(error) {
             console.log(error);
-            res.json(404, {error: 'failed to fetch aparment'});
+            res.json(404, {error: 'failed to fetch apartment'});
           });
       })
       .otherwise(function(error) {
         console.log(error);
         res.json(404, {error: 'error getting invitation'});
       });
+
   });
 
   // Removes invitation from the database
   app.delete('/invitations/:invite', function(req, res) {
-    res.end();
+    new InvitationModel({id: req.params.invite})
+      .fetch()
+      .then(function(model) {
+        new UserModel({id: req.user.id})
+          .save({apartment_id: model.attributes.apartment_id}, {path: true})
+          .then(function() {
+            new InvitationModel({id: req.params.invite})
+            .destroy()
+            .then(function() {
+              res.send(200);
+            })
+            .otherwise(function() {
+              res.json(503, {error: 'failed to destroy invitation'});
+            });
+          })
+          .otherwise(function() {
+            res.json(503, {error: 'failed to add user to apartment'});
+          });
+      })
+      .otherwise(function() {
+        res.json(503, {error: 'failed to get invitation'});
+      });
   });
 
 };
