@@ -228,6 +228,7 @@ var bills = function(app) {
 
     // Copy over fields from the request
     var apartmentId = req.user.attributes.apartment_id;
+    var userId = req.user.attributes.id;
     var billId = req.params.bill;
     var name = req.body.name;
     var total = req.body.total;
