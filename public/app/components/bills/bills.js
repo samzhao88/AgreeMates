@@ -144,8 +144,11 @@ angular.module('main.bills').controller('BillsCtrl',
   	      success(function(data) {
             $scope.oldBill.payments = tempPayments;
             $scope.bills[index] = $scope.oldBill;
-            console.log($scope.oldBill);
+            // console.log($scope.oldBill);
+            // console.log($scope.bills[index]);
   	        $scope.reset();
+            //refresh
+            location.reload();
   	      }).
           error(function(data, status, headers, config){
             console.log(data);
@@ -211,6 +214,8 @@ angular.module('main.bills').controller('BillsCtrl',
       for (var i = 0; i < $scope.bills.length; i++) {
         if ($scope.bills[i].id == id){
           $scope.oldBill = angular.copy($scope.bills[i]);
+          $scope.oldBill.dueDate = $scope.convertDate($scope.oldBill.dueDate);
+          //add roommates who are currently responsible
           for (var i = 0; i < $scope.oldBill.payments.length; i++) {
             $scope.selectedRoommates.push($scope.oldBill.payments[i].userId);
           };
