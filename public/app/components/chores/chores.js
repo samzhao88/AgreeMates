@@ -23,7 +23,14 @@ function ($scope, $http, $timeout) {
             console.log(data);
 
         	$scope.chores = data.chores;
-            
+            for(var x = 0; x < $scope.chores.length; x++)
+            {
+                for(var i = 0; i < $scope.chores[x].users[i].length; i++)
+                {
+                    console.log(hello);
+                    $scope.chores[x].users[i].user_id = $scope.chores[x].users[i].id;
+                }
+            }
       	}).
       	error(function(data, status, headers, config){
 
@@ -263,7 +270,10 @@ function ($scope, $http, $timeout) {
 
     // for(var i = 0; i < chore.users.length; i++)
     // {
-    //     chore.users[i].id = chore.users[i].id;
+    //     if(chore.users[i].user_id)
+    //     {
+    //     chore.users[i].id = chore.users[i].user_id;
+    //     }
     // }
 
     //finds all users that are in the chore.users field and checkes them in $scope.users

@@ -36,7 +36,7 @@ var chores = function(app) {
 				res.json({chores: chores});
 				return;
 			}
-			
+			console.log(rows[0]);
 			var lastChoreId = -1;
 			var name, dueDate, createDate, interval, completed;
 			for(var i = 0; i < rows.length; i++){
@@ -69,7 +69,7 @@ var chores = function(app) {
 				}
 				
 				users_chores.push({
-					user_id: rows[i].users_id,
+					user_id: rows[i].user_id,
 					first_name: rows[i].first_name,
 					last_name: rows[i].last_name,
 					order_index: rows[i].order_index
