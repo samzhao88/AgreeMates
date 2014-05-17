@@ -11,7 +11,7 @@ var user = function(app) {
       return;
     }
 
-    res.json({id: req.user.attributes.id});
+    res.json({id: req.user.attributes.id, first_name: req.user.attributes.first_name, last_name: req.user.attributes.last_name});
   });
 
   // Get user
