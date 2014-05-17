@@ -51,7 +51,7 @@
   "main": "server/app.js",
   "scripts": {
     "start": "foreman start -f Procfile-dev -p 3000",
-    "test": "foreman run gulp test",
+    "test": "gulp test",
     "postinstall": "./node_modules/bower/bin/bower install"
   },
   "repository": {
