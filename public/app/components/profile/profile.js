@@ -6,9 +6,4 @@ angular.module('main.profile', []);
 angular.module('main.profile').controller('ProfileCtrl',
   function ($scope, $http) {
 
-    $http.get('/profile').
-      success(function(data) {
-        $scope.title = data.title;
-    });
-
 });

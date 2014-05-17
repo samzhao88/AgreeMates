@@ -24,7 +24,6 @@
 // Define the "main" module and inject all other modules as dependencies
 var app = angular.module('main',
   [
-    'main.calendar',
     'main.bills',
     'main.chores',
     'main.supplies',
@@ -42,11 +41,6 @@ var app = angular.module('main',
 // Register all routes
 app.config(function($routeProvider) {
   $routeProvider.
-    when('/', {
-    templateUrl: 'components/calendar/calendar.html',
-    module: 'main.calendar',
-    controller: 'CalendarCtrl'
-  }).
     when('/bills', {
     templateUrl: 'components/bills/bills.html',
     module: 'main.bills',
@@ -82,7 +76,7 @@ app.config(function($routeProvider) {
     controller: 'InviteCtrl'
   }).
     otherwise({
-    redirectTo: '/'
+    redirectTo: '/bills'
   });
 
 });
