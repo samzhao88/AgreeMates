@@ -6,19 +6,23 @@ angular.module('main.bills', []);
 angular.module('main.bills').controller('BillsCtrl',
   function($http, $scope) {
 
-    //new bill being added or updated
+    //new bill being added
   	$scope.bill = {};
     //balance when adding a bill
     $scope.balance = 0;
     //selected roommates and their amount when adding a bill
     $scope.selectedRoommates = [];
-    //
+    //all checked bills
     $scope.checkboxes = [];
+    //the bill being updated
+    $scope.oldBill = {payments:[]};
 
     //get current user ID
     $http.get('/user').
     success(function(data) {
       $scope.userId = data.id;
+      $scope.userFirstName = data.first_name;
+      $scope.userLastNanme = data.last_name;
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -73,9 +77,22 @@ angular.module('main.bills').controller('BillsCtrl',
       };
       	$http.post('/bills/', bill).
   	      success(function(data) {
-  	        //$scope.bills.push(data);
+            //stimulate the new bill into existing bills;
+            var newBill = {}
+            newBill.id = data.id;
+            newBill.name = bill.name;
+            newBill.amount = bill.total;
+            newBill.dueDate = bill.date;
+            newBill.frequency = bill.interval;
+            newBill.resolved = false;
+            newBill.creatorId = $scope.userId;
+            newBill.payTo = $scope.userFirstName;
+            newBill.payments = [];
+            for (var i = 0; i < bill.roommates.length; i++) {
+              newBill.payments.push({"uesrId": bill.roommates[i].id, "amount": bill.roommates[i].amount, "paid": false});
+            };
+  	        $scope.bills.push(newBill);
   	       	$scope.reset();
-            //need to show new bill on the page, need to get id of new bill
   	      }).
           error(function(data, status, headers, config){
             console.log(data);
@@ -89,8 +106,10 @@ angular.module('main.bills').controller('BillsCtrl',
       //is currently selected
       if (idx > -1) {
         $scope.selectedRoommates.splice(idx, 1);
+        console.log("remove");
       } else {
         $scope.selectedRoommates.push(roommateID);
+        console.log("push");
       }
     };
 
@@ -107,14 +126,33 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //update a bill, not done yet.
     $scope.updateBill = function(id, index) {
-        console.log($scope.bill);      
-      	// $http.put('/bills/'+id).
-  	    //   success(function(data) {
-  	    //     //refresh?
-  	    //   }).
-       //    error(function(data, status, headers, config){
-       //      console.log(data);
-       //    });
+        var tempBill = {};
+        tempBill.name = $scope.oldBill.name;
+        tempBill.total = $scope.oldBill.amount;
+        tempBill.interval = $scope.oldBill.frequency;
+        tempBill.date = $scope.oldBill.dueDate;
+        tempBill.roommates = [];
+        var tempPayments = [];
+        for (var i = 0; i < $scope.oldBill.payments.length; i++) {
+          if ($scope.selectedRoommates.indexOf($scope.oldBill.payments[i].userId) > -1) {
+            tempBill.roommates.push({id: $scope.oldBill.payments[i].userId, amount: $scope.oldBill.payments[i].amount});
+            tempPayments.push({userId: $scope.oldBill.payments[i].userId, amount: $scope.oldBill.payments[i].amount, paid: false});
+          }
+        };
+        console.log(tempBill);
+      	$http.put('/bills/'+$scope.oldBill.id, tempBill).
+  	      success(function(data) {
+            $scope.oldBill.payments = tempPayments;
+            $scope.bills[index] = $scope.oldBill;
+            // console.log($scope.oldBill);
+            // console.log($scope.bills[index]);
+  	        $scope.reset();
+            //refresh
+            location.reload();
+  	      }).
+          error(function(data, status, headers, config){
+            console.log(data);
+          });
     };
 
     //mark a bill as paid or not paid
@@ -170,18 +208,42 @@ angular.module('main.bills').controller('BillsCtrl',
       return date.split("T")[0];
     }
 
+    //set the oldBill to the bill that is selected to update
     $scope.prepareUpdate = function(id) {
-      $scope.oldBill = {};
+      $scope.reset();
       for (var i = 0; i < $scope.bills.length; i++) {
         if ($scope.bills[i].id == id){
           $scope.oldBill = angular.copy($scope.bills[i]);
+          $scope.oldBill.dueDate = $scope.convertDate($scope.oldBill.dueDate);
+          //add roommates who are currently responsible
+          for (var i = 0; i < $scope.oldBill.payments.length; i++) {
+            $scope.selectedRoommates.push($scope.oldBill.payments[i].userId);
+          };
+          //change date formate
         }
       };
+    }
+
+    //return whether a roommate should be checked when update a bill
+    $scope.isChecked = function(roommateId) {
+      if ($scope.oldBill.payments === undefined) {
+        return false;
+      }
+      for (var i = 0; i < $scope.oldBill.payments.length; i++) {
+        if ($scope.oldBill.payments[i].userId = roommateId) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+      return false;
     }
 
     //clear the bill
     $scope.reset = function() {
       $scope.bill = {};
+      $scope.selectedRoommates = [];
+      $scope.oldBill = {};
     };
 
 });
