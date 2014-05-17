@@ -233,7 +233,6 @@ var bills = function(app) {
     var total = req.body.total;
     var interval = req.body.interval;
     var date = req.body.date;
-    var paid = req.body.paid;
     var roommates = req.body.roommates;
 
     // Check for validity of fields
@@ -254,8 +253,7 @@ var bills = function(app) {
       .then(function() {
         // Edit the bill
         new BillModel({id: billId, apartment_id: apartmentId})
-          .save({name: name, amount: total, duedate: date,
-                paid: paid, interval: interval})
+          .save({name: name, amount: total, duedate: date, interval: interval})
           .then(function(model) {
             // If there is no payment for the creator, we add one
             // with a balance of 0
@@ -273,7 +271,7 @@ var bills = function(app) {
   
             // Add new payments for all the users who need to pay
             for(var i = 0; i < roommates.length; i++) {
-              new PaymentModel({paid: roommates[i].paid,
+              new PaymentModel({paid: false,
                                amount: roommates[i].amount,
                                user_id: roommates[i].id, bill_id: billId})
                 .save()
