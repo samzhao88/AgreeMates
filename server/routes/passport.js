@@ -57,6 +57,24 @@ module.exports = function(app, passport) {
 		})
 	);
 
+	// google authentication
+  app.get('/auth/google/invite/:invite', function(req, res, next) {
+		passport.authenticate('google', {
+      callbackURL: '/auth/google/callback/'+req.params.invite,
+			scope: ['https://www.googleapis.com/auth/userinfo.profile',
+							'https://www.googleapis.com/auth/userinfo.email']
+		})(req, res, next);
+  });
+
+  // google authentication callback
+	app.get('/auth/google/callback/:invite', function(req, res, next) {
+		passport.authenticate('google', {
+      callbackURL : '/auth/google/callback/'+req.params.invite,
+			successRedirect : '/',
+			failureRedirect : '/'
+		})(req, res, next);
+  });
+
 	// unlink facebook
 	app.get('/unlink/facebook', function(req, res) {
 		var user = req.user;
