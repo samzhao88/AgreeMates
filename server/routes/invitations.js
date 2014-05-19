@@ -1,5 +1,5 @@
 // Invitation routes
-/*jshint camelcase: false*/
+// jshint camelcase: false
 
 'use strict';
 
@@ -7,42 +7,13 @@ var UserModel = require('../models/user').model;
 var ApartmentModel = require('../models/apartment').model;
 var InvitationModel = require('../models/invitation').model;
 var InvitationCollection = require('../models/invitation').collection;
+var sendInvitation = require('../controllers/inviteMailer.js');
 
 var invitations = function(app) {
 
-  var nodemailer = require('nodemailer');
-
-  var sendInvitation = function(id, email, aptName) {
-    var smtpTransport = nodemailer.createTransport('SMTP', {
-      service: 'Mandrill',
-      auth: {
-        user: process.env.MANDRILL_USER,
-        pass: process.env.MANDRILL_PASS
-      }
-    });
-
-    var mailOptions = {
-      from: 'invitations@agreemates.com',
-      to: email,
-      subject: 'You have been invited to an AgreeMates apartment',
-      generateTextFromHTML: true,
-      html: 'You have been invited to ' + aptName + '! Click this ' +
-        '<a href="' + process.env.MANDRILL_INVURL +
-        id + '">link</a> to join'
-    };
-
-    smtpTransport.sendMail(mailOptions, function(error, response) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Message sent: ' + response.message);
-      }
-    });
-  };
-
   // Add invitation to database
   app.post('/invitations', function(req, res) {
-    if (req.user === null || req.body === null) {
+    if (req.user === undefined || req.body === undefined) {
       res.json(400, {error: 'Missing user or body'});
       return;
     }
@@ -94,11 +65,9 @@ var invitations = function(app) {
     new InvitationModel({id: req.params.invite})
       .fetch()
       .then(function(model) {
-        /*jshint camelcase: false*/
         new ApartmentModel({id: model.attributes.apartment_id})
           .fetch()
           .then(function(model2) {
-            console.log(model);
             var user = req.user;
             if (user != null) {
               res.render('components/invitations/index.html', {
@@ -123,6 +92,7 @@ var invitations = function(app) {
       });
 
   });
+
 
   // Removes invitation from the database
   app.delete('/invitations/:invite', function(req, res) {
