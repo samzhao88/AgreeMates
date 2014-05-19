@@ -15,6 +15,9 @@ angular.module('main.supplies').controller('SuppliesCtrl',
     //empty model
     $scope.supply = {name: ''};
 
+    //emtpy supplies
+    $scope.supplies = {};
+
   	//get apll supplies
     $http.get('/supplies/').
       success(function(data) {
@@ -84,6 +87,10 @@ angular.module('main.supplies').controller('SuppliesCtrl',
     $scope.reset = function(){
     	$scope.supply.name = '';
       $scope.hideAddBox = true;
+    };
+
+    $scope.emptySupplyList = function(){
+      return $scope.supplies.length == 0 && $scope.hideAddBox ? true : false; 
     };
 
     //show and hide an error msg
