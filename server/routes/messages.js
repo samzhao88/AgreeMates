@@ -32,7 +32,6 @@ var messages = function(app) {
               'comments.body as commentBody', 'comments.date as commentDate')
       .orderBy('messageId')
       .then(function(rows) {
-        console.log(rows);
         var messages = [];
         var comments = [];
         if(rows.length === 0) {
@@ -89,7 +88,6 @@ var messages = function(app) {
         });
         res.json({messages: messages});
       }).otherwise(function(error) {
-        console.log(error);
         res.json(503, {error: 'Database error.'});
       });            
   });
@@ -126,7 +124,6 @@ var messages = function(app) {
       .then(function (model) {
         res.json({id: model.attributes.id});
       }).otherwise(function(error) {
-        console.log(error);
         res.json(503, {error: 'Database error.'});
       });
   });
