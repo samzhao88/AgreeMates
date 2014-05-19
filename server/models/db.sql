@@ -178,39 +178,6 @@ ALTER SEQUENCE bills_reocurring_id_seq OWNED BY bills.reocurring_id;
 
 
 --
--- TOC entry 190 (class 1259 OID 25387)
--- Name: boards; Type: TABLE; Schema: public; Owner: -; Tablespace:
---
-
-CREATE TABLE boards (
-    id integer NOT NULL,
-    apartment_id integer
-);
-
-
---
--- TOC entry 189 (class 1259 OID 25385)
--- Name: board_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE board_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 2070 (class 0 OID 0)
--- Dependencies: 189
--- Name: board_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE board_id_seq OWNED BY boards.id;
-
-
---
 -- TOC entry 182 (class 1259 OID 25289)
 -- Name: chores; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
@@ -319,7 +286,7 @@ CREATE TABLE messages (
     body text,
     date date,
     user_id integer,
-    board_id integer
+    apartment_id integer
 );
 
 
@@ -493,15 +460,6 @@ ALTER TABLE ONLY bills ALTER COLUMN id SET DEFAULT nextval('bills_id_seq'::regcl
 
 ALTER TABLE ONLY bills ALTER COLUMN reocurring_id SET DEFAULT nextval('bills_reocurring_id_seq'::regclass);
 
-
---
--- TOC entry 1896 (class 2604 OID 25411)
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY boards ALTER COLUMN id SET DEFAULT nextval('board_id_seq'::regclass);
-
-
 --
 -- TOC entry 1891 (class 2604 OID 25412)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
@@ -607,26 +565,6 @@ SELECT pg_catalog.setval('bills_reocurring_id_seq', 1, false);
 
 
 --
--- TOC entry 2081 (class 0 OID 0)
--- Dependencies: 189
--- Name: board_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('board_id_seq', 1, true);
-
-
---
--- TOC entry 2057 (class 0 OID 25387)
--- Dependencies: 190
--- Data for Name: boards; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY boards (id, apartment_id) FROM stdin;
-1   1
-\.
-
-
---
 -- TOC entry 2049 (class 0 OID 25289)
 -- Dependencies: 182
 -- Data for Name: chores; Type: TABLE DATA; Schema: public; Owner: -
@@ -671,18 +609,6 @@ COPY comments (id, body, date, user_id, message_id) FROM stdin;
 --
 
 SELECT pg_catalog.setval('comments_id_seq', 1, false);
-
-
---
--- TOC entry 2044 (class 0 OID 25245)
--- Dependencies: 177
--- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY messages (id, subject, body, date, user_id, board_id) FROM stdin;
-1   test1   test1   \N  1   1
-2   test2   test2   \N  2   1
-\.
 
 
 --
@@ -783,15 +709,6 @@ ALTER TABLE ONLY bills
 
 
 --
--- TOC entry 1914 (class 2606 OID 25392)
--- Name: board_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
---
-
-ALTER TABLE ONLY boards
-    ADD CONSTRAINT board_pkey PRIMARY KEY (id);
-
-
---
 -- TOC entry 1908 (class 2606 OID 25295)
 -- Name: chores_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
@@ -843,15 +760,6 @@ ALTER TABLE ONLY supplies
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
-
-
---
--- TOC entry 1929 (class 2606 OID 25403)
--- Name: apartment_board_id; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY boards
-    ADD CONSTRAINT apartment_board_id FOREIGN KEY (apartment_id) REFERENCES apartments(id);
 
 
 --
@@ -910,11 +818,11 @@ ALTER TABLE ONLY comments
 
 --
 -- TOC entry 1918 (class 2606 OID 25393)
--- Name: messages_board_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: messages_apartment_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY messages
-    ADD CONSTRAINT messages_board_id FOREIGN KEY (board_id) REFERENCES boards(id);
+    ADD CONSTRAINT messages_apartment_id FOREIGN KEY (apartment_id) REFERENCES apartments(id);
 
 
 --
