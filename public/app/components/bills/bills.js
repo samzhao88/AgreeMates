@@ -139,7 +139,8 @@ angular.module('main.bills').controller('BillsCtrl',
       tempBill.roommates = [];
       var tempPayments = [];
       for (var i = 0; i < $scope.updatedAmount.length; i++) {
-        if ($scope.updatedAmount[i].amount != '') { //this only check if input box, should check is selected actually
+        //if the roommate is selected and the input box is filled
+        if ($scope.updatedAmount[i].amount != '' && $scope.selectedRoommates.indexOf($scope.updatedAmount[i].userId) > -1) { 
           tempBill.roommates.push({id: $scope.updatedAmount[i].userId, amount: $scope.updatedAmount[i].amount, paid: false});
           tempPayments.push({userId: $scope.updatedAmount[i].userId, amount: $scope.updatedAmount[i].amount, paid: false});
         }
@@ -149,8 +150,6 @@ angular.module('main.bills').controller('BillsCtrl',
 	      success(function(data) {
           $scope.oldBill.payments = tempPayments;
           $scope.bills[$scope.updateIdx] = $scope.oldBill;
-          // console.log($scope.oldBill);
-          // console.log($scope.bills[index]);
 	        $scope.reset();
 	      }).
         error(function(data, status, headers, config){
