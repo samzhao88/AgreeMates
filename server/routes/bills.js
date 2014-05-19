@@ -106,7 +106,6 @@ var bills = function(app) {
         res.json({bills: bills});
       })
       .otherwise(function(error) {
-        console.log(error);
         res.json(503, {error: 'Database error.'});
       });
   });
