@@ -28,6 +28,7 @@ var bills = function(app) {
     // payments
     Bookshelf.DB.knex('bills')
       .join('payments', 'bills.id', '=', 'payments.bill_id')
+      .join('users as creator', 'bills.user_id', '=', 'creator.id')
       .join('users', 'payments.user_id', '=', 'users.id')
       .where('bills.apartment_id', '=', apartmentId)
       .where('bills.paid', '=', (req.query.type === 'resolved'))
@@ -36,7 +37,7 @@ var bills = function(app) {
               'bills.createdate', 'bills.duedate', 'bills.name',
               'bills.interval', 'users.first_name', 'users.id',
               'payments.bill_id', 'payments.amount', 
-              'bills.user_id as creatorId')
+              'bills.user_id as creatorId', 'creator.first_name as payTo')
       .orderBy('payments.bill_id')
       .then(function(rows) {
         var bills = [];
@@ -80,9 +81,7 @@ var bills = function(app) {
             resolved = rows[i].billPaid;
             frequency = rows[i].interval;
             creatorId = rows[i].creatorId;
-          }
-          if(rows[i].creatorId === rows[i].user_id) {
-            payTo = rows[i].first_name;
+            payTo = rows[i].payTo;
           }
           payments.push({
             userId: rows[i].user_id,
@@ -107,6 +106,7 @@ var bills = function(app) {
         res.json({bills: bills});
       })
       .otherwise(function(error) {
+        console.log(error);
         res.json(503, {error: 'Database error.'});
       });
   });
@@ -131,19 +131,6 @@ var bills = function(app) {
     var createdate = (date.getMonth() + 1) + '/' + date.getDate() +
       '/' + date.getFullYear();
     var roommates = req.body.roommates;
-
-    // If there is no payment for the creator, we add one
-    // with a balance of 0
-    var creatorpayment = false;
-    for(var i = 0; i < roommates.length; i++) {
-      if(roommates[i].id === userId) {
-        creatorpayment = true;
-        break;
-      }
-    }
-    if(!creatorpayment) {
-      roommates.push({id: userId, amount: 0});
-    }
 
     // Check if the fields are acceptable
     if (!isValidName(name)) {
@@ -254,21 +241,7 @@ var bills = function(app) {
         // Edit the bill
         new BillModel({id: billId, apartment_id: apartmentId})
           .save({name: name, amount: total, duedate: date, interval: interval})
-          .then(function(model) {
-            // If there is no payment for the creator, we add one
-            // with a balance of 0
-            var creatorId = model.user_id;
-            var creatorpayment = false;
-            for(var i = 0; i < roommates.length; i++) {
-              if(roommates[i].id === creatorId) {
-                creatorpayment = true;
-                break;
-              }
-            }
-            if(!creatorpayment) {
-              roommates.push({id: creatorId, amount: 0});
-            }
-  
+          .then(function(model) {  
             // Add new payments for all the users who need to pay
             for(var i = 0; i < roommates.length; i++) {
               new PaymentModel({paid: false,
