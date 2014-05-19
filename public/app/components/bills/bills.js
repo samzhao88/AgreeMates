@@ -30,7 +30,7 @@ angular.module('main.bills').controller('BillsCtrl',
         console.log(data);
     });    
 
-  	//get all unresolved bills and set them to defaul
+  	//get all unresolved bills and set them to default
     $http.get('/bills', {params: {type: 'unresolved'}}).
     success(function(data) {
       $scope.unresolvedBills = data.bills;
@@ -91,9 +91,11 @@ angular.module('main.bills').controller('BillsCtrl',
           newBill.payTo = $scope.userFirstName;
           newBill.payments = [];
           for (var i = 0; i < bill.roommates.length; i++) {
-            newBill.payments.push({"uesrId": bill.roommates[i].id, "amount": bill.roommates[i].amount, "paid": false});
+            newBill.payments.push({"userId": bill.roommates[i].id, "amount": bill.roommates[i].amount, "paid": false});
           };
+          // console.log(newBill);
 	        $scope.unresolvedBills.push(newBill);
+          console.log($scope.bills);
 	       	$scope.reset();
 	      }).
         error(function(data, status, headers, config){
@@ -176,7 +178,7 @@ angular.module('main.bills').controller('BillsCtrl',
         });
     };
 
-    //return a boolean indictaing whether the bill is paid or not by the user
+    //return a boolean indictaing whether the bill is paid by the user
     $scope.isPaid = function(id, index) {
       var paid = false;
       for (var i = 0; i < $scope.bills[index].payments.length; i++) {
@@ -194,12 +196,16 @@ angular.module('main.bills').controller('BillsCtrl',
     };
 
     //return the amount owned by the current user for a bill
-    $scope.amountOwned = function(id, index) {  
-      for (var i = 0; i < $scope.bills[index].payments.length; i++) {
-        if ($scope.bills[index].payments[i].userId == $scope.userId) {
-          return $scope.bills[index].payments[i].amount;        
+    $scope.amountOwed = function(id, index) {  
+      for (var i = 0; i < $scope.bills.length; i++) {
+        if ($scope.bills[i].id == id){
+          for (var i = 0; i < $scope.bills[index].payments.length; i++) {
+            if ($scope.bills[index].payments[i].userId == $scope.userId) {
+              return $scope.bills[index].payments[i].amount;        
+            }
+          };  
         }
-      };      
+      } 
       return 0;
     };
 

@@ -92,7 +92,7 @@
 		<tr ng-repeat="bill in bills">
 			<td  data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, index)">{{bill.name}}</td>
 			<td  data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, index)">${{bill.amount}}</td>
-			<td  data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, index)">${{amountOwned(bill.id, $index)}}</td>
+			<td  data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, index)">${{amountOwed(bill.id, $index)}}</td>
 			<td  data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, index)">{{bill.payTo}}</td>
 			<td  data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, index)">{{convertDate(bill.dueDate)}}</td>
 			<td><input type="checkbox" ng-click="payBill(bill.id, $index)" ng-checked="isPaid(bill.id, $index)"></td>
