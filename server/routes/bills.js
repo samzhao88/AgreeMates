@@ -291,7 +291,6 @@ var bills = function(app) {
             res.json(503, {error: 'Delete payment error'})
           });
       }).otherwise(function(error) {
-        console.log(error);
         res.json(503, {error: 'Database error.'});
       });
 
