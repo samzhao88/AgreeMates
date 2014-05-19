@@ -22,9 +22,9 @@ var messages = function(app) {
     // Get all the messages for the apartment and their
     // corresponding comments
     Bookshelf.DB.knex('messages')  
-      .join('users as author', 'messages.user_id', '=', 'author.id')
-      .join('comments', 'messages.id', '=', 'comments.message_id')
-      .join('users', 'comments.user_id', '=', 'users.id')
+      .join('users as author', 'messages.user_id', '=', 'author.id', 'left outer')
+      .join('comments', 'messages.id', '=', 'comments.message_id', 'left outer')
+      .join('users', 'comments.user_id', '=', 'users.id', 'left outer')
       .where('messages.apartment_id', '=', apartmentId)
       .select('messages.id as messageId', 'messages.subject', 'messages.body',
               'author.first_name as authorName', 'messages.date as messageDate',
@@ -69,12 +69,14 @@ var messages = function(app) {
             author = rows[i].authorName;
             date = rows[i].messageDate;
           }
-          comments.push({
-            id: rows[i].commentId,
-            author: rows[i].commentAuthor,
-            text: rows[i].commentBody,
-            date: rows[i].commentDate
-          });
+          if(rows[i].commentId !== null) {
+            comments.push({
+              id: rows[i].commentId,
+              author: rows[i].commentAuthor,
+              text: rows[i].commentBody,
+              date: rows[i].commentDate
+            });
+          }
         }
         // Push last message onto the messages array
         messages.push({
@@ -119,7 +121,7 @@ var messages = function(app) {
     
     // Create the new message in the database.
     new MessageModel({apartment_id: apartmentId, user_id: userId,
-      subject: subject, body: text})
+      subject: subject, body: text, date: createdate})
       .save()
       .then(function (model) {
         res.json({id: model.attributes.id});
@@ -140,6 +142,7 @@ var messages = function(app) {
 
     // Copy over fields from the request
     var apartmentId = req.user.attributes.apartment_id;
+    var userId = req.user.attributes.id;
     var messageId = req.params.message;
     var subject = req.body.subject;
     var text = req.body.text;
@@ -155,7 +158,7 @@ var messages = function(app) {
     }
 
     // Get and update the model from the database
-    new MessageModel({id: messageId, apartment_id: apartmentId})
+    new MessageModel({id: messageId, apartment_id: apartmentId, user_id: userId})
       .save({subject: subject, body: text})
       .then(function(model) {
         res.json({result: 'Message successfully updated.'});
@@ -175,16 +178,19 @@ var messages = function(app) {
 
     var apartmentId = req.user.attributes.apartment_id;
     var messageId = req.params.message;
- 
+    var userId = req.user.attributes.id; 
+
     if(!isValidId(messageId)) {
       res.json(400, {error: 'Invalid message ID.'});
       return;
     }
 
     // Destroy all of the comments on the message and then
-    // destroy the message itself.
+    // destroy the message itself. The user must be the one
+    // who created the message.
     new CommentModel()
-      .query('where', 'message_id', '=', messageId)
+      .query('where', 'message_id', '=', messageId, 'AND',
+             'user_id', '=', userId)
       .destroy()
       .then(function () {
         new MessageModel()
