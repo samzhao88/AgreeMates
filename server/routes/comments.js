@@ -19,7 +19,7 @@ var comments = function(app) {
     var apartmentId = req.user.attributes.apartment_id;
     var userId = req.user.attributes.id;
     var messageId = req.params.message;
-    var text = req.body.text;
+    var text = req.body.body;
     var date = new Date();
     var createdate = (date.getMonth() + 1) + '/' + date.getDate() +
       '/' + date.getFullYear();
@@ -36,7 +36,7 @@ var comments = function(app) {
                      body: text, date: date})
       .save()
       .then(function(model) {
-        res.json({id: model.attributes.id});
+        res.json(model);
       }).otherwise(function(error) {
         res.json(503, {error: 'Database error'});
       });
