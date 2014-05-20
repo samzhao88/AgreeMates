@@ -129,7 +129,7 @@ var bills = function(app) {
     var date = new Date();
     var createdate = (date.getMonth() + 1) + '/' + date.getDate() +
       '/' + date.getFullYear();
-    var roommates = JSON.parse(req.body.roommates);
+    var roommates = req.body.roommates;
 
     // Check if the fields are acceptable
     if (!isValidName(name)) {
