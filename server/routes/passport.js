@@ -11,6 +11,7 @@ module.exports = function(app, passport) {
 		})
 	);
 
+
 	// facebook authentication callback
 	app.get('/auth/facebook/callback',
 		passport.authenticate('facebook', {
@@ -18,6 +19,21 @@ module.exports = function(app, passport) {
 			failureRedirect : '/'
 		})
 	);
+
+  app.get('/auth/facebook/invite/:invite', function(req, res, next) {
+    passport.authenticate('facebook', {
+      callbackURL : '/auth/facebook/callback/'+req.params.invite,
+      scope : 'email'
+    })(req, res, next);
+  });
+
+  app.get('/auth/facebook/callback/:invite', function(req, res, next) {
+    passport.authenticate('facebook', {
+      callbackURL : '/auth/facebook/callback/'+req.params.invite,
+      successRedirect : '/invitations/'+req.params.invite,
+      failureRedirect : '/'
+    })(req, res, next);
+  });
 
 	// log out
 	app.get('/logout', function(req, res) {

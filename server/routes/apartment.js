@@ -47,53 +47,14 @@ var apartment = function(app) {
 			});
 	});
 
-	// Gets an apartment's information
-	app.get('/apartment/:apt', function(req, res) {
+	// Gets all users in the apartment
+	app.get('/apartment/users', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
 		}
 
 		var apartmentId = req.user.attributes.apartment_id;
-
-		if (!isValidId(req.params.apt)) {
-			res.json(400, {error: 'Invalid apartment ID.'});
-			return;
-		}
-
-		if (apartmentId !== parseInt(req.params.apt)) {
-			res.json(401, {error: 'User unauthorized to view this apartment.'});
-			return;
-		}
-
-		Bookshelf.DB.knex('apartments')
-			.where('apartments.id', '=', apartmentId)
-			.then(function(rows) {
-				res.json(rows[0]);
-			})
-			.otherwise(function() {
-				res.json(503, {error: 'Database error.'});
-			});
-	});
-
-	// Gets all users in an apartment
-	app.get('/apartment/:apt/users', function(req, res) {
-		if (req.user === undefined) {
-			res.json(401, {error: 'Unauthorized user.'});
-			return;
-		}
-
-		var apartmentId = req.user.attributes.apartment_id;
-
-		if (!isValidId(req.params.apt)) {
-			res.json(400, {error: 'Invalid apartment ID.'});
-			return;
-		}
-
-		if (apartmentId !== parseInt(req.params.apt)) {
-			res.json(401, {error: 'User unauthorized to view this apartment.'});
-			return;
-		}
 
 		Bookshelf.DB.knex('users')
 			.select('id', 'first_name', 'last_name', 'email', 'phone')
@@ -106,8 +67,27 @@ var apartment = function(app) {
 			});
 	});
 
+	// Gets an apartment's information
+	app.get('/apartment', function(req, res) {
+		if (req.user === undefined) {
+			res.json(401, {error: 'Unauthorized user.'});
+			return;
+		}
+
+		var apartmentId = req.user.attributes.apartment_id;
+
+		Bookshelf.DB.knex('apartments')
+			.where('apartments.id', '=', apartmentId)
+			.then(function(rows) {
+				res.json(rows[0]);
+			})
+			.otherwise(function() {
+				res.json(503, {error: 'Database error.'});
+			});
+	});
+
 	// Edits an apartment's information
-	app.put('/apartment/:apt', function(req, res) {
+	app.put('/apartment', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
@@ -117,24 +97,19 @@ var apartment = function(app) {
 		var apartmentName = req.body.name;
 		var apartmentAddress = req.body.address;
 
-		if (!isValidId(req.params.apt)) {
-			res.json(400, {error: 'Invalid apartment ID.'});
-			return;
-		} else if (!isValidName(apartmentName)) {
+		if (!isValidName(apartmentName)) {
 			res.json(400, {error: 'Invalid apartment name.'});
-			return;
-		} else if (!isValidName(apartmentAddress)) {
-			res.json(400, {error: 'Invalid apartment address.'});
 			return;
 		}
 
-		if (apartmentId !== parseInt(req.params.apt)) {
-			res.json(401, {error: 'User unauthorized to view this apartment'});
-			return;
+		var update = {};
+		update.name = apartmentName.trim();
+		if (isValidName(apartmentAddress)) {
+			update.address = apartmentAddress.trim();
 		}
 
 		new ApartmentModel({id: apartmentId})
-			.save({name: apartmentName.trim(), address: apartmentAddress.trim()}, {patch: true})
+			.save(update, {patch: true})
 			.then(function() {
 				res.json(200);
 			})
@@ -145,7 +120,7 @@ var apartment = function(app) {
 
 	  // Removes apartment from the database
 	  // Needs to delete all the other models not just break ties
-	app.delete('/apartment/:apt', function(req, res) {
+	app.delete('/apartment', function(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
@@ -232,7 +207,7 @@ var apartment = function(app) {
 
 	// Checks if a name is valid
 	function isValidName(name) {
-		return name !== undefined && name !== null && name !== '';
+		return name !== undefined && name !== null && name.trim() !== '';
 	}
 
 	// Checks if an ID is valid

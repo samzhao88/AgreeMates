@@ -29,7 +29,7 @@
       </div>
 
       <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li><a href="#"><i class="ion-ios7-bell"></i><span class="badge red-badge notif-badge">2</span></a></li>
+        <li><a href="#"><i class="ion-ios7-bell"></i></a></li>
       </ul>
 
       <!-- side-bar -->
@@ -50,16 +50,12 @@
               Tasks
             </li>
 
-            <li ng-class="{active: isActive('/')}">
-              <a href='#/'>Calendar</a>
-            </li>
-
             <li ng-class="{active: isActive('/bills')}">
               <a href='#/bills'>Bills</a>
             </li>
 
             <li ng-class="{active: isActive('/chores')}">
-              <a href='#/chores'>Chores<span class="badge pull-right red-badge">2</span></a>
+              <a href='#/chores'>Chores</a>
             </li>
 
             <li ng-class="{active: isActive('/supplies')}">
@@ -104,7 +100,6 @@
 
   <script src="components/bills/bills.js"></script>
   <script src="components/board/board.js"></script>
-  <script src="components/calendar/calendar.js"></script>
   <script src="components/chores/chores.js"></script>
   <script src="components/supplies/supplies.js"></script>
   <script src="components/navbar/navbar.js"></script>
