@@ -129,7 +129,7 @@ var bills = function(app) {
     var date = new Date();
     var createdate = (date.getMonth() + 1) + '/' + date.getDate() +
       '/' + date.getFullYear();
-    var roommates = req.body.roommates;
+    var roommates = JSON.parse(req.body.roommates);
 
     // Check if the fields are acceptable
     if (!isValidName(name)) {
@@ -196,7 +196,47 @@ var bills = function(app) {
       .where('bill_id', '=', billId)
       .update({paid: paid})
       .then(function() {
-        res.send(200);
+        // Check if all payments for bill have been paid
+        // if so, mark bill as paid
+        new PaymentCollection()
+          .query('where', 'bill_id', '=', billId)
+          .fetch()
+          .then(function(model) {
+            var allPaymentsPaid = true;
+            for(var i = 0; i < model.length; i++) {
+              var payment = model.models[i].attributes;
+              if(payment.paid !== true) {
+                allPaymentsPaid = false;
+                break;
+              }
+            }
+            if(allPaymentsPaid) {
+              new BillModel({id: billId, apartment_id: apartmentId})
+                .save({paid: true})
+                .then(function(model) {
+                  console.log(model.interval);
+                  if(model.interval === 3) {
+                    var month = model.duedate.getMonth() + 1;
+                    var duedate = month + '/' + model.duedate.getDay() + '/' + 
+                      model.duedate.getFullYear();
+                    var createdate = new Date();
+                    new BillModel({apartment_id: apartmentId, name: model.name,
+                                  user_id: userId, amount: model.amount, 
+                                  paid: false, interval: model.interval, 
+                                  duedate: duedate, createdate: createdate,
+                                  reoccuring_id: model.reoccuring_id})
+                      .save()
+                      .then(function() {
+                        res.send(200);
+                      }).otherwise(503, {error: 'Database error.'});
+                  } else {
+                    res.send(200);
+                  }   
+                }).otherwise(503, {error: 'Database error.'});
+            } else {
+              res.send(200);
+            }
+          }).otherwise(503, {error: 'Database error.'});
       })
       .otherwise(function() {
         res.json(503, {error: 'Database error.'});
