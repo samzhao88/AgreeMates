@@ -213,30 +213,45 @@ var bills = function(app) {
             if(allPaymentsPaid) {
               new BillModel({id: billId, apartment_id: apartmentId})
                 .save({paid: true})
-                .then(function(model) {
-                  console.log(model.interval);
-                  if(model.interval === 3) {
-                    var month = model.duedate.getMonth() + 1;
-                    var duedate = month + '/' + model.duedate.getDay() + '/' + 
-                      model.duedate.getFullYear();
-                    var createdate = new Date();
-                    new BillModel({apartment_id: apartmentId, name: model.name,
-                                  user_id: userId, amount: model.amount, 
-                                  paid: false, interval: model.interval, 
-                                  duedate: duedate, createdate: createdate,
-                                  reoccuring_id: model.reoccuring_id})
-                      .save()
-                      .then(function() {
+                .then(function() {
+                  new BillModel()
+                    .query('where', 'id', '=', billId, 'AND',
+                           'apartment_id', '=', apartmentId)
+                    .fetch()
+                    .then(function(model) {
+                      if(model.attributes.interval === 3) {
+                        var month = model.attributes.duedate.getMonth() + 2;
+                        var duedate = month + '/' + model.attributes.duedate.getDate() + '/' + 
+                          model.attributes.duedate.getFullYear();
+                        console.log(duedate);
+                        var createdate = new Date();
+                        new BillModel({apartment_id: apartmentId, name: model.attributes.name,
+                                      user_id: userId, amount: model.attributes.amount, 
+                                      paid: false, interval: model.attributes.interval, 
+                                      duedate: duedate, createdate: createdate})
+                          .save()
+                          .then(function() {
+                            res.send(200);
+                          }).otherwise(function(error) {
+                            console.log(error);
+                            res.json(503, {error: 'Database error.'});
+                          });
+                      } else {
                         res.send(200);
-                      }).otherwise(503, {error: 'Database error.'});
-                  } else {
-                    res.send(200);
-                  }   
-                }).otherwise(503, {error: 'Database error.'});
+                      }   
+                    }).otherwise(function(error) {
+                      console.log(error);
+                      res.json(503, {error: 'Database error.'});
+                    });
+                }).otherwise(function() {
+                  res.json(503, {error: 'Database error.'});
+                });
             } else {
               res.send(200);
             }
-          }).otherwise(503, {error: 'Database error.'});
+          }).otherwise(function() {
+            res.json(503, {error: 'Database error.'});
+          });
       })
       .otherwise(function() {
         res.json(503, {error: 'Database error.'});
