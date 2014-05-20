@@ -219,7 +219,7 @@ var bills = function(app) {
                         var createdate = new Date();
                         new BillModel({apartment_id: apartmentId, 
                                       name: oldBill.attributes.name,
-                                      user_id: userId, 
+                                      user_id: oldBill.attributes.user_id, 
                                       amount: oldBill.attributes.amount, 
                                       paid: false, 
                                       interval: oldBill.attributes.interval, 
