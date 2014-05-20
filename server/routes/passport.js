@@ -49,29 +49,31 @@ module.exports = function(app, passport) {
 		})
 	);
 
-  // google authentication callback
-	app.get('/auth/google/callback',
-		passport.authenticate('google', {
-			successRedirect : '/',
-			failureRedirect : '/'
-		})
-	);
-
 	// google authentication
   app.get('/auth/google/invite/:invite', function(req, res, next) {
+    req.session.redirectUrl = '/invitations/'+req.params.invite;
 		passport.authenticate('google', {
-      callbackURL: '/auth/google/callback/'+req.params.invite,
 			scope: ['https://www.googleapis.com/auth/userinfo.profile',
 							'https://www.googleapis.com/auth/userinfo.email']
 		})(req, res, next);
   });
 
   // google authentication callback
-	app.get('/auth/google/callback/:invite', function(req, res, next) {
-		passport.authenticate('google', {
-      callbackURL : '/auth/google/callback/'+req.params.invite,
-			successRedirect : '/',
-			failureRedirect : '/'
+	app.get('/auth/google/callback', function(req, res, next) {
+		passport.authenticate('google', function(err, user) {
+      var redirectUrl = '/';
+
+      if (err) { return next(err); }
+      if (!user) { return res.redirect('/'); }
+
+      if (req.session.redirectUrl) {
+        redirectUrl = req.session.redirectUrl;
+        req.session.redirectUrl = null;
+      }
+      req.logIn(user, function(err) {
+        if (err) { return next(err); }
+      });
+      res.redirect(redirectUrl);
 		})(req, res, next);
   });
 
