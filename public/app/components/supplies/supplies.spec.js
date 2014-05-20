@@ -3,6 +3,9 @@
 var expect = chai.expect;
 
 describe('supplies module', function() {
+
+  var $httpMock, $scope, $controller;
+  
   var suppliesModule;
   beforeEach(function() {
     suppliesModule = module('main.supplies');
@@ -12,29 +15,82 @@ describe('supplies module', function() {
     expect(suppliesModule).not.to.equal(null);
   });
 
-  describe('SuppliesCtrl', function() {
-    var ctrl, scope, httpMock;
+  var supplies = {supplies: [
+    {
+      'id': 1, 
+      'name': 'toilet paper', 
+      'status': 1
+    },
+    {
+      'id': 2, 
+      'name': 'oranges', 
+      'status': 0
+    }
+  ]};
 
-    beforeEach(inject(function ($controller, $rootScope, $httpBackend) {
-      httpMock = $httpBackend;
+  var supply = {
+    'name': 'new chore',
+    'status': 0
+  };
 
-      scope = $rootScope.$new();
-      httpMock.when('GET', '/supplies').respond({supplies: [{'id': 1, 'name': 'toilet paper', 'status': 1},{'id': 2, 'name': 'oranges', 'status': 0}]});
+  var supplyEdit = {
+    'id': 3,
+    'name': 'new chore just got renamed',
+    'status': 0
+  };
 
-      ctrl = $controller;
-      ctrl('SuppliesCtrl', {
-        $scope: scope
-      });
-    }));
+  var supplyAddResponse = {
+    'id': 3,
+    'name': 'new chore',
+    'status': 0
+  };
 
-    it('should exist', function() {
-      expect(ctrl).not.to.equal(null);
-    });
+  var supplyEditResponse = {'200'};
 
-    it('gets the title from the api and assigns it to scope', function() {
-      httpMock.expectGET('/supplies');
-      httpMock.flush();
-      expect(scope.title).to.equal('supplies title');
-    });
+  var supplyDeleteResponse = {'200'};
+
+  beforeEach(inject(function($injector) {
+    $httpMock = $injector.get('$httpBackend');
+    $scope = $injector.get('$rootScope');
+    var $controllerTemp = $injector.get('$controller');
+    $controller = $controllerTemp('SuppliesCtrl', {'$scope': $scope});
+
+    $httpMock.whenGET('/supplies').respond(supplies);
+    $httpMock.whenPOST('/supplies', supply).respond(supplyAddResponse);
+  }));
+
+  //check controller available
+  it('controller should exist', function() {
+    expect($controller).not.to.equal(null);
   });
+
+  it('should fail', function() {
+    expect(false).to.equal(true);
+  });
+
+  it('should fetch all supplies',function() {
+    $httpMock.expectGET('/supplies').respond(supplies);
+    $httpMock.flush();
+
+    expect($scope.supplies.length).to.equal(2);
+  });
+
+  it('should post and add a supply',function() {
+    $httpMock.expectPOST('/supplies',supply).respond(supplyAddResponse);
+    $httpMock.flush();
+
+    expect($scope.supplies.length).to.equal(3);
+  });
+
+  it('should update a supply',function() {
+    $httpMock.expectPUT('/supplies/3',supplyEdit).respond(supplyEditResponse);
+    $httpMock.flush();
+  });
+
+  it('should delete a supply',function() {
+    $httpMock.expectDELETE('/supplies/3').respond(supplyDeleteResponse);
+    $httpMock.flush();
+    
+  });
+
 });
