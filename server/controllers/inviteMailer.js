@@ -2,7 +2,7 @@
 
 var nodemailer = require('nodemailer');
 
-var sendInvitation = function(id, email, aptName) {
+function sendInvitation(id, email, aptName) {
   var smtpTransport = nodemailer.createTransport('SMTP', {
     service: 'Mandrill',
     auth: {
@@ -28,7 +28,7 @@ var sendInvitation = function(id, email, aptName) {
       console.log('Message sent: ' + response.message);
     }
   });
-};
+}
 
 module.exports = sendInvitation;
 

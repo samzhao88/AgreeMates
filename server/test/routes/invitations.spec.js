@@ -2,12 +2,52 @@
 'use strict';
 
 var app = require('../../app');
-var UserModel = require('../../models/user').model;
-var ApartmentModel = require('../../models/apartment').model;
-var request = require('supertest');
+require('../../models/user').model;
+require('../../models/apartment').model;
+var invitations = require('../../routes/invitations');
 
-var agent = request.agent(app);
+var chai = require('chai');
+var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
+var expect = chai.expect;
+chai.use(sinonChai);
 
+//var agent = request.agent(app);
+
+describe('Invitations', function() {
+  describe('addInvitations', function() {
+    var res;
+    var resMock;
+
+    beforeEach(function() {
+      res = { json: function() {} };
+      resMock = sinon.mock(res);
+    });
+
+    afterEach(function() {
+      resMock.verify();
+    });
+
+    it('returns 400 if no user', function() {
+      var req = {body: 'blah'};
+      resMock.expects('json').once().
+        withArgs(400, {error: 'Missing user or body'});
+
+      invitations.addInvitations(req, res);
+    });
+
+    it('returns 400 if no body', function() {
+      var req = {user: 'Some User'};
+      resMock.expects('json').once().
+        withArgs(400, {error: 'Missing user or body'});
+
+      invitations.addInvitations(req, res);
+    });
+  });
+
+});
+
+/*
 describe('Invitations API', function() {
 
   describe('while not logged in', function() {
@@ -31,7 +71,9 @@ describe('Invitations API', function() {
       res.send(200);
     });
 
+
     before(function(done) {
+
       new ApartmentModel({name: 'test', address: 'test'})
         .save()
         .then(function(apartment) {
@@ -65,6 +107,7 @@ describe('Invitations API', function() {
     });
 
     describe('POST /invitations', function() {
+
       it('returns 200 with proper data', function(done) {
         agent
           .post('/invitations')
@@ -97,3 +140,4 @@ describe('Invitations API', function() {
   });
 
 });
+*/
