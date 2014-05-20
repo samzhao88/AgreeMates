@@ -75,7 +75,7 @@
 	<!-- Bill table -->
 	<!-- add a filter to table later on -->
 	<div class="clearfix" id="bill-filter"><a href="" ng-click="setTable('unresolved')">Unresolved</a> | <a href="" ng-click="setTable('resolved')">Resolved</a></div>
-	<table class="table table-striped table-hover clearfix" id="bill-table">
+	<table ng-show="!emptyBillList()" class="table table-striped table-hover clearfix" id="bill-table">
 		<!-- Table Header -->
 		<tr>
 			<th>Bill</th>
@@ -177,4 +177,5 @@
 			<td>0</td>
 		</tr>
 	</table> -->
+	<div class="alert alert-warning" ng-show="emptyBillList()">No bills here, add some!</div>
 </div>

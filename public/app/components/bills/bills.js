@@ -282,6 +282,10 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.updatedAmount = [];
     };
 
+    $scope.emptyBillList = function(){
+      return $scope.bills.length == 0 ? true : false; 
+    };
+
 });
 
 
