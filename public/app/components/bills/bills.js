@@ -18,11 +18,13 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.checkboxes = [];
     //the bill being updated
     $scope.oldBill = {};
-    //all roommates id and their old amount when updating a bill
-    //if a roommate has no amount, the default is 0
+    //all roommates id and their old amount when updating a bill, if a roommate has no amount, the default is 0
     $scope.updatedAmount = [];
     //index of bill being updated
     $scope.updateIdx;
+    //balance between model
+    $scope.balances = [];
+
 
     //get current user ID and name
     $http.get('/user').
@@ -35,11 +37,33 @@ angular.module('main.bills').controller('BillsCtrl',
         console.log(data);
     });    
 
+    //get all roommates in the apartment
+    $http.get('/apartment/users').
+    success(function(data) {
+      $scope.roommates = data.users;
+    }).
+    error(function(data, status, headers, config){
+        console.log(data);
+    });    
+
   	//get all unresolved bills and set them to default
     $http.get('/bills', {params: {type: 'unresolved'}}).
     success(function(data) {
       $scope.unresolvedBills = data.bills;
       $scope.bills = $scope.unresolvedBills;
+
+      //generate the balances model
+      for (var i = 0; i < $scope.roommates.length; i++) {
+        if ($scope.roommates[i].id != $scope.userId) {
+          $scope.balances[i] = {};
+          $scope.balances[i].userId = $scope.roommates[i].id;
+          $scope.balances[i].first_name = $scope.roommates[i].first_name;
+          $scope.balances[i].last_name = $scope.roommates[i].last_name;
+        }
+      };
+      for (var i = 0; i < $scope.unresolvedBills.payments.length; i++) {
+        $scope.unresolvedBills.payments[i]
+      };
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -62,15 +86,6 @@ angular.module('main.bills').controller('BillsCtrl',
     		$scope.bills = $scope.unresolvedBills;
     	}   	
     };
-
-    //get all roommates in the apartment
-    $http.get('/apartment/users').
-    success(function(data) {
-      $scope.roommates = data.users;
-    }).
-    error(function(data, status, headers, config){
-        console.log(data);
-    });    
 
     //add a new bill
     $scope.addBill = function() {
