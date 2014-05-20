@@ -160,7 +160,6 @@ var bills = function(app) {
           new PaymentModel({paid: false, amount: roommates[i].amount,
             user_id: roommates[i].id, bill_id: model.id})
             .save()
-            .then(function() { })
             .otherwise(function(error) {
               res.json(503, {error: 'Database error.'});
             });
@@ -196,51 +195,60 @@ var bills = function(app) {
       .where('bill_id', '=', billId)
       .update({paid: paid})
       .then(function() {
+
         // Check if all payments for bill have been paid
         // if so, mark bill as paid
         new PaymentCollection()
           .query('where', 'bill_id', '=', billId)
           .fetch()
           .then(function(model) {
-            var allPaymentsPaid = true;
-            for(var i = 0; i < model.length; i++) {
-              var payment = model.models[i].attributes;
-              if(payment.paid !== true) {
-                allPaymentsPaid = false;
-                break;
-              }
-            }
-            if(allPaymentsPaid) {
+            if(allPaymentsPaid(model)) {
               new BillModel({id: billId, apartment_id: apartmentId})
                 .save({paid: true})
                 .then(function() {
                   new BillModel()
                     .query('where', 'id', '=', billId, 'AND',
                            'apartment_id', '=', apartmentId)
-                    .fetch()
-                    .then(function(model) {
-                      if(model.attributes.interval === 3) {
-                        var month = model.attributes.duedate.getMonth() + 2;
-                        var duedate = month + '/' + model.attributes.duedate.getDate() + '/' + 
-                          model.attributes.duedate.getFullYear();
-                        console.log(duedate);
+                    .fetch({withRelated: ['payment']})
+                    .then(function(oldBill) {
+                      
+                      // If the bill is reocurring we need to make a new
+                      // instance of it and it's payments
+                      if(oldBill.attributes.interval === 3) {
+                        var duedate = createDueDate(oldBill.attributes.duedate);
                         var createdate = new Date();
-                        new BillModel({apartment_id: apartmentId, name: model.attributes.name,
-                                      user_id: userId, amount: model.attributes.amount, 
-                                      paid: false, interval: model.attributes.interval, 
-                                      duedate: duedate, createdate: createdate})
+                        new BillModel({apartment_id: apartmentId, 
+                                      name: oldBill.attributes.name,
+                                      user_id: userId, 
+                                      amount: oldBill.attributes.amount, 
+                                      paid: false, 
+                                      interval: oldBill.attributes.interval, 
+                                      duedate: duedate, createdate: createdate,
+                                      reocurring_id: oldBill.attributes.reocurring_id})
                           .save()
-                          .then(function() {
+                          .then(function(newBill) {
+                            // Now add new payments for the new bill. They will
+                            // be the same as the payments for the previous bill
+                            // except for the bill_id field
+                            var payments = oldBill.relations.payment.models;
+                            for(var i = 0; i < payments.length; i++) {
+                              new PaymentModel({paid: false, 
+                                               amount: payments[i].attributes.amount,
+                                               user_id: payments[i].attributes.user_id, 
+                                               bill_id: newBill.attributes.id})
+                                .save()
+                                .otherwise(function(error) {
+                                  res.json(503, {error: 'Database error.'});
+                                });
+                            }
                             res.send(200);
                           }).otherwise(function(error) {
-                            console.log(error);
                             res.json(503, {error: 'Database error.'});
                           });
                       } else {
                         res.send(200);
                       }   
                     }).otherwise(function(error) {
-                      console.log(error);
                       res.json(503, {error: 'Database error.'});
                     });
                 }).otherwise(function() {
@@ -370,6 +378,41 @@ var bills = function(app) {
     return name !== undefined && name !== null && name !== '';
   }
 
+  // Creates a valid new due date for a bill
+  function createDueDate(date) {
+    var month = (date.getMonth() + 2) % 12;
+    var duedate = date;
+    // If the year changed then update it
+    if(month === 1) {
+      duedate.setFullYear(date.getFullYear() + 1);
+    }
+
+    // If the date is past the 28th we need to set a new
+    // date that is valid depending on the month
+    if(date.getDate() > 28) {
+      if(month === 2) {
+        duedate.setDate(28);
+      } else if(month === 4 | month === 6 |
+                month === 9 | month === 11) {
+        duedate.setDate(30);
+      }
+    }
+    duedate.setMonth(month - 1);
+    return duedate;
+  }
+
+  // Checks if an array of payment models are all paid
+  function allPaymentsPaid(payments) {
+    var allPaid = true;
+    for(var i = 0; i < payments.length; i++) {
+      var payment = payments.models[i].attributes;
+      if(payment.paid !== true) {
+        allPaid = false;
+        break;
+      }
+    }
+    return allPaid;
+  }
 };
 
 module.exports = bills;
