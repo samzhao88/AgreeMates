@@ -8,16 +8,10 @@ angular.module('main.board').controller('BoardCtrl',
 
     $scope.newMessage = {};
 
-  	var dummy = {"messages": [
-  		{"id": 1, "subject": "subject1", "body": "body1", "author": "user1", "comments": [{"body": "comment1"},{"body": "comment1"}]}, 
-  		{"id": 2, "subject": "subject1", "body": "body1", "author": "user2", "comments": []}, 
-  	]};
-
-    //$http.get('/board/0/10').
-      $http.get('/').
+      $http.get('/messages').
       	success(function(data) {
         	$scope.messages = data.messages;
-        	$scope.messages = dummy.messages;
+          console.log(data);
       	});
 
     //add a message
@@ -25,10 +19,8 @@ angular.module('main.board').controller('BoardCtrl',
     	
     	var message = angular.copy($scope.newMessage);
 
-    	//$http.post('/messages', message).
-      $http.get('/').
+    	$http.post('/messages', message).
 	      	success(function(data) {
-            data = message;
             data.comments = [];
 	        	$scope.messages.splice(0,0,data);
 	        	$scope.reset();
@@ -43,7 +35,7 @@ angular.module('main.board').controller('BoardCtrl',
 
     $scope.deleteMessage = function(id, index){
 
-    	$http.delete('/message/'+id).
+    	$http.delete('/messages/'+id).
 	      	success(function(data) {
 	        	$scope.splice(index, 1);
 	      	}).
@@ -58,7 +50,7 @@ angular.module('main.board').controller('BoardCtrl',
 
     $scope.updateMessage = function(id, index){
 
-    	$http.put('/message/'+id, $scope.messages[index]).
+    	$http.put('/messages/'+id, $scope.messages[index]).
 	      	success(function(data) {
 	        	//update msg
 	      	}).
@@ -80,8 +72,7 @@ angular.module('main.board').controller('BoardCtrl',
     	var comment = angular.copy($scope.messages[msg_ind].newComment);
     	comment.msg_id = $scope.messages[msg_ind].id;
 
-    	//$http.post('/comment/', comment).
-      $http.get('/').
+    	$http.post('/messages/'+comment.msg_id+'/comments/', comment).
 	      	success(function(data) {
             data = comment;
 	        	$scope.messages[msg_ind].comments.push(data);
@@ -96,7 +87,7 @@ angular.module('main.board').controller('BoardCtrl',
     //delete a comment: TODO
     $scope.deleteComment = function(id, index){
 
-    	$http.delete('/comment/'+id).
+    	$http.delete('/comments/'+id).
 	      	success(function(data) {
 	        	$scope.messages[msg_ind].comments.splice(index, 1);
 	      	}).
@@ -113,5 +104,9 @@ angular.module('main.board').controller('BoardCtrl',
     $scope.postButton = function(){
       return 1;//return (($scope.newMessage.subject  == '') || ($scope.newMessage.body == '')) ? true : false;
     };
+
+    $scope.format = function(date){
+      return moment(date).calendar();
+    }
 
 });
