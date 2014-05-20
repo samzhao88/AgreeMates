@@ -36,7 +36,7 @@ var comments = function(app) {
                      body: text, date: date})
       .save()
       .then(function(model) {
-        res.json({result: 'Comment successfully added'});
+        res.json({id: model.attributes.id});
       }).otherwise(function(error) {
         res.json(503, {error: 'Database error'});
       });
@@ -71,7 +71,7 @@ var comments = function(app) {
     new CommentModel({id: commentId, message_id: messageId, user_id: userId})
       .save({body: text})
       .then(function() {
-        res.json({result: 'Comment successfully edited.'});
+        res.json({id: model.attributes.id});
       }).otherwise(function(error) {
         res.json(503, {error: 'Database error.'});
       });    
@@ -105,7 +105,7 @@ var comments = function(app) {
              'user_id', '=', userId)
       .destroy()
       .then(function() {
-        res.json(200);
+        res.send(200);
       }).otherwise(function(error) {
         res.json(503, {error: 'Database error.'});
       });

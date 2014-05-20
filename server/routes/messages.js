@@ -158,7 +158,7 @@ var messages = function(app) {
     new MessageModel({id: messageId, apartment_id: apartmentId, user_id: userId})
       .save({subject: subject, body: text})
       .then(function(model) {
-        res.json({result: 'Message successfully updated.'});
+        res.send(200);
       }).otherwise(function(error) {
         res.json(503, {error: 'Database error.'});
       });
@@ -195,7 +195,7 @@ var messages = function(app) {
                  'apartment_id', '=', apartmentId)
           .destroy()
           .then(function( ) {
-            res.json(200);
+            res.send(200);
           }).otherwise(function(error) {
             res.json(503, {error: 'Error deleting message'});
           });
