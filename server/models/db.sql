@@ -122,8 +122,8 @@ ALTER SEQUENCE apartments_id_seq OWNED BY apartments.id;
 CREATE TABLE bills (
     id integer NOT NULL,
     name character varying(255),
-    createdate date,
-    duedate date,
+    createdate timestamp,
+    duedate timestamp,
     "interval" integer,
     paid boolean,
     amount numeric,
@@ -185,8 +185,8 @@ ALTER SEQUENCE bills_reocurring_id_seq OWNED BY bills.reocurring_id;
 CREATE TABLE chores (
     id integer NOT NULL,
     name character varying(255),
-    createdate date,
-    duedate date,
+    createdate timestamp,
+    duedate timestamp,
     "interval" integer,
     completed boolean,
     reocurring_id integer NOT NULL,
@@ -247,7 +247,7 @@ ALTER SEQUENCE chores_reocurring_id_seq OWNED BY chores.reocurring_id;
 CREATE TABLE comments (
     id integer NOT NULL,
     body text,
-    date date,
+    date timestamp,
     user_id integer,
     message_id integer
 );
@@ -284,7 +284,7 @@ CREATE TABLE messages (
     id integer NOT NULL,
     subject character varying(255),
     body text,
-    date date,
+    date timestamp,
     user_id integer,
     apartment_id integer
 );
