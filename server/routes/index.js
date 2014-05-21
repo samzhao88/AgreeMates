@@ -12,7 +12,7 @@ var router = function(app, passport) {
   require('./comments.js')(app);
   require('./user.js')(app);
   require('./apartment.js')(app);
-  require('./invitations.js')(app);
+  require('./invitations.js').setup(app);
   require('./passport.js')(app, passport);
 
 };
