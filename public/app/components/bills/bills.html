@@ -102,9 +102,25 @@
 			<td data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, $index)">{{bill.payTo}}</td>
 			<td data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, $index)">{{format(bill.dueDate)}}</td>
 			<td><input type="checkbox" ng-click="payBill(bill.id, $index)" ng-checked="isPaid(bill.id, $index)"></td>
-			<td><i class="ion-close-circled delete-icon" ng-click="deleteBill(bill.id, $index)"></i></td>
+			<td><i class="ion-close-circled delete-icon" data-toggle="modal" data-target="#deleteModal" ng-click="prepareDelete(bill.id, $index)"></i></td>
 		</tr>
 	</table>
+
+	<!-- Delete Confirmation modal -->
+	<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+		    <div class="modal-body">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title" id="myModalLabel">Are you sure you want to delete this bill?</h4>
+	      </div>
+		    <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="resetDelete()">Cancel</button>
+	        <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deleteBill()">Delete</button>    
+	      </div>
+	    </div>
+	  </div>
+	</div>		
 
 	<!-- Edit bill modal -->
 	<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -173,7 +189,7 @@
 	</div>
 
 	<!-- Roommates balance table -->
-	<h3>Balance between you and your roommates</h3>
+	<h3>Balance</h3>
 	<table class="table table-hover table-striped">
 		<tr>
 			<th>Roommate</th>

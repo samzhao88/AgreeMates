@@ -28,6 +28,9 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.updateIdx;
     //balance between model
     $scope.balances = [];
+    //delete bill is
+    $scope.deleteId = -1;
+    $scope.deleteIdx = -1;
 
 
     //get current user ID and name
@@ -184,11 +187,23 @@ angular.module('main.bills').controller('BillsCtrl',
       }
     };
 
+    //set up delete bill id and index
+    $scope.prepareDelete = function(id, index) {
+      $scope.deleteId = id;
+      $scope.deleteIdx = index;
+    }
+
+    //reset delete bill id and index
+    $scope.resetDelete = function() {
+      $scope.deleteId = -1;
+      $scope.deleteIdx = -1;      
+    }
+
     //delete a bill
-    $scope.deleteBill = function(id, index) {
-    	$http.delete('/bills/'+id).
+    $scope.deleteBill = function() {
+    	$http.delete('/bills/'+$scope.deleteId).
 	      success(function(data) {
-	        $scope.bills.splice(index, 1);
+	        $scope.bills.splice($scope.deleteIdx, 1);
           $scope.updateBalanceModel();
 	      }).
         error(function(data, status, headers, config){
