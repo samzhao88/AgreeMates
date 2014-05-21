@@ -91,12 +91,10 @@ a:hover {
   margin-top: 10px;
   padding: 10px;
   text-align: center;
-  margin-bottom: 10px;
 }
 
 #user-welcome {
   margin-top: 10px;
-  margin-bottom: 0;
 }
 
 @media(min-width:768px) {
