@@ -30,7 +30,10 @@
   		<br>
   		<ul ng-show="true" class="list-group comments">
   			<li data-ng-repeat="comment in message.comments" class="list-group-item comment">
-          <h4 class="comment-body"><small>Posted by {{comment.author}} - {{format(message.date)}}</small></h4>
+          <h4 class="comment-body">
+          	<small>Posted by {{comment.author}} - {{format(message.date)}}</small>
+          	<span class="pull-right glyphicon glyphicon-remove"></span>
+          </h4>
           {{comment.body}}
         </li>
   			<li class="list-group-item comment clearfix add-comment-box">
