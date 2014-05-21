@@ -21,6 +21,13 @@
   document.body.scrollLeft = scroll.left;
 }());
 
+// Closes menu when clicking in mobile viewport
+$(function() {
+  $('.sidebar-collapse a').click(function() {
+    $(".sidebar-collapse").collapse('hide');
+  });
+});
+
 // Define the "main" module and inject all other modules as dependencies
 var app = angular.module('main',
   [
