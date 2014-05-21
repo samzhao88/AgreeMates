@@ -145,8 +145,6 @@ var apartment = function(app) {
 		var apartment_id = req.user.attributes.apartment_id;
 		var user_id = req.user.id;
 		if(user_id != null && apartment_id != null) {
-			console.log(req.params.apt);
-			console.log(apartment_id);
 			if(apartment_id != req.params.apt) {
 					res.json(400, {msg: 'unauthorized'});
 					return;
@@ -205,7 +203,6 @@ var apartment = function(app) {
 					res.json({result : 'success'});
 				})
 				.otherwise(function(error) {
-					console.log(error);
 					res.json(400, {msg: 'derror deleting apartment'});
 					return;
 				});

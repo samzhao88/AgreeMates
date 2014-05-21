@@ -41,20 +41,20 @@
                   <input type="radio" id="xtwo" name="interval" value="7" ng-model="chore.interval">Weekly<br><br>
                 </td>
                 <td>
-                  <div class="col-lg-4" data-ng-repeat="user in users">
+                  <div data-ng-repeat="user in users">
                     <label>
-                    	<div>
-												<input type="checkbox" id="xthree" ng-model="user.isChecked"/>  <span>{{ user.first_name }}</span>
-											</div>
+                    	<input type="checkbox" id="xthree" ng-model="user.isChecked"/>  <span>{{user.first_name}}</span>
                     </label>
                     <br>
                   </div>
+									<br>
+									<input type="checkbox" ng-model="chore.rotating"> Rotating Chore?
                 </td>
               </tr>
             </table>
 
             <div class="form-group">
-            	<label for="xfour">Due Date</label><br>
+            	<label for="xfour">{{setModal(chore.interval)}} Date</label><br>
               <input type="date" id="xfour" name="bday" ng-model="chore.duedate">
             </div>
 
@@ -81,38 +81,38 @@
 					<h4 class="modal-title" id="editChoreLabel">Edit Chore</h4>
         </div>
 
-        <div class="col-md-4">
-          Chore Name
-        </div>
-        <div class="col-md-4">
-          Frequency
-        </div>
-        <div class="col-md-4">
-        	Persons Responsible
-        </div>
-        <br>
-
-        <div class="modal-body">
-        	<div class="row">
-            <div class="col-md-4">
-              <input type="text" ng-model="chore.name" class="form-control" placeholder="Chore Name">
-            </div>
-						<div class="col-md-4">
-        			<form action="">
-								<input type="radio" name="interval" value="0" ng-model="chore.interval">One-Time<br>
-								<input type="radio" name="interval" value="7" ng-model="chore.interval">Weekly <br><br>
-							</form>
+				<div class="modal-body">
+					<form role="form">
+						<div class="form-group">
+							<label for="xone">Name</label>
+							<input type="text" id="xone" ng-model="chore.name" class="form-control">
 						</div>
-            <div class="col-md-4" ng-repeat="i in users">
-              <label>
-						  	<input type="checkbox" ng-model="i.isChecked"/>  <span> {{ i.first_name }} </span>
-              </label>
+						<table>
+							<tr>
+								<th width="50%"><label for="xtwo">Frequency</label><br></th>
+								<th><label>Persons Responsible</label></th>
+							</tr>
+							<tr>
+								<td>
+									<input type="radio" name="interval" value="0" ng-model="chore.interval">One Time</br>
+									<input type="radio" name="interval" value="7" ng-model="chore.interval">Weekly<br><br>
+								</td>
+								<td>
+									<div data-ng-repeat="user in users">
+										<label>
+											<input type="checkbox" id="xthree" ng-model="user.isChecked"/>  <span>{{user.first_name}}</span>
+										</label>
+										<br>
+									</div>
+								</td>
+							</tr>
+						</table>
+						<div class="form-group">
+							<label for="xfour">Due Date</label><br>
+							<input type="date" id="xfour" name="bday" ng-model="chore.duedate">
 						</div>
-            <div class="col-md-4">
-              Due Date <input type="date" name="bday" ng-model="chore.duedate">
-						</div>
-          </div>
-        </div>
+					</form>
+				</div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
@@ -138,9 +138,9 @@
  			 	<span class="name">{{chore.name}}</span>
 				</td>
 				<td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
-        	<div ng-repeat="responsible in chore.users">
-          	<span class="responsible">{{responsible.first_name}}</span>
-        	</div>
+					<div ng-repeat="responsible in chore.users">
+          	<ul ng-class="{highlight: isResponsible(chore, responsible)}" ng-model="currResponsible">{{responsible.first_name}} </ul>
+ 				 </div>
 				</td>
  			 <td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  			 	<span class="recurring">{{convertfrequency(chore.interval)}}</span>

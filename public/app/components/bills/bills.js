@@ -273,6 +273,6 @@ angular.module('main.bills').controller('BillsCtrl',
 
     $scope.format = function(date) {
       return moment(date).format('MMMM Do, YYYY');
-    }
+    };
 
 });

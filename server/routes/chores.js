@@ -6,7 +6,7 @@ var ChoreCollection = require('../models/chore').collection;
 var UserChoreModel = require('../models/users_chores').model;
 var UserChoreCollection = require('../models/users_chores').collection;
 var UserModel = require('../models/user').model;
-var Bookshelf = require('bookshelf'); 
+var Bookshelf = require('bookshelf');
 
 var chores = function(app) {
 
@@ -16,14 +16,14 @@ var chores = function(app) {
 		res.json(401, {error: 'Unauthorized user.'});
 		return;
 	}
-  
+
     var apartmentId = req.user.attributes.apartment_id;
-	
+
 	Bookshelf.DB.knex('chores')
 		.join('users_chores', 'chores.id', '=', 'users_chores.chore_id')
 		.join('users', 'users_chores.user_id', '=', 'users.id')
 		.where('chores.apartment_id', '=', apartmentId)
-		.select( 'chores.interval','chores.createdate', 
+		.select( 'chores.interval','chores.createdate',
 				'chores.duedate', 'users.first_name','users.last_name',
 				'chores.name','chores.reocurring_id',
 				'users_chores.user_id', 'users_chores.chore_id',
@@ -65,9 +65,9 @@ var chores = function(app) {
 				dueDate = rows[i].duedate;
 				interval = rows[i].interval;
 				completed = rows[i].completed;
-				
+
 				}
-				
+
 				users_chores.push({
 					user_id: rows[i].user_id,
 					first_name: rows[i].first_name,
@@ -90,8 +90,8 @@ var chores = function(app) {
 			res.json(503, {error: 'Database error.'});
 		});
   });
-  
-  
+
+
 // Get the chore information
   app.get('/chores/:chore', function(req, res) {
   	if (req.user === undefined) {
@@ -100,12 +100,12 @@ var chores = function(app) {
 	}
     var apartmentId = req.user.attributes.apartment_id;
 	var choreId = req.params.chore;
-	
+
 	if (!isValidId(choreId)) {
       res.json(400, {error: 'Invalid supply ID.'});
       return;
     }
-	
+
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
 		.fetch()
 		.then(function(model){
@@ -130,7 +130,7 @@ var chores = function(app) {
 		}).otherwise(function(){
 			res.json(503,{error: 'Database error.'});
 		});
-	
+
   });
 
   // Process chore form and adds to database
@@ -148,8 +148,8 @@ var chores = function(app) {
 			+'/' + date.getFullYear();
 
 		var interval = req.body.interval;
-		
-		
+
+
 		var roommates = req.body.roommates;
 		//var roommates = req.body.roommates;
 		if(!isValidName(name)){
@@ -158,10 +158,10 @@ var chores = function(app) {
 		}
 		// Call service class here that creates new chore (chore service)
 		// choreservice.create(params)
-		// returns a response 
-		
+		// returns a response
+
 		// Need to check that date is valid ie on or after date created
-		
+
 		new ChoreModel({apartment_id: apartmentId,
 					name: name,
 					duedate: duedate,
@@ -181,16 +181,16 @@ var chores = function(app) {
 								chore_id: choreModel.id,
 								order_index: i
 							});
-						
+
 					}
 					/*Save away our array of users to new chore
 					mapThen :Function to call for each element in the collection
 					Collects the return value of all of the function calls into a single response
-					then(function(resp)): takes the response built by the mapThen and verify 
+					then(function(resp)): takes the response built by the mapThen and verify
 					that the size of the array is equal to the number of user ids giving in the request.
 					*/
 					new UserChoreCollection(userChore)
-					.mapThen(function(model){				
+					.mapThen(function(model){
 						return model.save()
 						.then(function(){
 							return new UserModel({id: model.get('user_id')})
@@ -200,7 +200,7 @@ var chores = function(app) {
 							});
 						});
 					}).then(function(resp){
-						
+
 						var response = {chore: choreModel.attributes, users: resp};
 						if(resp.length !== userChore.length){
 							res.json(503,{error: 'DataBase error'});
@@ -208,7 +208,7 @@ var chores = function(app) {
 							res.send(200, response);
 						}
 					})
-					
+
 					}).otherwise(function(){
 						res.json(503,{error: 'DataBaser error'});
 				});
@@ -218,25 +218,26 @@ var chores = function(app) {
 	return {user_id: userModel.get('id'), first_name: userModel.get('first_name'),
 			last_name: userModel.get('last_name'), order_index: order_index};
  }
- 
- 
+
+
   // Update the chore
   app.put('/chores/:chore', function(req, res) {
 	if (req.user === undefined) {
 		res.json(401, {error: 'Unauthorized user.'});
 		return;
 	}
-	
-	
+
+
 	var apartmentId = req.user.attributes.apartment_id;
 	var choreId = req.params.chore;
 	var name = req.body.name;
 	var dueDate = req.body.duedate;
 	var roommates = req.body.roommates;
-	
-	
+  var interval = req.body.interval;
+
+
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
-	.save({name: name.trim(), duedate: dueDate},{patch: true})
+	.save({name: name.trim(), duedate: dueDate, interval: interval},{patch: true})
 	.then(function(choreModel) {
 	// Go through users_chores assocaited with chore
 		new UserChoreModel().query('where', 'chore_id', '=', choreId)
@@ -256,11 +257,11 @@ var chores = function(app) {
 					/*Save away our array of users to new chore
 					mapThen :Function to call for each element in the collection
 					Collects the return value of all of the function calls into a single response
-					then(function(resp)): takes the response built by the mapThen and verify 
+					then(function(resp)): takes the response built by the mapThen and verify
 					that the size of the array is equal to the number of user ids giving in the request.
 					*/
 					new UserChoreCollection(userChore)
-					.mapThen(function(model){				 
+					.mapThen(function(model){
 						return model.save()
 						.then(function(){
 						});
@@ -269,10 +270,10 @@ var chores = function(app) {
 						if(resp.length !== userChore.length){
 							res.json(503,{error: 'DataBase error'});
 						}else{
-							res.send(200);
+							res.send(200, userChore);
 						}
 					})
-					
+
 		}).otherwise(function(){
 			res.json(503,{error: 'Database error'});
 		});
@@ -288,16 +289,16 @@ var chores = function(app) {
 		res.json(401, {error: 'Unauthorized user.'});
 		return;
 	}
-	
+
     var apartmentId = req.user.attributes.apartment_id;
-	
+
 	var choreId = req.params.chore;
-	
+
 	if (!isValidId(choreId)) {
       res.json(400, {error: 'Invalid supply ID.'});
       return;
     }
-	
+
 	new UserChoreModel().query('where', 'chore_id', '=', choreId)
 		.destroy()
 		.then(function(choremodel){
@@ -307,12 +308,12 @@ var chores = function(app) {
 				res.send(200);
 			}).otherwise(function() {
 				res.json(503, {error: 'Database error'});
-			});				
+			});
 		}).otherwise(function() {
 			res.json(503, {error: 'Database error'})
 		});
   });
-  
+
   //Checks if a chore name is valid
   function isValidName(name) {
     return name !== undefined && name !== null && name !== '';
@@ -322,7 +323,7 @@ var chores = function(app) {
   function isValidId(id) {
     return isInt(id) && id > 0;
   }
-  
+
   function isInt(value) {
     /* jshint eqeqeq: false */
     return !isNaN(value) && parseInt(value) == value;
