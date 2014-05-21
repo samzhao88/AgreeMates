@@ -355,7 +355,7 @@ angular.module('main.bills').controller('BillsCtrl',
 
     $scope.isOwner = function(billId) {
       for (var i = 0; i < $scope.bills.length; i++) {
-        if ($scope.bills[i].creatorId == $scope.userId) {
+        if ($scope.bills[i].id == billId && $scope.bills[i].creatorId == $scope.userId) {
           return true;
         }
       };
