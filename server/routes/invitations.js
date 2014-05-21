@@ -9,6 +9,7 @@ var InvitationModel = require('../models/invitation').model;
 var InvitationCollection = require('../models/invitation').collection;
 var sendInvitation = require('../controllers/inviteMailer');
 
+// Adds invitartions
 function addInvitations(req, res) {
   if (req.user === undefined || req.body === undefined) {
     res.json(400, {error: 'Missing user or body'});
@@ -58,6 +59,7 @@ function addInvitations(req, res) {
     });
 }
 
+// Gets an invitation
 function getInvitation(req, res) {
   new InvitationModel({id: req.params.invite})
     .fetch()
@@ -89,6 +91,7 @@ function getInvitation(req, res) {
     });
 }
 
+// Deletes an invitation
 function deleteInvitation(req, res) {
   new InvitationModel({id: req.params.invite})
     .fetch()
@@ -114,14 +117,10 @@ function deleteInvitation(req, res) {
     });
 }
 
+// Sets up all routes
 function setup(app) {
-  // Add invitation to database
   app.post('/invitations', addInvitations);
-
-  // Get invitation information
   app.get('/invitations/:invite', getInvitation);
-
-  // Removes invitation from the database
   app.delete('/invitations/:invite', deleteInvitation);
 }
 
