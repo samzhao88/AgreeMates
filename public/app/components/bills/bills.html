@@ -74,7 +74,12 @@
 
 	<!-- Bill table -->
 	<!-- add a filter to table later on -->
-	<div class="clearfix" id="bill-filter"><a href="" ng-click="setTable('unresolved')">Unresolved</a> | <a href="" ng-click="setTable('resolved')">Resolved</a></div>
+	<div class="clearfix" id="bill-filter">
+		<div class="btn-group">
+		  <button type="button" class="btn btn-default" ng-click="setTable('resolved')" ng-class="{ 'active' : table === 'resolved' }">Resolved</button>
+		  <button type="button" class="btn btn-default" ng-click="setTable('unresolved')" ng-class="{ 'active' : table === 'unresolved' }">Unresolved</button>
+		</div>
+	</div>
 	<table ng-show="!emptyBillList()" class="table table-striped table-hover clearfix" id="bill-table">
 		<!-- Table Header -->
 		<tr>
@@ -166,16 +171,19 @@
 	</div>
 
 	<!-- Roommates balance table -->
-	<!-- Not yet implemented -->
-<!-- 	<table class="table table-hover table-striped">
+	<table class="table table-hover table-striped">
 		<tr>
 			<th>Roommate</th>
-			<th>Balance</th>
+			<th>Owed to them</th>
+			<th>They owe you</th>
+			<th>Net Balance</th>
 		</tr>
-		<tr ng-repeat="roommate in roommates">
-			<td>{{roommate.first_name}} {{roommate.last_name}}</td>
-			<td>0</td>
+		<tr ng-repeat="balance in balances">
+			<td>{{balance.first_name}} {{balance.last_name}}</td>
+			<td>{{balance.userOwed}}</td>
+			<td>{{balance.owedToUser}}</td>
+			<td>{{balance.owedToUser - balance.userOwed}}</td>
 		</tr>
-	</table> -->
+	</table>
 	<div class="alert alert-warning" ng-show="emptyBillList()">No bills here, add some!</div>
 </div>

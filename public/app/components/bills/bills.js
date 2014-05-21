@@ -8,6 +8,8 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //bills being showed currently
     $scope.bills = [];
+    //which table (resolved or unresolved) is selected
+    $scope.table = '';
     //new bill being added
   	$scope.bill = {};
     //balance when adding a bill
@@ -51,19 +53,8 @@ angular.module('main.bills').controller('BillsCtrl',
     success(function(data) {
       $scope.unresolvedBills = data.bills;
       $scope.bills = $scope.unresolvedBills;
-
-      //generate the balances model
-      for (var i = 0; i < $scope.roommates.length; i++) {
-        if ($scope.roommates[i].id != $scope.userId) {
-          $scope.balances[i] = {};
-          $scope.balances[i].userId = $scope.roommates[i].id;
-          $scope.balances[i].first_name = $scope.roommates[i].first_name;
-          $scope.balances[i].last_name = $scope.roommates[i].last_name;
-        }
-      };
-      for (var i = 0; i < $scope.unresolvedBills.payments.length; i++) {
-        $scope.unresolvedBills.payments[i]
-      };
+      $scope.table = 'resolved';
+      $scope.updateBalanceModel();
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -78,12 +69,59 @@ angular.module('main.bills').controller('BillsCtrl',
         console.log(data);
     });
 
+    //generate the balances model
+    $scope.updateBalanceModel = function() {
+      //set up roommates information
+      for (var i = 0; i < $scope.roommates.length; i++) {
+        if ($scope.roommates[i].id != $scope.userId) {
+          var balance = {};
+          balance.userId = $scope.roommates[i].id;
+          balance.first_name = $scope.roommates[i].first_name;
+          balance.last_name = $scope.roommates[i].last_name;
+          balance.owedToUser = 0;
+          balance.userOwed = 0;
+          balance.netBalance = 0;
+          $scope.balances.push(balance);
+        }
+      };
+
+      //for each bill's payments, 
+      for (var i = 0; i < $scope.unresolvedBills.length; i++) {
+        //if the user if the creator, update the amount others owe to him
+        if ($scope.unresolvedBills[i].creatorId == $scope.userId) {          
+          for (var j = 0; j < $scope.balances.length; j++) {
+            for (var k = 0; k < $scope.unresolvedBills[i].payments.length; k++) {
+              if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId) {
+                $scope.balances[j].owedToUser += parseFloat($scope.unresolvedBills[i].payments[k].amount);
+                //may add more details
+              }
+            };
+          };
+        } 
+        //if the user is not the creator, update the amount he owe to that creator
+        else {
+          for (var j = 0; j < $scope.balances.length; j++) {
+            if ($scope.balances[j].userId == $scope.unresolvedBills[i].creatorId) {
+              for (var k = 0; k < $scope.unresolvedBills[i].payments.length; k++) {
+                if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId) {
+                  $scope.balances[j].userOwed += parseFloat($scope.unresolvedBills[i].payments[k].amount);
+                  //may add more details
+                }
+              };
+            }
+          };
+        }
+      };   
+    }
+
     //select unresolved bills or resolved bills
     $scope.setTable = function(table) {
     	if (table == 'resolved') {
     		$scope.bills = $scope.resolvedBills;
+        $scope.table = 'resolved';
     	} else {
     		$scope.bills = $scope.unresolvedBills;
+        $scope.table = 'unresolved';
     	}   	
     };
 
