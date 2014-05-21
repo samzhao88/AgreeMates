@@ -8,7 +8,7 @@ var router = function(app, passport) {
   require('./bills.js').setup(app);
   require('./chores.js')(app);
   require('./supplies.js').setup(app);
-  require('./messages.js')(app);
+  require('./messages.js').setup(app);
   require('./comments.js')(app);
   require('./user.js').setup(app);
   require('./apartment.js')(app);
