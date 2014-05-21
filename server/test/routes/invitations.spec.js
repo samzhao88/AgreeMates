@@ -3,8 +3,9 @@
 
 var app = require('../../app');
 require('../../models/user').model;
-require('../../models/apartment').model;
+var ApartmentModel = require('../../models/apartment').model;
 var invitations = require('../../routes/invitations');
+var Promise = require('bluebird');
 
 var chai = require('chai');
 var sinon = require('sinon');
@@ -18,6 +19,8 @@ describe('Invitations', function() {
   describe('addInvitations', function() {
     var res;
     var resMock;
+
+    Promise.prototype.otherwise = Promise.prototype.caught;
 
     beforeEach(function() {
       res = { json: function() {} };
@@ -42,6 +45,39 @@ describe('Invitations', function() {
         withArgs(400, {error: 'Missing user or body'});
 
       invitations.addInvitations(req, res);
+    });
+
+    it('returns 404 if no user id', function() {
+      var req = {body: 'blah', user: {attributes: {}}};
+      resMock.expects('json').once().
+        withArgs(404, {error: 'could not fetch id'});
+
+      invitations.addInvitations(req, res);
+    });
+
+    it('fetches the apartment', function() {
+      var aptModelStub = sinon.stub(ApartmentModel.prototype, 'fetch').
+        returns(Promise.resolve());
+      var req = {body: {emails: []}, user: {attributes: {apartment_id: 1}}};
+
+      invitations.addInvitations(req, res);
+
+      expect(aptModelStub).to.have.been.calledOnce;
+      aptModelStub.restore();
+    });
+
+    it('returns 404 if failed to fetch apartment', function() {
+      var aptModelStub = sinon.stub(ApartmentModel.prototype, 'fetch').
+        returns(Promise.reject());
+      var req = {body: {emails: []}, user: {attributes: {apartment_id: 1}}};
+
+      resMock.expects('json').once().
+        withArgs(404, {error: 'error getting apartment'});
+
+      invitations.addInvitations(req, res);
+
+      expect(aptModelStub).to.have.been.calledOnce;
+      aptModelStub.restore();
     });
   });
 

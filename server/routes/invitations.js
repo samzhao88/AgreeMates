@@ -16,11 +16,10 @@ function addInvitations(req, res) {
   }
 
   var apartmentId = req.user.attributes.apartment_id;
-  if (apartmentId === null) {
+  if (apartmentId === undefined) {
     res.json(404, {error: 'could not fetch id'});
     return;
   }
-
 
   var emails = req.body.emails;
   new ApartmentModel({id : apartmentId})
