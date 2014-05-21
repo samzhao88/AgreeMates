@@ -11,293 +11,290 @@ var Messages = require('../models/message').collection;
 var Supplies = require('../models/supply').collection;
 var Bookshelf = require('bookshelf');
 
-var apartment = function(app) {
+// Adds an apartment to the database
+function addApartment(req, res) {
+	if (req.user === undefined) {
+		res.json(401, {error: 'Unauthorized user.'});
+		return;
+	}
 
-	// Adds an apartment to the database
-	function addApartment(req, res) {
-		if (req.user === undefined) {
-			res.json(401, {error: 'Unauthorized user.'});
-			return;
-		}
+	var apartmentName = req.body.name;
+	var apartmentAddress = req.body.address;
 
-		var apartmentName = req.body.name;
-		var apartmentAddress = req.body.address;
+	if (!isValidName(apartmentName)) {
+		res.json(400, {error: 'Invalid apartment name.'});
+		return;
+	} else if (!isValidName(apartmentAddress)) {
+		res.json(400, {error: 'Invalid apartment address.'});
+		return;
+	}
 
-		if (!isValidName(apartmentName)) {
-			res.json(400, {error: 'Invalid apartment name.'});
-			return;
-		} else if (!isValidName(apartmentAddress)) {
-			res.json(400, {error: 'Invalid apartment address.'});
-			return;
-		}
-
-		new ApartmentModel({name: apartmentName.trim(), address: apartmentAddress.trim()})
-			.save()
-			.then(function(model) {
-				new UserModel({id: req.user.id})
-					.save({apartment_id: model.attributes.id}, {patch: true})
-					.then(function() {
-						res.send(200);
-					})
-					.otherwise(function() {
-						res.json(503, {error: 'Error adding user to the new apartment.'});
-					});
-			})
-			.otherwise(function() {
-				res.json(503, {error: 'Error adding new apartment'});
-			});
-	});
-
-	// Gets all users in the apartment
-	function getUsers(req, res) {
-		if (req.user === undefined) {
-			res.json(401, {error: 'Unauthorized user.'});
-			return;
-		}
-
-		var apartmentId = req.user.attributes.apartment_id;
-
-		Bookshelf.DB.knex('users')
-			.select('id', 'first_name', 'last_name', 'email', 'phone', 'facebook_id', 'google_id')
-			.where('apartment_id', '=', apartmentId)
-			.then(function(users) {
-				var result = [];
-				for (var i = 0; i < users.length; i++) {
-					if (users[i].facebook_id !== null) {
-						var temp = users[i];
-						temp.profile_pic = 'https://graph.facebook.com/' +
-							users[i].facebook_id  + '/picture?height=300&width=300';
-						result.push(temp);
-					} else {
-						var temp = users[i];
-						temp.profile_pic = 'http://placehold.it/300x300';
-						result.push(temp);
-					}
-				}
-				res.json({users: result});
-			})
-			.otherwise(function(error) {
-				res.json(503, {error: 'Database error.'});
-			});
-	});
-
-	// Gets an apartment's information
-	function getApartment(req, res) 
-		if (req.user === undefined) {
-			res.json(401, {error: 'Unauthorized user.'});
-			return;
-		}
-
-		var apartmentId = req.user.attributes.apartment_id;
-
-		Bookshelf.DB.knex('apartments')
-			.where('apartments.id', '=', apartmentId)
-			.then(function(rows) {
-				res.json(rows[0]);
-			})
-			.otherwise(function() {
-				res.json(503, {error: 'Database error.'});
-			});
-	});
-
-	// Edits an apartment's information
-	function updateApartment(req, res) {
-		if (req.user === undefined) {
-			res.json(401, {error: 'Unauthorized user.'});
-			return;
-		}
-
-		var apartmentId = req.user.attributes.apartment_id;
-		var apartmentName = req.body.name;
-		var apartmentAddress = req.body.address;
-
-		if (!isValidName(apartmentName)) {
-			res.json(400, {error: 'Invalid apartment name.'});
-			return;
-		}
-
-		var update = {};
-		update.name = apartmentName.trim();
-		if (isValidName(apartmentAddress)) {
-			update.address = apartmentAddress.trim();
-		}
-
-		new ApartmentModel({id: apartmentId})
-			.save(update, {patch: true})
-			.then(function() {
-				res.json(200);
-			})
-			.otherwise(function() {
-				res.json(504, {error: 'Database error.'});
-			});
-	});
-
-	  // Removes apartment from the database
-	  // Needs to delete all the other models not just break ties
-	function deleteApartment(req, res)  {
-	    //authorization
-		if (req.user === undefined) {
-			res.json(401, {error: 'Unauthorized user.'});
-			return;
-		}
-		if(req.user== null || req.query == null) {
-				res.json(400, {msg: 'invalid request'});
-				return;
-		}
-		var apartment_id = req.user.attributes.apartment_id;
-		var user_id = req.user.id;
-		if(user_id != null && apartment_id != null) {
-			
-			//delete associated users' tie to the apartment
-			 new Users()
-			.query('where', 'apartment_id', '=', apartment_id)
-			.fetch()
-			.then(function(collection) {	
-				collection.mapThen(function(user) {
-				    //delete  bills
-					user.attributes.apartment_id = null;
-					return user.save().then(function(x) {});
+	new ApartmentModel({name: apartmentName.trim(), address: apartmentAddress.trim()})
+		.save()
+		.then(function(model) {
+			new UserModel({id: req.user.id})
+				.save({apartment_id: model.attributes.id}, {patch: true})
+				.then(function() {
+					res.send(200);
 				})
-				.then(function(users) {
-					new Bills()
-					.query('where', 'apartment_id', '=', apartment_id)
-					.fetch()
-					.then(function(bills) {
-						bills.mapThen(function(bill) {
-							bill.attributes.apartment_id = null;
-							return bill.save().then(function(x) {});
-						}).then(function(bills) {
-							new Messages()
-								.query('where', 'apartment_id', '=', apartment_id)
-								.fetch()
+				.otherwise(function() {
+					res.json(503, {error: 'Error adding user to the new apartment.'});
+				});
+		})
+		.otherwise(function() {
+			res.json(503, {error: 'Error adding new apartment'});
+		});
+}
+
+// Gets all users in the apartment
+function getUsers(req, res) {
+	if (req.user === undefined) {
+		res.json(401, {error: 'Unauthorized user.'});
+		return;
+	}
+
+	var apartmentId = req.user.attributes.apartment_id;
+
+	Bookshelf.DB.knex('users')
+		.select('id', 'first_name', 'last_name', 'email', 'phone', 'facebook_id', 'google_id')
+		.where('apartment_id', '=', apartmentId)
+		.then(function(users) {
+			var result = [];
+			for (var i = 0; i < users.length; i++) {
+				if (users[i].facebook_id !== null) {
+					var temp = users[i];
+					temp.profile_pic = 'https://graph.facebook.com/' +
+						users[i].facebook_id  + '/picture?height=300&width=300';
+					result.push(temp);
+				} else {
+					var temp = users[i];
+					temp.profile_pic = 'http://placehold.it/300x300';
+					result.push(temp);
+				}
+			}
+			res.json({users: result});
+		})
+		.otherwise(function(error) {
+			res.json(503, {error: 'Database error.'});
+		});
+}
+
+// Gets an apartment's information
+function getApartment(req, res) {
+	if (req.user === undefined) {
+		res.json(401, {error: 'Unauthorized user.'});
+		return;
+	}
+
+	var apartmentId = req.user.attributes.apartment_id;
+
+	Bookshelf.DB.knex('apartments')
+		.where('apartments.id', '=', apartmentId)
+		.then(function(rows) {
+			res.json(rows[0]);
+		})
+		.otherwise(function() {
+			res.json(503, {error: 'Database error.'});
+		});
+}
+
+// Edits an apartment's information
+function updateApartment(req, res) {
+	if (req.user === undefined) {
+		res.json(401, {error: 'Unauthorized user.'});
+		return;
+	}
+
+	var apartmentId = req.user.attributes.apartment_id;
+	var apartmentName = req.body.name;
+	var apartmentAddress = req.body.address;
+
+	if (!isValidName(apartmentName)) {
+		res.json(400, {error: 'Invalid apartment name.'});
+		return;
+	}
+
+	var update = {};
+	update.name = apartmentName.trim();
+	if (isValidName(apartmentAddress)) {
+		update.address = apartmentAddress.trim();
+	}
+
+	new ApartmentModel({id: apartmentId})
+		.save(update, {patch: true})
+		.then(function() {
+			res.json(200);
+		})
+		.otherwise(function() {
+			res.json(504, {error: 'Database error.'});
+		});
+}
+
+  // Removes apartment from the database
+  // Needs to delete all the other models not just break ties
+function deleteApartment(req, res)  {
+	//authorization
+	if (req.user === undefined) {
+		res.json(401, {error: 'Unauthorized user.'});
+		return;
+	}
+	if(req.user== null || req.query == null) {
+			res.json(400, {msg: 'invalid request'});
+			return;
+	}
+	var apartment_id = req.user.attributes.apartment_id;
+	var user_id = req.user.id;
+	if(user_id != null && apartment_id != null) {
+		
+		//delete associated users' tie to the apartment
+		 new Users()
+		.query('where', 'apartment_id', '=', apartment_id)
+		.fetch()
+		.then(function(collection) {	
+			collection.mapThen(function(user) {
+				//delete  bills
+				user.attributes.apartment_id = null;
+				return user.save().then(function(x) {});
+			})
+			.then(function(users) {
+				new Bills()
+				.query('where', 'apartment_id', '=', apartment_id)
+				.fetch()
+				.then(function(bills) {
+					bills.mapThen(function(bill) {
+						bill.attributes.apartment_id = null;
+						return bill.save().then(function(x) {});
+					}).then(function(bills) {
+						new Messages()
+							.query('where', 'apartment_id', '=', apartment_id)
+							.fetch()
+							.then(function(messages) {
+								messages.mapThen(function(messages) {
+									messages.attributes.apartment_id = null;
+									return message.save().then(function(x) {});
+								})
 								.then(function(messages) {
-									messages.mapThen(function(messages) {
-										messages.attributes.apartment_id = null;
-										return message.save().then(function(x) {});
-									})
-									.then(function(messages) {
-										new Chores()
-										.query('where', 'apartment_id', '=', apartment_id)
-										.fetch()
-										.then(function(chore) {
-											chore.mapThen(function(chore) {
-												chore.attributes.apartment_id = null;
-												return chore.save().then(function(x) {});
-											})
-											.then(function(chores) {
-												new Supplies()
-												.query('where', 'apartment_id', '=', apartment_id)
-												.fetch()
-												.then(function(supply) {
-													supply.mapThen(function(supply) {
-														supply.attributes.apartment_id = null;
-														return supply.save().then(function(x) {});
-													});
+									new Chores()
+									.query('where', 'apartment_id', '=', apartment_id)
+									.fetch()
+									.then(function(chore) {
+										chore.mapThen(function(chore) {
+											chore.attributes.apartment_id = null;
+											return chore.save().then(function(x) {});
+										})
+										.then(function(chores) {
+											new Supplies()
+											.query('where', 'apartment_id', '=', apartment_id)
+											.fetch()
+											.then(function(supply) {
+												supply.mapThen(function(supply) {
+													supply.attributes.apartment_id = null;
+													return supply.save().then(function(x) {});
 												});
 											});
 										});
 									});
 								});
-			if(apartment_id != req.params.apt) {
-					res.json(400, {msg: 'unauthorized'});
-					return;
+							});
+						});
+					});
+				});
+			});
+
+		//delete associated users
+		new Users({apartment_id : apartment_id})
+		.fetch().then(function(users) {
+			for(var i = 0; i < users.length; i++) {
+				users.models[i].attributes.apartment_id = null;
+				users.models[i].save().then(function(x){});
 			}
-			//delete associated users
-			new Users({apartment_id : apartment_id})
-			.fetch().then(function(users) {
-				for(var i = 0; i < users.length; i++) {
-					users.models[i].attributes.apartment_id = null;
-					users.models[i].save().then(function(x){});
+
+
+			//delete associated bills
+			new Bills({apartment_id : apartment_id})
+			.fetch().then(function(bills) {
+				for(var i = 0; i < bills.length; i++) {
+					bills.models[i].attributes.apartment_id = null;
+					bills.models[i].save();
 				}
 
-
-				//delete associated bills
-				new Bills({apartment_id : apartment_id})
-				.fetch().then(function(bills) {
-					for(var i = 0; i < bills.length; i++) {
-						bills.models[i].attributes.apartment_id = null;
-						bills.models[i].save();
+				//delete associated messages
+				new Messages({apartment_id : apartment_id})
+				.fetch().then(function(messages) {
+					for(var i = 0; i < messages.length; i++) {
+						messages.models[i].attributes.apartment_id = null;
+						messages.models[i].save();
 					}
 
-					//delete associated messages
-					new Messages({apartment_id : apartment_id})
-					.fetch().then(function(messages) {
-						for(var i = 0; i < messages.length; i++) {
-							messages.models[i].attributes.apartment_id = null;
-							messages.models[i].save();
+					//delete associated chores
+					new Chores({apartment_id : apartment_id})
+					.fetch().then(function(chores) {
+						for(var i = 0; i < chores.length; i++) {
+							chores.models[i].attributes.apartment_id = null;
+							chores.models[i].save();
 						}
-
-						//delete associated chores
-						new Chores({apartment_id : apartment_id})
-						.fetch().then(function(chores) {
-							for(var i = 0; i < chores.length; i++) {
-								chores.models[i].attributes.apartment_id = null;
-								chores.models[i].save();
-							}
-						})
-						.otherwise(function(error) {
-							res.json(400, {msg: 'error deleting chores'});
-							return;
-						});
-					}).otherwise(function(error) {
-						res.json(400, {msg: 'error deleting apartment'});
+					})
+					.otherwise(function(error) {
+						res.json(400, {msg: 'error deleting chores'});
+						return;
 					});
-				}).then(function(users) {
+				}).otherwise(function(error) {
+					res.json(400, {msg: 'error deleting apartment'});
+				});
+			}).then(function(users) {
 
-					res.json(200);
-				})
-				.otherwise(function(error) {
-					res.json(400, {msg: 'error deleting bills'});
-					return;
-				});
-				//delete
-				var apartment = new ApartmentModel({id : apartment_id});
-				apartment.destroy()
-				.then(function(apartment) {
-					res.json({result : 'success'});
-				})
-				.otherwise(function(error) {
-					res.json(400, {msg: 'derror deleting apartment'});
-					return;
-				});
+				res.json(200);
 			})
 			.otherwise(function(error) {
-				res.json(400, {msg: 'error updating user'});
+				res.json(400, {msg: 'error deleting bills'});
 				return;
 			});
-		} else {
-			res.json(401, {msg: 'could not fetch id'});
-		}
-	});
-
-	// Checks if a name is valid
-	function isValidName(name) {
-		return name !== undefined && name !== null && name.trim() !== '';
+			//delete
+			var apartment = new ApartmentModel({id : apartment_id});
+			apartment.destroy()
+			.then(function(apartment) {
+				res.json({result : 'success'});
+			})
+			.otherwise(function(error) {
+				res.json(400, {msg: 'derror deleting apartment'});
+				return;
+			});
+		})
+		.otherwise(function(error) {
+			res.json(400, {msg: 'error updating user'});
+			return;
+		});
+	} else {
+		res.json(401, {msg: 'could not fetch id'});
 	}
+}
 
-	// Checks if an ID is valid
-	function isValidId(id) {
-		return isInt(id) && id > 0;
-	}
+// Checks if a name is valid
+function isValidName(name) {
+	return name !== undefined && name !== null && name.trim() !== '';
+}
 
-	// Checks if a value is an integer
-	function isInt(value) {
-		/* jshint eqeqeq: false */
-		return !isNaN(value) && parseInt(value) == value;
-	}
-	
-	// Sets up all routes
-	function setup(app) {
-	  app.get('/apartment', getApartment);
-	  app.get('/apartment/users', getUsers);
-	  app.post('/apartment', addApartment);
-	  app.put('/apartment', updateApartment);
-	  app.delete('/apartment', deleteApartment);
-	}
+// Checks if an ID is valid
+function isValidId(id) {
+	return isInt(id) && id > 0;
+}
 
-};
+// Checks if a value is an integer
+function isInt(value) {
+	/* jshint eqeqeq: false */
+	return !isNaN(value) && parseInt(value) == value;
+}
 
-module.exports = apartment;
+// Sets up all routes
+function setup(app) {
+  app.get('/apartment', getApartment);
+  app.get('/apartment/users', getUsers);
+  app.post('/apartment', addApartment);
+  app.put('/apartment', updateApartment);
+  app.delete('/apartment', deleteApartment);
+}
+
+
 module.exports.getApartment = getApartment;
 module.exports.addApartment = addApartment;
 module.exports.updateApartment = updateApartment;
