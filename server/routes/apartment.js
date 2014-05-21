@@ -14,7 +14,7 @@ var Bookshelf = require('bookshelf');
 var apartment = function(app) {
 
 	// Adds an apartment to the database
-	app.post('/apartment', function(req, res) {
+	function addApartment(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
@@ -49,7 +49,7 @@ var apartment = function(app) {
 	});
 
 	// Gets all users in the apartment
-	app.get('/apartment/users', function(req, res) {
+	function getUsers(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
@@ -82,7 +82,7 @@ var apartment = function(app) {
 	});
 
 	// Gets an apartment's information
-	app.get('/apartment', function(req, res) {
+	function getApartment(req, res) 
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
@@ -101,7 +101,7 @@ var apartment = function(app) {
 	});
 
 	// Edits an apartment's information
-	app.put('/apartment', function(req, res) {
+	function updateApartment(req, res) {
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
 			return;
@@ -134,7 +134,7 @@ var apartment = function(app) {
 
 	  // Removes apartment from the database
 	  // Needs to delete all the other models not just break ties
-	app.delete('/apartment', function(req, res) {
+	function deleteApartment(req, res)  {
 	    //authorization
 		if (req.user === undefined) {
 			res.json(401, {error: 'Unauthorized user.'});
@@ -285,7 +285,22 @@ var apartment = function(app) {
 		/* jshint eqeqeq: false */
 		return !isNaN(value) && parseInt(value) == value;
 	}
+	
+	// Sets up all routes
+	function setup(app) {
+	  app.get('/apartment', getApartment);
+	  app.get('/apartment/users', getUsers);
+	  app.post('/apartment', addApartment);
+	  app.put('/apartment', updateApartment);
+	  app.delete('/apartment', deleteApartment);
+	}
 
 };
 
 module.exports = apartment;
+module.exports.getApartment = getApartment;
+module.exports.addApartment = addApartment;
+module.exports.updateApartment = updateApartment;
+module.exports.deleteApartment = deleteApartment;
+module.exports.getUsers = getUsers;
+module.exports.setup = setup;
