@@ -16,7 +16,7 @@ function getBills(req, res) {
     return;
   }
 
-  if(req.query.type === undefined || (req.query.type !== 'resolved' &&
+  if (req.query.type === undefined || (req.query.type !== 'resolved' &&
      req.query.type !== 'unresolved')) {
     res.json(400, {error: 'Unexpected type parameter.'});
     return;
