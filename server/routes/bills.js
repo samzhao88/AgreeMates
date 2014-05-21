@@ -9,89 +9,55 @@ var PaymentModel = require('../models/payment').model;
 var PaymentCollection = require('../models/payment').collection;
 var Bookshelf = require('bookshelf');
 
-var bills = function(app) {
+// Gets all bills for an apartment
+function getBills(req, res) {
+  if (req.user === undefined) {
+    res.json(401, {error: 'Unauthorized user.'});
+    return;
+  }
 
-  //Get all bills in apartment information
-  app.get('/bills', function(req, res) {
-    if (req.user === undefined) {
-      res.json(401, {error: 'Unauthorized user.'});
-      return;
-    }
-    if(req.query.type === undefined || (req.query.type !== 'resolved' &&
-       req.query.type !== 'unresolved')) {
-      res.json(400, {error: 'Unexpected type parameter.'});
-      return;
-    }
-    var apartmentId = req.user.attributes.apartment_id;
+  if (req.query.type === undefined || (req.query.type !== 'resolved' &&
+     req.query.type !== 'unresolved')) {
+    res.json(400, {error: 'Unexpected type parameter.'});
+    return;
+  }
 
-    // Fetch all the apartments bills and their corresponding
-    // payments
-    Bookshelf.DB.knex('bills')
-      .join('payments', 'bills.id', '=', 'payments.bill_id')
-      .join('users as creator', 'bills.user_id', '=', 'creator.id')
-      .join('users', 'payments.user_id', '=', 'users.id')
-      .where('bills.apartment_id', '=', apartmentId)
-      .where('bills.paid', '=', (req.query.type === 'resolved'))
-      .select('bills.amount as total', 'payments.user_id',
-              'bills.paid as billPaid', 'payments.paid as userPaid',
-              'bills.createdate', 'bills.duedate', 'bills.name',
-              'bills.interval', 'users.first_name', 'users.id',
-              'payments.bill_id', 'payments.amount', 
-              'bills.user_id as creatorId', 'creator.first_name as payTo')
-      .orderBy('payments.bill_id')
-      .then(function(rows) {
-        var bills = [];
-        var payments = [];
-        if(rows.length === 0) {
-          res.json({bills: bills});
-          return;
-        }
+  var apartmentId = req.user.attributes.apartment_id;
 
-        // set lastBillId to invalid Id so algorithm will work
-        var lastBillId = -1;
-        var name, amount, createDate, dueDate;
-        var frequency, resolved, creatorId, payTo;
-        for(var i = 0; i < rows.length; i++) {
+  // Fetch all the apartments bills and their corresponding
+  // payments
+  Bookshelf.DB.knex('bills')
+    .join('payments', 'bills.id', '=', 'payments.bill_id')
+    .join('users as creator', 'bills.user_id', '=', 'creator.id')
+    .join('users', 'payments.user_id', '=', 'users.id')
+    .where('bills.apartment_id', '=', apartmentId)
+    .where('bills.paid', '=', (req.query.type === 'resolved'))
+    .select('bills.amount as total', 'payments.user_id',
+            'bills.paid as billPaid', 'payments.paid as userPaid',
+            'bills.createdate', 'bills.duedate', 'bills.name',
+            'bills.interval', 'users.first_name', 'users.id',
+            'payments.bill_id', 'payments.amount',
+            'bills.user_id as creatorId', 'creator.first_name as payTo')
+    .orderBy('payments.bill_id')
+    .then(function(rows) {
+      var bills = [];
+      var payments = [];
+      if(rows.length === 0) {
+        res.json({bills: bills});
+        return;
+      }
 
-          // If billid is different, then all payments for the current
-          // bill have been pushed on payments. We push the bill then
-          if(rows[i].bill_id !== lastBillId) {
-            if(lastBillId !== -1) {
-              bills.push({
-                id: lastBillId,
-                name: name,
-                amount: amount,
-                createDate: createDate,
-                dueDate: dueDate,
-                frequency: frequency,
-                resolved: resolved,
-                creatorId: creatorId,
-                payTo: payTo,
-                payments: payments
-              });
-            }
-            // empty payments since bill is done and set all fields for the
-            // new bill
-            payments = [];
-            lastBillId = rows[i].bill_id;
-            name = rows[i].name;
-            amount = rows[i].total;
-            createDate = rows[i].createdate;
-            dueDate = rows[i].duedate;
-            resolved = rows[i].billPaid;
-            frequency = rows[i].interval;
-            creatorId = rows[i].creatorId;
-            payTo = rows[i].payTo;
-          }
-          payments.push({
-            userId: rows[i].user_id,
-            name: rows[i].first_name,
-            amount: rows[i].amount,
-            paid: rows[i].userPaid
-          });
-        }
-        // Push the last bill onto the bills array
-        bills.push({
+      // set lastBillId to invalid Id so algorithm will work
+      var lastBillId = -1;
+      var name, amount, createDate, dueDate;
+      var frequency, resolved, creatorId, payTo;
+      for(var i = 0; i < rows.length; i++) {
+
+        // If billid is different, then all payments for the current
+        // bill have been pushed on payments. We push the bill then
+        if(rows[i].bill_id !== lastBillId) {
+          if(lastBillId !== -1) {
+            bills.push({
               id: lastBillId,
               name: name,
               amount: amount,
@@ -102,219 +68,358 @@ var bills = function(app) {
               creatorId: creatorId,
               payTo: payTo,
               payments: payments
-        });
-        res.json({bills: bills});
-      })
-      .otherwise(function(error) {
-        res.json(503, {error: 'Database error.'});
-      });
-  });
-
-  // Create a new bill
-  app.post('/bills', function(req, res) {
-
-    // Check that user is authorized
-    if(req.user === undefined) {
-      res.json(401, {error: 'Unauthorized user.'});
-      return;
-    }
-
-    // Copy over fields from request
-    var apartmentId = req.user.attributes.apartment_id;
-    var userId = req.user.attributes.id;
-    var name = req.body.name;
-    var total = req.body.total;
-    var interval = req.body.interval;
-    var duedate = req.body.date;
-    var date = new Date();
-    var createdate = (date.getMonth() + 1) + '/' + date.getDate() +
-      '/' + date.getFullYear();
-    var roommates = req.body.roommates;
-
-    // Check if the fields are acceptable
-    if (!isValidName(name)) {
-      res.json(400, {error: 'Invalid bill name.'});
-      return;
-    } else if (total === undefined || total < 0) {
-      res.json(400, {error: 'Invalid bill total.'});
-      return;
-    } else if (interval === undefined || interval < 0) {
-      res.json(400, {error: 'Invalid bill interval.'});
-      return;
-    } else if (duedate === undefined) {
-      res.json(400, {error: 'Invalid due date.'});
-      return;
-    } else if (roommates === undefined) {
-      res.json(400, {error: 'Invalid roommates.'});
-      return;
-    }
-
-    // Create a new bill model
-    new BillModel({apartment_id: apartmentId, name: name,
-      user_id: userId, amount: total, paid: false,
-      interval: interval, duedate: duedate, createdate: createdate})
-      .save()
-      .then(function(model) {
-        for(var i = 0; i < roommates.length; i++) {
-          // add payment models for each of the payments for the bill
-          new PaymentModel({paid: false, amount: roommates[i].amount,
-            user_id: roommates[i].id, bill_id: model.id})
-            .save()
-            .then(function() { })
-            .otherwise(function(error) {
-              res.json(503, {error: 'Database error.'});
             });
+          }
+          // empty payments since bill is done and set all fields for the
+          // new bill
+          payments = [];
+          lastBillId = rows[i].bill_id;
+          name = rows[i].name;
+          amount = rows[i].total;
+          createDate = rows[i].createdate;
+          dueDate = rows[i].duedate;
+          resolved = rows[i].billPaid;
+          frequency = rows[i].interval;
+          creatorId = rows[i].creatorId;
+          payTo = rows[i].payTo;
         }
-        res.json({id: model.attributes.id});
-      }).otherwise(function(error) {
-        res.json(503, {error: 'Database error.'});
+        payments.push({
+          userId: rows[i].user_id,
+          name: rows[i].first_name,
+          amount: rows[i].amount,
+          paid: rows[i].userPaid
+        });
+      }
+      // Push the last bill onto the bills array
+      bills.push({
+            id: lastBillId,
+            name: name,
+            amount: amount,
+            createDate: createDate,
+            dueDate: dueDate,
+            frequency: frequency,
+            resolved: resolved,
+            creatorId: creatorId,
+            payTo: payTo,
+            payments: payments
       });
-  });
+      res.json({bills: bills});
+    })
+    .otherwise(function(error) {
+      res.json(503, {error: 'Database error.'});
+    });
+}
 
-  // Marks that a user has paid their payment of a bill
-  app.put('/bills/:bill/payment', function(req, res) {
-    if (req.user === undefined) {
-      res.json(401, {error: 'Unauthorized user.'});
-      return;
-    }
+// Adds a bill to an apartment
+function addBill(req, res) {
+  if (req.user === undefined) {
+    res.json(401, {error: 'Unauthorized user.'});
+    return;
+  }
 
-    var apartmentId = req.user.attributes.apartment_id;
-    var userId = req.user.attributes.id;
-    var billId = req.params.bill;
-    var paid = req.body.paid;
+  // Copy over fields from request
+  var apartmentId = req.user.attributes.apartment_id;
+  var userId = req.user.attributes.id;
+  var name = req.body.name;
+  var total = req.body.total;
+  var interval = req.body.interval;
+  var duedate = req.body.date;
+  var createdate = new Date();
+  var roommates = req.body.roommates;
 
-    if (!isValidId(billId)) {
-      res.json(400, {error: 'Invalid bill ID.'});
-      return;
-    } else if (paid !== 'true' && paid !== 'false') {
-      res.json(400, {error: 'Invalid paid parameter.'});
-      return;
-    }
+  // Check if the fields are acceptable
+  if (!isValidName(name)) {
+    res.json(400, {error: 'Invalid bill name.'});
+    return;
+  } else if (total === undefined || total < 0) {
+    res.json(400, {error: 'Invalid bill total.'});
+    return;
+  } else if (interval === undefined || interval < 0) {
+    res.json(400, {error: 'Invalid bill interval.'});
+    return;
+  } else if (duedate === undefined) {
+    res.json(400, {error: 'Invalid due date.'});
+    return;
+  } else if (roommates === undefined) {
+    res.json(400, {error: 'Invalid roommates.'});
+    return;
+  }
 
-    Bookshelf.DB.knex('payments')
-      .where('user_id', '=', userId)
-      .where('bill_id', '=', billId)
-      .update({paid: paid})
-      .then(function() {
-        res.send(200);
-      })
-      .otherwise(function() {
-        res.json(503, {error: 'Database error.'});
-      });
-  });
-
-  // Process edit bill form, modify database
-  app.put('/bills/:bill', function(req, res) {
-
-    // Check if user is authorized
-    if(req.user === undefined) {
-      res.json(401, {error: 'Unauthorized user.'});
-      return;
-    }
-
-    // Copy over fields from the request
-    var apartmentId = req.user.attributes.apartment_id;
-    var billId = req.params.bill;
-    var name = req.body.name;
-    var total = req.body.total;
-    var interval = req.body.interval;
-    var date = req.body.date;
-    var roommates = req.body.roommates;
-
-    // Check for validity of fields
-    if (!isValidId(billId)) {
-      res.json(400, {error: 'Invalid bill ID.'});
-      return;
-    } else if (!isValidName(name)) {
-      res.json(400, {error: 'Invalid bill name.'});
-      return;
-    }
-
-    // Destroy all the payments which are references to the billId
-    // This must be done since the roommates paying on a bill could be
-    // different.
-    new PaymentModel()
-      .query('where', 'bill_id', '=', billId)
-      .destroy()
-      .then(function() {
-        // Edit the bill
-        new BillModel({id: billId, apartment_id: apartmentId})
-          .save({name: name, amount: total, duedate: date, interval: interval})
-          .then(function(model) {  
-            // Add new payments for all the users who need to pay
-            for(var i = 0; i < roommates.length; i++) {
-              new PaymentModel({paid: false,
-                               amount: roommates[i].amount,
-                               user_id: roommates[i].id, bill_id: billId})
-                .save()
-                .otherwise(function(error) {
-                  res.json(503, {error: 'Database error'});
-                });
-            }
-            res.json({result: 'success'});
-          }).otherwise(function(error) {
+  // Create a new bill model
+  new BillModel({apartment_id: apartmentId, name: name,
+    user_id: userId, amount: total, paid: false,
+    interval: interval, duedate: duedate, createdate: createdate})
+    .save()
+    .then(function(model) {
+      for(var i = 0; i < roommates.length; i++) {
+        // add payment models for each of the payments for the bill
+        new PaymentModel({paid: false, amount: roommates[i].amount,
+          user_id: roommates[i].id, bill_id: model.id})
+          .save()
+          .otherwise(function(error) {
             res.json(503, {error: 'Database error.'});
           });
-      }).otherwise(function(error) {
-        res.json(503, {error: 'Database error.'});
-      });
-  });
+      }
+      res.json({id: model.attributes.id});
+    }).otherwise(function(error) {
+      res.json(503, {error: 'Database error.'});
+    });
+}
 
-  app.delete('/bills/:bill', function(req, res) {
-    if(req.user === undefined) {
-      res.json(401, {error: 'Unauthorized user.'});
-      return;
+// Update a bill's payment
+function updatePayment(req, res) {
+  if (req.user === undefined) {
+    res.json(401, {error: 'Unauthorized user.'});
+    return;
+  }
+
+  var apartmentId = req.user.attributes.apartment_id;
+  var userId = req.user.attributes.id;
+  var billId = req.params.bill;
+  var paid = req.body.paid;
+
+  if (!isValidId(billId)) {
+    res.json(400, {error: 'Invalid bill ID.'});
+    return;
+  } else if (paid !== 'true' && paid !== 'false') {
+    res.json(400, {error: 'Invalid paid parameter.'});
+    return;
+  }
+
+  Bookshelf.DB.knex('payments')
+    .where('user_id', '=', userId)
+    .where('bill_id', '=', billId)
+    .update({paid: paid})
+    .then(function() {
+
+      // Check if all payments for bill have been paid
+      // if so, mark bill as paid
+      new PaymentCollection()
+        .query('where', 'bill_id', '=', billId)
+        .fetch()
+        .then(function(model) {
+          if(allPaymentsPaid(model)) {
+            new BillModel({id: billId, apartment_id: apartmentId})
+              .save({paid: true})
+              .then(function() {
+                new BillModel()
+                  .query('where', 'id', '=', billId, 'AND',
+                         'apartment_id', '=', apartmentId)
+                  .fetch({withRelated: ['payment']})
+                  .then(function(oldBill) {
+
+                    // If the bill is reocurring we need to make a new
+                    // instance of it and it's payments
+                    if(oldBill.attributes.interval === 3) {
+                      var duedate = createDueDate(oldBill.attributes.duedate);
+                      var createdate = new Date();
+                      new BillModel({apartment_id: apartmentId,
+                                    name: oldBill.attributes.name,
+                                    user_id: oldBill.attributes.user_id,
+                                    amount: oldBill.attributes.amount,
+                                    paid: false,
+                                    interval: oldBill.attributes.interval,
+                                    duedate: duedate, createdate: createdate,
+                                    reocurring_id: oldBill.attributes.reocurring_id})
+                        .save()
+                        .then(function(newBill) {
+                          // Now add new payments for the new bill. They will
+                          // be the same as the payments for the previous bill
+                          // except for the bill_id field
+                          var payments = oldBill.relations.payment.models;
+                          for(var i = 0; i < payments.length; i++) {
+                            new PaymentModel({paid: false,
+                                             amount: payments[i].attributes.amount,
+                                             user_id: payments[i].attributes.user_id,
+                                             bill_id: newBill.attributes.id})
+                              .save()
+                              .otherwise(function(error) {
+                                res.json(503, {error: 'Database error.'});
+                              });
+                          }
+                          res.send(200);
+                        }).otherwise(function(error) {
+                          res.json(503, {error: 'Database error.'});
+                        });
+                    } else {
+                      res.send(200);
+                    }
+                  }).otherwise(function(error) {
+                    res.json(503, {error: 'Database error.'});
+                  });
+              }).otherwise(function() {
+                res.json(503, {error: 'Database error.'});
+              });
+          } else {
+            res.send(200);
+          }
+        }).otherwise(function() {
+          res.json(503, {error: 'Database error.'});
+        });
+    })
+    .otherwise(function() {
+      res.json(503, {error: 'Database error.'});
+    });
+}
+
+// Edit a bill
+function editBill(req, res) {
+  if (req.user === undefined) {
+    res.json(401, {error: 'Unauthorized user.'});
+    return;
+  }
+
+  // Copy over fields from the request
+  var apartmentId = req.user.attributes.apartment_id;
+  var billId = req.params.bill;
+  var name = req.body.name;
+  var total = req.body.total;
+  var interval = req.body.interval;
+  var date = req.body.date;
+  var roommates = req.body.roommates;
+
+  // Check for validity of fields
+  if (!isValidId(billId)) {
+    res.json(400, {error: 'Invalid bill ID.'});
+    return;
+  } else if (!isValidName(name)) {
+    res.json(400, {error: 'Invalid bill name.'});
+    return;
+  }
+
+  // Destroy all the payments which are references to the billId
+  // This must be done since the roommates paying on a bill could be
+  // different.
+  new PaymentModel()
+    .query('where', 'bill_id', '=', billId)
+    .destroy()
+    .then(function() {
+      // Edit the bill
+      new BillModel({id: billId, apartment_id: apartmentId})
+        .save({name: name, amount: total, duedate: date, interval: interval})
+        .then(function(model) {
+          // Add new payments for all the users who need to pay
+          for(var i = 0; i < roommates.length; i++) {
+            new PaymentModel({paid: false,
+                             amount: roommates[i].amount,
+                             user_id: roommates[i].id, bill_id: billId})
+              .save()
+              .otherwise(function() {
+                res.json(503, {error: 'Database error'});
+              });
+          }
+          res.json({result: 'success'});
+        }).otherwise(function(error) {
+          res.json(503, {error: 'Database error.'});
+        });
+    }).otherwise(function() {
+      res.json(503, {error: 'Database error.'});
+    });
+}
+
+// Delete a bill
+function deleteBill(req, res) {
+  if (req.user === undefined) {
+    res.json(401, {error: 'Unauthorized user.'});
+    return;
+  }
+
+  var apartmentId = req.user.attributes.apartment_id;
+  var billId = req.params.bill;
+
+  if (!isValidId(billId)) {
+    res.json(400, {error: 'Invalid bill ID.'});
+    return;
+  }
+
+  // Destroy all the payments for a bill and then destroy
+  // the bill.
+  new PaymentModel()
+    .query('where', 'bill_id', '=', billId)
+    .destroy()
+    .then(function() {
+      new BillModel()
+        .query('where', 'id', '=',  billId, 'AND',
+               'apartment_id', '=', apartmentId)
+        .destroy()
+        .then(function() {
+          res.send(200);
+        }).otherwise(function() {
+          res.json(503, {error: 'Database error.'})
+        });
+    }).otherwise(function(error) {
+      res.json(503, {error: 'Database error.'});
+    });
+}
+
+// Checks if a bill ID is valid
+function isValidId(id) {
+  return isInt(id) && id > 0;
+}
+
+// Checks if a paid parameter is valid
+function isValidPaid(paid) {
+
+}
+
+// Checks if a value is an integer
+function isInt(value) {
+  return !isNaN(value) && parseInt(value) == value;
+}
+
+// Checks if a bill name is valid
+function isValidName(name) {
+  return name !== undefined && name !== null && name !== '';
+}
+
+// Creates a valid new due date for a bill
+function createDueDate(date) {
+  var month = (date.getMonth() + 2) % 12;
+  var duedate = date;
+  // If the year changed then update it
+  if (month === 1) {
+    duedate.setFullYear(date.getFullYear() + 1);
+  }
+
+  // If the date is past the 28th we need to set a new
+  // date that is valid depending on the month
+  if (date.getDate() > 28) {
+    if (month === 2) {
+      duedate.setDate(28);
+    } else if (month === 4 | month === 6 |
+              month === 9 | month === 11) {
+      duedate.setDate(30);
     }
+  }
+  duedate.setMonth(month - 1);
+  return duedate;
+}
 
-    var apartmentId = req.user.attributes.apartment_id;
-    var billId = req.params.bill;
-
-    if(!isValidId(billId)) {
-      res.json(400, {error: 'Invalid bill ID.'});
-      return;
+// Checks if an array of payment models are all paid
+function allPaymentsPaid(payments) {
+  var allPaid = true;
+  for (var i = 0; i < payments.length; i++) {
+    var payment = payments.models[i].attributes;
+    if (payment.paid !== true) {
+      allPaid = false;
+      break;
     }
-
-    // Destroy all the payments for a bill and then destroy
-    // the bill.
-    new PaymentModel()
-      .query('where', 'bill_id', '=', billId)
-      .destroy()
-      .then(function(payModel) {
-        new BillModel()
-          .query('where', 'id', '=',  billId, 'AND',
-                 'apartment_id', '=', apartmentId)
-          .destroy()
-          .then(function(model) {
-            res.json(200);
-          }).otherwise(function(error) {
-            res.json(503, {error: 'Delete payment error'})
-          });
-      }).otherwise(function(error) {
-        res.json(503, {error: 'Database error.'});
-      });
-
-  });
-
-  // Checks if a bill ID is valid
-  function isValidId(id) {
-    return isInt(id) && id > 0;
   }
+  return allPaid;
+}
 
-  // Checks if a paid parameter is valid
-  function isValidPaid(paid) {
+// Sets up all routes
+function setup(app) {
+  app.get('/bills', getBills);
+  app.post('/bills', addBill);
+  app.put('/bills/:bill/payment', updatePayment);
+  app.put('/bills/:bill', editBill);
+  app.delete('/bills/:bill', deleteBill);
+}
 
-  }
-
-  // Checks if a value is an integer
-  function isInt(value) {
-    return !isNaN(value) && parseInt(value) == value;
-  }
-
-  // Checks if a bill name is valid
-  function isValidName(name) {
-    return name !== undefined && name !== null && name !== '';
-  }
-
-};
-
-module.exports = bills;
+module.exports.getBills = getBills;
+module.exports.addBill = addBill;
+module.exports.updatePayment = updatePayment;
+module.exports.editBill = editBill;
+module.exports.deleteBill = deleteBill;
+module.exports.setup = setup;
