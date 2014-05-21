@@ -30,7 +30,7 @@ var messages = function(app) {
               'author.first_name as authorName', 'messages.date as messageDate',
               'users.first_name as commentAuthor', 'comments.id as commentId',
               'comments.body as commentBody', 'comments.date as commentDate')
-      .orderBy('messageId')
+      .orderBy('messageId', 'desc')
       .then(function(rows) {
         var messages = [];
         var comments = [];
@@ -53,7 +53,7 @@ var messages = function(app) {
               messages.push({
                 id: lastMessageId,
                 subject: subject,
-                text: text,
+                body: text,
                 author: author,
                 date: date,
                 comments: comments
@@ -72,7 +72,7 @@ var messages = function(app) {
             comments.push({
               id: rows[i].commentId,
               author: rows[i].commentAuthor,
-              text: rows[i].commentBody,
+              body: rows[i].commentBody,
               date: rows[i].commentDate
             });
           }
@@ -81,7 +81,7 @@ var messages = function(app) {
         messages.push({
           id: lastMessageId,
           subject: subject,
-          text: text,
+          body: text,
           author: author,
           date: date,
           comments: comments
@@ -105,10 +105,8 @@ var messages = function(app) {
     var apartmentId = req.user.attributes.apartment_id;
     var userId = req.user.attributes.id;
     var subject = req.body.subject;
-    var text = req.body.text;
+    var text = req.body.body;
     var date = new Date();
-    var createdate = (date.getMonth() + 1) + '/' + date.getDate() + 
-      '/' + date.getFullYear();
 
     // Check fields for validity
     if(subject === null) {
@@ -119,11 +117,12 @@ var messages = function(app) {
     
     // Create the new message in the database.
     new MessageModel({apartment_id: apartmentId, user_id: userId,
-      subject: subject, body: text, date: createdate})
+      subject: subject, body: text, date: date})
       .save()
       .then(function (model) {
-        res.json({id: model.attributes.id});
+        res.json(model);
       }).otherwise(function(error) {
+        console.log(error);
         res.json(503, {error: 'Database error.'});
       });
   });
@@ -142,7 +141,7 @@ var messages = function(app) {
     var userId = req.user.attributes.id;
     var messageId = req.params.message;
     var subject = req.body.subject;
-    var text = req.body.text;
+    var text = req.body.body;
 
     if(!isValidId(messageId)) {
       res.json(400, {error: 'Invalid message ID.'});

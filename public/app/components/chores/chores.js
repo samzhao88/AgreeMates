@@ -15,6 +15,8 @@ function ($scope, $http, $timeout) {
 
     $scope.chore = {name: ''};
     
+    $scope.chores = [];
+
     $scope.weekly = [];
 
     //get chores
@@ -349,6 +351,10 @@ function ($scope, $http, $timeout) {
         }
 
 
+    };
+
+    $scope.emptyChoreList = function(){
+      return $scope.chores.length == 0 ? true : false; 
     };
 
 });
