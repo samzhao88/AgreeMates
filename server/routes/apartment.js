@@ -8,6 +8,7 @@ var Users = require('../models/user').collection;
 var Bills = require('../models/bill').collection;
 var Chores = require('../models/chore').collection;
 var Messages = require('../models/message').collection;
+var Supplies = require('../models/supply').collection;
 var Bookshelf = require('bookshelf');
 
 var apartment = function(app) {
@@ -137,74 +138,67 @@ var apartment = function(app) {
 			//delete associated users' tie to the apartment
 			 new Users()
 			.query('where', 'apartment_id', '=', apartment_id)
-			.mapThen(function(user) {
-				user.attributes.apartment_id = null;
-				user.save();
-				console.log("4");
-			}).then(function(users) {
-				//delete
-				console.log("1");
-				res.json(200);
+			.fetch()
+			.then(function(collection) {	
+				collection.mapThen(function(user) {
+				    //delete  bills
+					user.attributes.apartment_id = null;
+					return user.save().then(function(x) {});
+				})
+				.then(function(users) {
+					new Bills()
+					.query('where', 'apartment_id', '=', apartment_id)
+					.fetch()
+					.then(function(bills) {
+						bills.mapThen(function(bill) {
+							bill.attributes.apartment_id = null;
+							return bill.save().then(function(x) {});
+						}).then(function(bills) {
+							new Messages()
+								.query('where', 'apartment_id', '=', apartment_id)
+								.fetch()
+								.then(function(messages) {
+									messages.mapThen(function(messages) {
+										messages.attributes.apartment_id = null;
+										return message.save().then(function(x) {});
+									})
+									.then(function(messages) {
+										new Chores()
+										.query('where', 'apartment_id', '=', apartment_id)
+										.fetch()
+										.then(function(chore) {
+											chore.mapThen(function(chore) {
+												chore.attributes.apartment_id = null;
+												return chore.save().then(function(x) {});
+											})
+											.then(function(chores) {
+												new Supplies()
+												.query('where', 'apartment_id', '=', apartment_id)
+												.fetch()
+												.then(function(supply) {
+													supply.mapThen(function(supply) {
+														supply.attributes.apartment_id = null;
+														return supply.save().then(function(x) {});
+													});
+												});
+											});
+										});
+									});
+								});
+						});
+					}).otherwise(function(error) {
+						console.log(error);
+						res.json(400, {msg: 'error deleting apartment'});
+					});
+				}).then(function(users) {
+
+					res.json(200);
+				});
 			})
 			.otherwise(function(error) {
 				res.json(400, {msg: 'error updating user'});
 				return;
 			});
-
-			//delete associated bills
-			new Bills()
-			.query('where', 'apartment_id', '=', apartment_id)
-			.mapThen(function(bill) {
-				// Destroy all the payments for a bill and then destroy
-				// the bill.
-				console.log("3");
-				new PaymentModel()
-				  .query('where', 'bill_id', '=', bill.attributes.id)
-				  .destroy()
-				  .then(function(payModel) {
-					new BillModel()
-					  .query('where', 'id', '=',  bill.attributes.id, 'AND',
-							 'apartment_id', '=', apartment_id)
-					  .destroy()
-					  .then(function(model) {
-						res.json(200);
-					  }).otherwise(function(error) {
-						res.json(503, {error: 'Delete payment error'})
-					  });
-				})
-				.then(function(users) {
-					//delete
-					console.log("2");
-					res.json(200);
-				}).otherwise(function(error) {
-					res.json(503, {error: 'Could not fetch payment'});
-				});
-			})
-			.otherwise(function(error) {
-				res.json(400, {msg: 'error deleting bills'});
-				return;
-			});
-
-				//delete associated messages
-			/*new Messages
-			.query('where', 'apartment_id', '=', apartment_id)
-			.mapThen(function(message) {
-			})
-			.otherwise(function(error) {
-				res.json(400, {msg: 'error deleting messages'});
-				return;
-			}); */
-
-				//delete associated chores
-			/*new Chores
-			.query('where', 'apartment_id', '=', apartment_id)
-			.mapThen(function(chore) {
-
-			})
-			.otherwise(function(error) {
-				res.json(400, {msg: 'error deleting chores'});
-				return;
-			});		*/
 		} else {
 			res.json(401, {msg: 'could not fetch id'});
 		}
