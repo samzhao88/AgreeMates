@@ -12,6 +12,7 @@ var router = function(app, passport) {
   require('./messages.js').setup(app);
   require('./comments.js')(app);
   require('./user.js').setup(app);
+  require('./history.js').setup(app);
   require('./invitations.js').setup(app);
   require('./passport.js')(app, passport);
 
