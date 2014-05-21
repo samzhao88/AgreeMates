@@ -16,7 +16,10 @@ function getSupplies(req, res) {
   var apartmentId = req.user.attributes.apartment_id;
 
   new SupplyCollection()
-    .query('where', 'apartment_id', '=', apartmentId)
+    .query(function(qb) {
+      qb.where('apartment_id', '=', apartmentId);
+      qb.orderBy('id', 'desc');
+    })
     .fetch()
     .then(function(model) {
       var supplies = [];

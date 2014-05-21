@@ -160,7 +160,12 @@ html, body {
   vertical-align: middle;
 }
 
-#supply-add-button {
+.delete-icon {
+  font-size: 16px;
+  color: #d9534f;
+}
+
+#supply-add-button, #chores-add-button {
   float: right;
   margin-bottom: 15px;
 }

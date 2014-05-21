@@ -9,7 +9,7 @@
 	</div>
 	<hr>
 
-	<div class="supplyAddButton">
+	<div id="chores-add-button">
 		<button type="button" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-success" ng-click="cancel(); chore.interval = 0">Add Chore</button>
 	</div>
 
@@ -124,14 +124,14 @@
 	</div>
 
 	<!-- Chores table -->
-	<table class="table table-striped table-hover">
+	<table class="table table-striped table-hover text-center">
     <tbody>
     	<tr ng-show="!emptyChoreList()">
- 		   <th>Name</th>
- 			 <th>Responsible</th>
- 			 <th>Frequency</th>
- 			 <th>Due</th>
-			  <th>Delete</th>
+ 		   <th class="text-center">Name</th>
+ 			 <th class="text-center">Responsible</th>
+ 			 <th class="text-center">Frequency</th>
+ 			 <th class="text-center">Due</th>
+			  <th class="text-center">Delete</th>
  		 </tr>
       <tr data-ng-repeat ="chore in chores" >
     		<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
@@ -148,10 +148,8 @@
  			 <td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  				 <span class="due date">{{format(chore.duedate)}}</span>
  			 </td>
- 			 <td width = "100">
- 			   <div class="delete">
-						<span class="glyphicon glyphicon-remove" ng-click="deleteChore(chore.id, $index)"></span>
-					</div>
+ 			 <td width>
+ 			   <i class="ion-close-circled delete-icon" ng-click="deleteChore(chore.id, $index)"></i>
 				</td>
     	</tr>
 		</tbody>
