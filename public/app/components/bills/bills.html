@@ -173,6 +173,7 @@
 	</div>
 
 	<!-- Roommates balance table -->
+	<h3>Balance between you and your roommates</h3>
 	<table class="table table-hover table-striped">
 		<tr>
 			<th>Roommate</th>
@@ -182,9 +183,9 @@
 		</tr>
 		<tr ng-repeat="balance in balances">
 			<td>{{balance.first_name}} {{balance.last_name}}</td>
-			<td>{{balance.userOwed}}</td>
-			<td>{{balance.owedToUser}}</td>
-			<td>{{balance.owedToUser - balance.userOwed}}</td>
+			<td>{{showBalance(balance.userOwed)}}</td>
+			<td>{{showBalance(balance.owedToUser)}}</td>
+			<td>${{balance.netBalance}}</td>
 		</tr>
 	</table>
 
