@@ -14,7 +14,7 @@ function ($scope, $http, $timeout) {
     $scope.gindex = 0;
 
     $scope.chore = {name: ''};
-    
+
     $scope.chores = [];
 
     $scope.weekly = [];
@@ -42,16 +42,16 @@ function ($scope, $http, $timeout) {
   	$scope.users = [];
 
 	$http.get('/apartment/users').
-      	success(function(data) { 
+      	success(function(data) {
       	//get users in apartment
         console.log(data);
       	$scope.users = data.users;
 
     }).error(function(data, status, headers, config){
-        $scope.users = [ {name: "alice", id: 12} , {name: "bob", id: 13} 
+        $scope.users = [ {name: "alice", id: 12} , {name: "bob", id: 13}
         , {name: "cameron", id: 14}];
     }
-    );	
+    );
 
 
 
@@ -97,7 +97,7 @@ function ($scope, $http, $timeout) {
         {
 
             if($scope.users[i].isChecked)
-            { 
+            {
             any.id = $scope.users[i].id;
             chore.roommates.push(any.id);
             }
@@ -119,7 +119,7 @@ function ($scope, $http, $timeout) {
             }
 
             $scope.chores.push(chore);
-            
+
             console.log($scope.chores);
             showSucc("Chore "+chore.name+" successfully added!");
 
@@ -129,18 +129,18 @@ function ($scope, $http, $timeout) {
       	});
         }
     }
-    
+
     //resets the add chore modal to defaults
-    $scope.cancel;  
+    $scope.cancel;
 
     };
 
     //edits chore in db then updates the view
     $scope.editChore = function(index) {
-    	
+
       	console.log($scope.chore);
         console.log($scope.gindex);
-        
+
         $scope.chore.roommates = [];
 
         var temp = [];
@@ -248,7 +248,7 @@ function ($scope, $http, $timeout) {
         }
     };
 
-    
+
 
 
     //sets the edit chore menu to the selected chore, maps all responsible as well
@@ -264,10 +264,10 @@ function ($scope, $http, $timeout) {
     }
     console.log($scope.users);
     var temp2 = {};
-    
 
 
-    
+
+
     //bugfix
 
     // for(var i = 0; i < chore.users.length; i++)
@@ -298,7 +298,7 @@ function ($scope, $http, $timeout) {
 
 
     $scope.chore = chore;
-    
+
     //console.log($scope.chore);
 
     };
@@ -325,8 +325,8 @@ function ($scope, $http, $timeout) {
         {
 
             if($scope.users[i].isChecked)
-            { 
-                return true; 
+            {
+                return true;
             }
             else
             {
@@ -354,7 +354,11 @@ function ($scope, $http, $timeout) {
     };
 
     $scope.emptyChoreList = function(){
-      return $scope.chores.length == 0 ? true : false; 
+      return $scope.chores.length == 0 ? true : false;
     };
+
+    $scope.format = function(date) {
+      return moment(date).format('MMMM Do, YYYY');
+    }
 
 });

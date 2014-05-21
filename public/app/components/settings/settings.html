@@ -20,7 +20,7 @@
 
   <div class="row">
     <div class="col-sm-4 roommate-info" ng-repeat="roommate in roommates">
-      <img src="{{roommate.profile_pic}}" class="user-image img-circle"><br>
+      <img ng-src="{{roommate.profile_pic}}" class="user-image img-circle"><br>
       <strong>{{roommate.first_name}} {{roommate.last_name}}</strong><br>
       <em>Email</em>: {{roommate.email}}<br>
       <em>Phone</em>: {{roommate.phone}}
