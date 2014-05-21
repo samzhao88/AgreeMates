@@ -24,7 +24,10 @@
 // Closes menu when clicking in mobile viewport
 $(function() {
   $('.sidebar-collapse a').click(function() {
-    $(".sidebar-collapse").collapse('hide');
+    var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+    if (width < 768) {
+      $(".sidebar-collapse").collapse('hide');
+    }
   });
 });
 
