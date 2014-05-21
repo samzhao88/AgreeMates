@@ -28,16 +28,13 @@
         <a class="navbar-brand" href="/">AgreeMates</a>
       </div>
 
-      <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li><a href="#"><i class="ion-ios7-bell"></i></a></li>
-      </ul>
-
       <!-- side-bar -->
       <div id="sidebar" class="navbar-default navbar-static-side" role="navigation">
         <!-- Profile Avatar -->
         <div class="hidden-xs" id="user-info">
-          <img src="{{profile_pic}}" id="user-image" class="img-circle">
+          <img src="{{profile_pic}}" class="user-image img-circle">
           <p id="user-welcome">Welcome, {{firstname}}!</p>
+          <a href="/logout" class="btn btn-danger btn-xs">Logout</a>
         </div>
 
 

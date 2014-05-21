@@ -37,7 +37,7 @@ var apartment = function(app) {
 				new UserModel({id: req.user.id})
 					.save({apartment_id: model.attributes.id}, {patch: true})
 					.then(function() {
-						res.json(200);
+						res.send(200);
 					})
 					.otherwise(function() {
 						res.json(503, {error: 'Error adding user to the new apartment.'});
@@ -58,10 +58,23 @@ var apartment = function(app) {
 		var apartmentId = req.user.attributes.apartment_id;
 
 		Bookshelf.DB.knex('users')
-			.select('id', 'first_name', 'last_name', 'email', 'phone')
+			.select('id', 'first_name', 'last_name', 'email', 'phone', 'facebook_id', 'google_id')
 			.where('apartment_id', '=', apartmentId)
 			.then(function(users) {
-				res.json({users: users});
+				var result = [];
+				for (var i = 0; i < users.length; i++) {
+					if (users[i].facebook_id !== null) {
+						var temp = users[i];
+						temp.profile_pic = 'https://graph.facebook.com/' +
+							users[i].facebook_id  + '/picture?height=300&width=300';
+						result.push(temp);
+					} else {
+						var temp = users[i];
+						temp.profile_pic = 'http://placehold.it/300x300';
+						result.push(temp);
+					}
+				}
+				res.json({users: result});
 			})
 			.otherwise(function(error) {
 				res.json(503, {error: 'Database error.'});
@@ -185,6 +198,46 @@ var apartment = function(app) {
 										});
 									});
 								});
+			if(apartment_id != req.params.apt) {
+					res.json(400, {msg: 'unauthorized'});
+					return;
+			}
+			//delete associated users
+			new Users({apartment_id : apartment_id})
+			.fetch().then(function(users) {
+				for(var i = 0; i < users.length; i++) {
+					users.models[i].attributes.apartment_id = null;
+					users.models[i].save().then(function(x){});
+				}
+
+
+				//delete associated bills
+				new Bills({apartment_id : apartment_id})
+				.fetch().then(function(bills) {
+					for(var i = 0; i < bills.length; i++) {
+						bills.models[i].attributes.apartment_id = null;
+						bills.models[i].save();
+					}
+
+					//delete associated messages
+					new Messages({apartment_id : apartment_id})
+					.fetch().then(function(messages) {
+						for(var i = 0; i < messages.length; i++) {
+							messages.models[i].attributes.apartment_id = null;
+							messages.models[i].save();
+						}
+
+						//delete associated chores
+						new Chores({apartment_id : apartment_id})
+						.fetch().then(function(chores) {
+							for(var i = 0; i < chores.length; i++) {
+								chores.models[i].attributes.apartment_id = null;
+								chores.models[i].save();
+							}
+						})
+						.otherwise(function(error) {
+							res.json(400, {msg: 'error deleting chores'});
+							return;
 						});
 					}).otherwise(function(error) {
 						res.json(400, {msg: 'error deleting apartment'});
@@ -192,6 +245,20 @@ var apartment = function(app) {
 				}).then(function(users) {
 
 					res.json(200);
+				})
+				.otherwise(function(error) {
+					res.json(400, {msg: 'error deleting bills'});
+					return;
+				});
+				//delete
+				var apartment = new ApartmentModel({id : apartment_id});
+				apartment.destroy()
+				.then(function(apartment) {
+					res.json({result : 'success'});
+				})
+				.otherwise(function(error) {
+					res.json(400, {msg: 'derror deleting apartment'});
+					return;
 				});
 			})
 			.otherwise(function(error) {

@@ -50,7 +50,7 @@ gulp.task('cover', function (cb) {
 
 function handleError(err) {
 	console.log(err.toString());
-	this.emit('end');
+  this.emit('end');
 }
 
 function karmaTest(action) {
@@ -66,9 +66,12 @@ gulp.task('test', ['test:server', 'test:client'], function() {});
 
 // Run server tests and output reports
 gulp.task('test:server', function () {
-	gulp.src('./server/test/**/*.js')
+	return gulp.src('./server/**/*.spec.js')
 		.pipe(mocha({ reporter: 'list' }))
-		.on('error', handleError);
+		.on('error', handleError)
+    .once('end', function () {
+      process.exit();
+    });
 });
 
 // Run client tests and output reports
