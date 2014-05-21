@@ -53,7 +53,7 @@ angular.module('main.bills').controller('BillsCtrl',
     success(function(data) {
       $scope.unresolvedBills = data.bills;
       $scope.bills = $scope.unresolvedBills;
-      $scope.table = 'resolved';
+      $scope.table = 'unresolved';
       $scope.updateBalanceModel();
     }).
     error(function(data, status, headers, config){
@@ -330,7 +330,7 @@ angular.module('main.bills').controller('BillsCtrl',
     };
 
     $scope.emptyBillList = function(){
-      return $scope.bills.length == 0 ? true : false;
+      return $scope.unresolvedBills.length == 0 ? true : false;
     };
 
     $scope.format = function(date) {
