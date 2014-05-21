@@ -18,7 +18,7 @@ function getLatestHistory(req, res) {
     .query(function(qb) {
       qb.where('apartment_id', '=', apartmentId);
       qb.orderBy('date', 'desc');
-      qb.limit(3);
+      qb.limit(10);
     })
     .fetch()
     .then(function(collection) {
