@@ -21,8 +21,6 @@ var comments = function(app) {
     var messageId = req.params.message;
     var text = req.body.body;
     var date = new Date();
-    var createdate = (date.getMonth() + 1) + '/' + date.getDate() +
-      '/' + date.getFullYear();
 
     if (!isValidId(messageId)) {
       res.json(400, {error: 'Invalid message id.'});
