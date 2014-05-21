@@ -4,7 +4,9 @@ angular.module('main.bills', []);
 
 // Angular controller for bills
 angular.module('main.bills').controller('BillsCtrl',
-  function($http, $scope) {
+  function($http, $scope, $timeout) {
+    //alert msg show length in ms
+    var alertLength = 2000;
 
     //bills being showed currently
     $scope.bills = [];
@@ -28,8 +30,9 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.updateIdx;
     //balance between model
     $scope.balances = [];
-    //delete bill is
+    //delete bill id
     $scope.deleteId = -1;
+    //delete bill index
     $scope.deleteIdx = -1;
 
 
@@ -170,6 +173,7 @@ angular.module('main.bills').controller('BillsCtrl',
           };
 	        $scope.unresolvedBills.push(newBill);
           $scope.updateBalanceModel();
+          showSucc("Bill "+bill.name+" successfully added!");
 	       	$scope.reset();
 	      }).
         error(function(data, status, headers, config){
@@ -207,6 +211,7 @@ angular.module('main.bills').controller('BillsCtrl',
 	      success(function(data) {
 	        $scope.bills.splice($scope.deleteIdx, 1);
           $scope.updateBalanceModel();
+          showSucc("Bill "+ $scope.bills[$scope.deleteIdx].name+" successfully deleted!");
 	      }).
         error(function(data, status, headers, config){
           console.log(data);
@@ -235,6 +240,7 @@ angular.module('main.bills').controller('BillsCtrl',
           $scope.oldBill.payments = tempPayments;
           $scope.bills[$scope.updateIdx] = $scope.oldBill;
           $scope.updateBalanceModel();
+          showSucc("Bill "+ tempBill.name+" successfully updated!");
 	        $scope.reset();
 	      }).
         error(function(data, status, headers, config){
@@ -256,6 +262,15 @@ angular.module('main.bills').controller('BillsCtrl',
       }
       $http.put('/bills/'+id+"/payment", {paid: paid}).
         success(function(data) {
+          for (var i = 0; i < $scope.bills[index].payments.length; i++) {
+            if ($scope.bills[index].payments[i] == $scope.userId) {
+              if (paid == "false") {
+                $scope.bills[index].payments[i].paid = false;
+              } else {
+                $scope.bills[index].payments = true;
+              }                         
+            }
+          };
           $scope.updateBalanceModel();
         }).
         error(function(data, status, headers, config){
@@ -340,7 +355,7 @@ angular.module('main.bills').controller('BillsCtrl',
 
     $scope.isOwner = function(billId) {
       for (var i = 0; i < $scope.bills.length; i++) {
-        if ($scope.bills[i].creatorId == $scope.userId) {
+        if ($scope.bills[i].id == billId && $scope.bills[i].creatorId == $scope.userId) {
           return true;
         }
       };
@@ -387,4 +402,18 @@ angular.module('main.bills').controller('BillsCtrl',
       return moment(date).format('MMMM Do, YYYY');
     };
 
+    //show and hide an error msg
+    function showErr(msg){
+      console.log(data);
+      $scope.errormsg = msg;
+      $scope.error = true;
+      $timeout(function(){$scope.error=false;},alertLength);
+    }
+
+    //show and hide a success msg
+    function showSucc(msg){
+      $scope.successmsg = msg;
+      $scope.success = true;
+      $timeout(function(){$scope.success=false;},alertLength);
+    }
 });
