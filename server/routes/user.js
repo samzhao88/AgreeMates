@@ -1,40 +1,26 @@
 // User routes
+// jshint camelcase: false
 
 'use strict';
 
-var user = function(app) {
+// Gets your user information
+function getUserInfo(req, res) {
+  if (req.user === undefined) {
+    res.json(401, {error: 'Unauthorized user.'});
+    return;
+  }
 
-  // Gets your user ID.
-  app.get('/user', function(req, res) {
-    if (req.user === undefined) {
-      res.json(401, {error: 'Unauthorized user.'});
-      return;
-    }
+  var userId = req.user.attributes.id;
+  var firstName = req.user.attributes.first_name;
+  var lastName = req.user.attributes.last_name;
 
-    res.json({id: req.user.attributes.id, first_name: req.user.attributes.first_name, last_name: req.user.attributes.last_name});
-  });
+  res.json({id: userId, first_name: firstName, last_name: lastName});
+}
 
-  // Get user
-  app.get('/user/:user', function(req, res) {
-    res.end();
-  });
+// Sets up all routes
+function setup(app) {
+  app.get('/user', getUserInfo);
+}
 
-  // Adds a user to the database
-  app.post('/user', function(req, res) {
-    res.end();
-  });
-
-  // Edits a user
-  app.put('/user/:user', function(req, res) {
-    res.end();
-  });
-
-  // Delets a user
-  app.delete('/user/:user', function(req, res) {
-    res.end();
-  });
-
-
-};
-
-module.exports = user;
+module.exports.getUserInfo = getUserInfo;
+module.exports.setup = setup;

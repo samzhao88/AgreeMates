@@ -2,16 +2,8 @@
 
 'use strict';
 
-var app = require('../../app');
-require('../../models/user').model;
-require('../../models/apartment').model;
 var supplies = require('../../routes/supplies');
-
-var chai = require('chai');
 var sinon = require('sinon');
-var sinonChai = require('sinon-chai');
-var expect = chai.expect;
-chai.use(sinonChai);
 
 describe('Supplies', function() {
 
@@ -123,7 +115,7 @@ var req3 = {user: {attributes: {apartment_id: 1}}, params: {supply: 1}, body: {n
       supplies.deleteSupply(req2, res);
       supplies.deleteSupply(req3, res);
     });
-    
+
   });
 
 });
