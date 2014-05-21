@@ -8,6 +8,8 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //bills being showed currently
     $scope.bills = [];
+    //unresolved bills
+    $scope.unresolvedBills = [];
     //which table (resolved or unresolved) is selected
     $scope.table = '';
     //new bill being added
@@ -71,6 +73,7 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //generate the balances model
     $scope.updateBalanceModel = function() {
+      $scope.balances = [];
       //set up roommates information
       for (var i = 0; i < $scope.roommates.length; i++) {
         if ($scope.roommates[i].id != $scope.userId) {
@@ -91,7 +94,7 @@ angular.module('main.bills').controller('BillsCtrl',
         if ($scope.unresolvedBills[i].creatorId == $scope.userId) {          
           for (var j = 0; j < $scope.balances.length; j++) {
             for (var k = 0; k < $scope.unresolvedBills[i].payments.length; k++) {
-              if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId) {
+              if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId && !$scope.unresolvedBills[i].payments[k].paid) {
                 $scope.balances[j].owedToUser += parseFloat($scope.unresolvedBills[i].payments[k].amount);
                 //may add more details
               }
@@ -103,7 +106,7 @@ angular.module('main.bills').controller('BillsCtrl',
           for (var j = 0; j < $scope.balances.length; j++) {
             if ($scope.balances[j].userId == $scope.unresolvedBills[i].creatorId) {
               for (var k = 0; k < $scope.unresolvedBills[i].payments.length; k++) {
-                if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId) {
+                if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId && !$scope.unresolvedBills[i].payments[k].paid) {
                   $scope.balances[j].userOwed += parseFloat($scope.unresolvedBills[i].payments[k].amount);
                   //may add more details
                 }
@@ -161,6 +164,7 @@ angular.module('main.bills').controller('BillsCtrl',
             newBill.payments.push({"userId": bill.roommates[i].id, "amount": bill.roommates[i].amount, "paid": false});
           };
 	        $scope.unresolvedBills.push(newBill);
+          $scope.updateBalanceModel();
 	       	$scope.reset();
 	      }).
         error(function(data, status, headers, config){
@@ -185,6 +189,7 @@ angular.module('main.bills').controller('BillsCtrl',
     	$http.delete('/bills/'+id).
 	      success(function(data) {
 	        $scope.bills.splice(index, 1);
+          $scope.updateBalanceModel();
 	      }).
         error(function(data, status, headers, config){
           console.log(data);
@@ -212,6 +217,7 @@ angular.module('main.bills').controller('BillsCtrl',
 	      success(function(data) {
           $scope.oldBill.payments = tempPayments;
           $scope.bills[$scope.updateIdx] = $scope.oldBill;
+          $scope.updateBalanceModel();
 	        $scope.reset();
 	      }).
         error(function(data, status, headers, config){
@@ -233,7 +239,7 @@ angular.module('main.bills').controller('BillsCtrl',
       }
       $http.put('/bills/'+id+"/payment", {paid: paid}).
         success(function(data) {
-          //doesn't need to do anything because the checkbox is already checked/unchecked
+          $scope.updateBalanceModel();
         }).
         error(function(data, status, headers, config){
           console.log(data);
@@ -271,11 +277,6 @@ angular.module('main.bills').controller('BillsCtrl',
       return 0;
     };
 
-    //convert date to yyyy-mm-dd format
-    $scope.convertDate = function(date) {
-      return date.split("T")[0];
-    }
-
     //set the oldBill to the bill that is selected to update
     $scope.prepareUpdate = function(id, index) {
       $scope.reset();
@@ -305,6 +306,7 @@ angular.module('main.bills').controller('BillsCtrl',
           };
         }
       };
+      console.log($scope.updatedAmount);
     }
 
     //return whether a roommate should be checked when update a bill
@@ -329,10 +331,16 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.updatedAmount = [];
     };
 
+    //return whether there are any unresolved bills
     $scope.emptyBillList = function(){
       return $scope.unresolvedBills.length == 0 ? true : false;
     };
 
+    $scope.convertDate = function(date) {
+      return date.split('T')[0];
+    }
+
+    //formate the date
     $scope.format = function(date) {
       return moment(date).format('MMMM Do, YYYY');
     };

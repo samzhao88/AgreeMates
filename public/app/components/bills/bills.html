@@ -46,11 +46,8 @@
 			      <div class="form-group">
 			        <label class="col-sm-2 control-label">Frequency</label>
 			        <div class="col-sm-6">
-					      <select class="form-control" ng-model="bill.interval">
-					        <option value="0">One time</option>
-					        <option value="2">Every week</option>
-					        <option value="3">Every month</option>
-					      </select>
+					      <input type="radio" name="interval" value="0" ng-model="bill.interval">One-Time 
+					      <input type="radio" name="interval" value="3" ng-model="bill.interval">Monthly
 			        </div>
 			      </div>
 			      <div class="form-group">
@@ -132,7 +129,7 @@
 		        <div class="col-sm-6">
             <div class="input-group">
               <span class="input-group-addon">$</span>
-              <input type="number" class="form-control" ng-model="oldBill.amount">
+              <input type="text" class="form-control" ng-model="oldBill.amount">
             </div>
 		        </div>
 		      </div>
@@ -145,10 +142,8 @@
 		      <div class="form-group">
 		        <label class="col-sm-2 control-label">Frequency</label>
 		        <div class="col-sm-6">
-				      <select class="form-control" ng-model="oldBill.frequency">
-				        <option value="0">One time</option>
-				        <option value="3">Every month</option>
-				      </select>
+				      <input type="radio" name="frequency" value="0" ng-model="oldBill.frequency">One-Time 
+				      <input type="radio" name="frequency" value="3" ng-model="oldBill.frequency">Monthly
 		        </div>
 		      </div>
 		      <div class="form-group">
@@ -156,12 +151,12 @@
 		        <div class="col-sm-6">
 				      <ul class="list-unstyled" ng-repeat="roommate in roommates">
 				        <li>
-                <input type="checkbox" value={{roommate.id}} ng-click="toggleSelection(roommate.id)"> {{roommate.first_name}} {{roommate.last_name}}
+                <input type="checkbox" value={{roommate.id} ng-click="toggleSelection(roommate.id)" ng-checked="isChecked(roommate.id)">{{roommate.first_name}} {{roommate.last_name}}
                 <div class="input-group">
                   <span class="input-group-addon">$</span>
-                  <input type="number" class="form-control" ng-model="roommate.amount">
+                  <input type="text" class="form-control" ng-model="updatedAmount[$index].amount">
                 </div>
-              </li>
+              	</li>
 				      </ul>
 		        </div>
 		      </div>
