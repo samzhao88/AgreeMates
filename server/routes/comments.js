@@ -36,7 +36,7 @@ var comments = function(app) {
                      body: text, date: date})
       .save()
       .then(function(model) {
-        res.json(model);
+        res.json({model: model, author: req.user.attributes.first_name});
       }).otherwise(function(error) {
         res.json(503, {error: 'Database error'});
       });
