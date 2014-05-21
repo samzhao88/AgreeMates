@@ -84,8 +84,8 @@ angular.module('main.bills').controller('BillsCtrl',
           balance.userId = $scope.roommates[i].id;
           balance.first_name = $scope.roommates[i].first_name;
           balance.last_name = $scope.roommates[i].last_name;
-          balance.owedToUser = [];
-          balance.userOwed = [];
+          balance.owedToUser = 0;
+          balance.userOwed = 0;
           balance.netBalance = 0;
           $scope.balances.push(balance);
         }
@@ -98,7 +98,8 @@ angular.module('main.bills').controller('BillsCtrl',
           for (var j = 0; j < $scope.balances.length; j++) {
             for (var k = 0; k < $scope.unresolvedBills[i].payments.length; k++) {
               if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId && !$scope.unresolvedBills[i].payments[k].paid) {
-                $scope.balances[j].owedToUser.push({"bill": $scope.unresolvedBills[i].name, "amount": parseFloat($scope.unresolvedBills[i].payments[k].amount)});
+                //$scope.balances[j].owedToUser.push({"bill": $scope.unresolvedBills[i].name, "amount": parseFloat($scope.unresolvedBills[i].payments[k].amount)});
+                $scope.balances[j].owedToUser += parseFloat($scope.unresolvedBills[i].payments[k].amount);
                 $scope.balances[j].netBalance += parseFloat($scope.unresolvedBills[i].payments[k].amount);
               }
             };
@@ -110,7 +111,8 @@ angular.module('main.bills').controller('BillsCtrl',
             if ($scope.balances[j].userId == $scope.unresolvedBills[i].creatorId) {
               for (var k = 0; k < $scope.unresolvedBills[i].payments.length; k++) {
                 if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId && !$scope.unresolvedBills[i].payments[k].paid) {
-                  $scope.balances[j].userOwed.push({"bill": $scope.unresolvedBills[i].name, "amount": parseFloat($scope.unresolvedBills[i].payments[k].amount)});
+                  //$scope.balances[j].userOwed.push({"bill": $scope.unresolvedBills[i].name, "amount": parseFloat($scope.unresolvedBills[i].payments[k].amount)});
+                  $scope.balances[j].userOwed += parseFloat($scope.unresolvedBills[i].payments[k].amount);
                   $scope.balances[j].netBalance -= parseFloat($scope.unresolvedBills[i].payments[k].amount);
                 }
               };
@@ -336,22 +338,31 @@ angular.module('main.bills').controller('BillsCtrl',
       return false;
     }
 
-    $scope.showBalance = function(arr) {
-      if (arr.length == 0) {
-        return "$0";
-      }
-
-      var total = 0;
-      var result = "";
-
-      result += "$" + arr[0].amount + "(" + arr[0].bill + ")";
-      total += arr[0].amount;
-      for (var i = 1; i < arr.length; i++) {
-        result += " + $" + arr[i].amount + "(" + arr[i].bill + ")";
-        total += arr[i].amount;
+    $scope.isOwner = function(billId) {
+      for (var i = 0; i < $scope.bills.length; i++) {
+        if ($scope.bills[i].creatorId == $scope.userId) {
+          return true;
+        }
       };
-      return result + " = $" + total;
+      return false;
     }
+
+    // $scope.showBalance = function(arr) {
+    //   if (arr.length == 0) {
+    //     return "$0";
+    //   }
+
+    //   var total = 0;
+    //   var result = "";
+
+    //   result += "$" + arr[0].amount + "(" + arr[0].bill + ")";
+    //   total += arr[0].amount;
+    //   for (var i = 1; i < arr.length; i++) {
+    //     result += " + $" + arr[i].amount + "(" + arr[i].bill + ")";
+    //     total += arr[i].amount;
+    //   };
+    //   return result + " = $" + total;
+    // }
 
     //clear the bill
     $scope.reset = function() {
