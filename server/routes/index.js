@@ -5,14 +5,14 @@
 var router = function(app, passport) {
 
   require('./main.js')(app);
-  require('./bills.js')(app);
+  require('./bills.js').setup(app);
   require('./chores.js')(app);
-  require('./supplies.js')(app);
+  require('./supplies.js').setup(app);
   require('./messages.js')(app);
   require('./comments.js')(app);
-  require('./user.js')(app);
+  require('./user.js').setup(app);
   require('./apartment.js')(app);
-  require('./invitations.js')(app);
+  require('./invitations.js').setup(app);
   require('./passport.js')(app, passport);
 
 };

@@ -36,7 +36,7 @@ var apartment = function(app) {
 				new UserModel({id: req.user.id})
 					.save({apartment_id: model.attributes.id}, {patch: true})
 					.then(function() {
-						res.json(200);
+						res.send(200);
 					})
 					.otherwise(function() {
 						res.json(503, {error: 'Error adding user to the new apartment.'});
@@ -57,10 +57,23 @@ var apartment = function(app) {
 		var apartmentId = req.user.attributes.apartment_id;
 
 		Bookshelf.DB.knex('users')
-			.select('id', 'first_name', 'last_name', 'email', 'phone')
+			.select('id', 'first_name', 'last_name', 'email', 'phone', 'facebook_id', 'google_id')
 			.where('apartment_id', '=', apartmentId)
 			.then(function(users) {
-				res.json({users: users});
+				var result = [];
+				for (var i = 0; i < users.length; i++) {
+					if (users[i].facebook_id !== null) {
+						var temp = users[i];
+						temp.profile_pic = 'https://graph.facebook.com/' +
+							users[i].facebook_id  + '/picture?height=300&width=300';
+						result.push(temp);
+					} else {
+						var temp = users[i];
+						temp.profile_pic = 'http://placehold.it/300x300';
+						result.push(temp);
+					}
+				}
+				res.json({users: result});
 			})
 			.otherwise(function(error) {
 				res.json(503, {error: 'Database error.'});
@@ -132,8 +145,6 @@ var apartment = function(app) {
 		var apartment_id = req.user.attributes.apartment_id;
 		var user_id = req.user.id;
 		if(user_id != null && apartment_id != null) {
-			console.log(req.params.apt);
-			console.log(apartment_id);
 			if(apartment_id != req.params.apt) {
 					res.json(400, {msg: 'unauthorized'});
 					return;
@@ -192,7 +203,6 @@ var apartment = function(app) {
 					res.json({result : 'success'});
 				})
 				.otherwise(function(error) {
-					console.log(error);
 					res.json(400, {msg: 'derror deleting apartment'});
 					return;
 				});

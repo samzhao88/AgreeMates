@@ -37,7 +37,7 @@ angular.module('main.bills').controller('BillsCtrl',
     }).
     error(function(data, status, headers, config){
         console.log(data);
-    });    
+    });
 
     //get all roommates in the apartment
     $http.get('/apartment/users').
@@ -125,6 +125,15 @@ angular.module('main.bills').controller('BillsCtrl',
     	}   	
     };
 
+    //get all roommates in the apartment
+    $http.get('/apartment/users').
+    success(function(data) {
+      $scope.roommates = data.users;
+    }).
+    error(function(data, status, headers, config){
+        console.log(data);
+    });
+
     //add a new bill
     $scope.addBill = function() {
     	var bill = angular.copy($scope.bill);
@@ -133,7 +142,7 @@ angular.module('main.bills').controller('BillsCtrl',
       for (var i = 0; i < $scope.roommates.length; i++) {
         if ($scope.selectedRoommates.indexOf($scope.roommates[i].id) > -1) {
           bill.roommates.push({"id": $scope.roommates[i].id, "amount": $scope.roommates[i].amount});
-        };       
+        };
       };
     	$http.post('/bills/', bill).
 	      success(function(data) {
@@ -173,7 +182,7 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //delete a bill
     $scope.deleteBill = function(id, index) {
-    	$http.delete('/bills/'+id). 
+    	$http.delete('/bills/'+id).
 	      success(function(data) {
 	        $scope.bills.splice(index, 1);
 	      }).
@@ -193,7 +202,7 @@ angular.module('main.bills').controller('BillsCtrl',
       var tempPayments = [];
       for (var i = 0; i < $scope.updatedAmount.length; i++) {
         //if the roommate is selected and the input box is filled
-        if ($scope.updatedAmount[i].amount != '' && $scope.selectedRoommates.indexOf($scope.updatedAmount[i].userId) > -1) { 
+        if ($scope.updatedAmount[i].amount != '' && $scope.selectedRoommates.indexOf($scope.updatedAmount[i].userId) > -1) {
           tempBill.roommates.push({id: $scope.updatedAmount[i].userId, amount: $scope.updatedAmount[i].amount, paid: false});
           tempPayments.push({userId: $scope.updatedAmount[i].userId, amount: $scope.updatedAmount[i].amount, paid: false});
         }
@@ -242,23 +251,23 @@ angular.module('main.bills').controller('BillsCtrl',
             if ($scope.checkboxes.indexOf(id) < 0) {
               $scope.checkboxes.push(id);
             }
-          }         
+          }
         }
       };
       return paid;
     };
 
     //return the amount owned by the current user for a bill
-    $scope.amountOwed = function(id, index) {  
+    $scope.amountOwed = function(id, index) {
       for (var i = 0; i < $scope.bills.length; i++) {
         if ($scope.bills[i].id == id){
           for (var i = 0; i < $scope.bills[index].payments.length; i++) {
             if ($scope.bills[index].payments[i].userId == $scope.userId) {
-              return $scope.bills[index].payments[i].amount;        
+              return $scope.bills[index].payments[i].amount;
             }
-          };  
+          };
         }
-      } 
+      }
       return 0;
     };
 
@@ -276,7 +285,7 @@ angular.module('main.bills').controller('BillsCtrl',
         if ($scope.bills[i].id == id){
           $scope.oldBill = angular.copy($scope.bills[i]);
           $scope.oldBill.dueDate = $scope.convertDate($scope.oldBill.dueDate);
-          //add roommates's id who are currently responsible to selectedRoommates 
+          //add roommates's id who are currently responsible to selectedRoommates
           for (var i = 0; i < $scope.oldBill.payments.length; i++) {
             $scope.selectedRoommates.push($scope.oldBill.payments[i].userId);
           };
@@ -289,11 +298,11 @@ angular.module('main.bills').controller('BillsCtrl',
               if ($scope.oldBill.payments[j].userId == $scope.updatedAmount[i].userId) {
                 $scope.updatedAmount[i].amount = $scope.oldBill.payments[j].amount;
               }
-            };          
+            };
             if ($scope.updatedAmount[i].amount == undefined) {
               $scope.updatedAmount[i].amount = '';
             }
-          };          
+          };
         }
       };
     }
@@ -306,7 +315,7 @@ angular.module('main.bills').controller('BillsCtrl',
       for (var i = 0; i < $scope.oldBill.payments.length; i++) {
         if ($scope.oldBill.payments[i].userId == roommateId) {
           return true;
-        } 
+        }
       };
       return false;
     }
@@ -321,9 +330,11 @@ angular.module('main.bills').controller('BillsCtrl',
     };
 
     $scope.emptyBillList = function(){
-      return $scope.bills.length == 0 ? true : false; 
+      return $scope.bills.length == 0 ? true : false;
+    };
+
+    $scope.format = function(date) {
+      return moment(date).format('MMMM Do, YYYY');
     };
 
 });
-
-
