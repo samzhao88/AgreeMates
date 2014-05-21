@@ -187,7 +187,6 @@ var apartment = function(app) {
 								});
 						});
 					}).otherwise(function(error) {
-						console.log(error);
 						res.json(400, {msg: 'error deleting apartment'});
 					});
 				}).then(function(users) {
