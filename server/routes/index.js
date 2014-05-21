@@ -4,7 +4,7 @@
 
 var router = function(app, passport) {
 
-  require('./main.js')(app);
+  require('./main.js').setup(app);
   require('./bills.js').setup(app);
   require('./chores.js')(app);
   require('./supplies.js').setup(app);
