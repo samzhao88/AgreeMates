@@ -20,7 +20,7 @@
 	        <h4 class="modal-title" id="myModalLabel">Add Bill</h4>
 	      </div>
 
-        <form class="form-horizontal" role="form" name="addBillForm" ng-submit="addBill()">
+        <form class="form-horizontal" role="form" name="addBillForm">
   	      <div class="modal-body">
   			      <div class="form-group">
   			        <label class="col-sm-2 control-label">Name</label>
@@ -61,7 +61,7 @@
   			      <div class="form-group">
   			        <label class="col-sm-2 control-label">Responsible</label>
   			        <div class="col-sm-6">
-  					      <ul class="list-unstyled" ng-repeat="roommate in roommates">
+  					      <ul class="list-unstyled" ng-repeat="roommate in responsible">
   					        <li>
                       <input type="checkbox" value={{roommate.id}} ng-click="toggleSelection(roommate.id)"> {{roommate.first_name}} {{roommate.last_name}}
                       <div class="input-group">
@@ -76,7 +76,7 @@
 
   	      <div class="modal-footer">
   	        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-  	        <button type="submit" class="btn btn-success">Add</button>
+  	        <button type="submit" class="btn btn-success" data-dismiss="modal" ng-click="addBill()">Add</button>
   	      </div>
         </form>
 
@@ -101,7 +101,6 @@
 			<th class="text-center">Pay to</th>
 			<th class="text-center">Due</th>
 			<th class="text-center">Paid?</th>
-			<th class="text-center">Delete</th>
 		</tr>
 
 		<tr ng-repeat="bill in bills">
@@ -111,7 +110,6 @@
 			<td data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, $index)">{{bill.payTo}}</td>
 			<td data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, $index)">{{format(bill.dueDate)}}</td>
 			<td><input type="checkbox" ng-click="payBill(bill.id, $index)" ng-checked="isPaid(bill.id, $index)" ng-show="isResponsible(bill.id)"></td>
-			<td><i class="ion-close-circled delete-icon" data-toggle="modal" data-target="#deleteModal" ng-click="prepareDelete(bill.id, $index)" ng-show="isOwner(bill.id)"></i></td>
 		</tr>
 	</table>
 
@@ -138,7 +136,8 @@
 
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h4 class="modal-title" id="myModalLabel">Edit Bill</h4>
+	        <h4 class="modal-title" id="myModalLabel" ng-show="isOwner()">Edit Bill</h4>
+	        <h4 class="modal-title" id="myModalLabel" ng-show="!isOwner()">Bill Information</h4>
 	      </div>
 
 	      <div class="modal-body">
@@ -189,8 +188,9 @@
 	      </div>
 
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-	        <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="updateBill()" ng-disabled="!isOwner()">Edit</button>
+					<button type="button" class="btn btn-danger pull-left" data-dismiss="modal" data-toggle="modal" data-target="#deleteModal" ng-show="isOwner()">Delete</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
+	        <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="updateBill()" ng-show="isOwner()">Edit</button>
 	      </div>
 
 	    </div>
@@ -210,7 +210,7 @@
 			<td>{{balance.first_name}} {{balance.last_name}}</td>
 			<td>${{balance.userOwed}}</td>
 			<td>${{balance.owedToUser}}</td>
-			<td>${{balance.netBalance}}</td>
+			<td>{{showBalance(balance.netBalance)}}</td>
 		</tr>
 	</table>
 
