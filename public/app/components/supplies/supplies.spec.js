@@ -38,50 +38,52 @@ describe('supplies module', function() {
     'name': 'new chore just got renamed',
     'status': 0
   };
-
+  var supplyEditResponse = {}
   var supplyAddResponse = {
     'id': 3,
     'name': 'new chore',
     'status': 0
   };
-
-  var supplyEditResponse = {'200'};
-
-  var supplyDeleteResponse = {'200'};
+  var supplyDeleteResponse = {
+    'id': 3,
+    'name': 'new chore',
+    'status': 0
+  };
 
   beforeEach(inject(function($injector) {
     $httpMock = $injector.get('$httpBackend');
-    $scope = $injector.get('$rootScope');
+     $scope = $injector.get('$rootScope');
     var $controllerTemp = $injector.get('$controller');
     $controller = $controllerTemp('SuppliesCtrl', {'$scope': $scope});
 
-    $httpMock.whenGET('/supplies').respond(supplies);
-    $httpMock.whenPOST('/supplies', supply).respond(supplyAddResponse);
+    $httpMock.whenGET('/supplies/').respond(supplies);
+    $httpMock.whenPOST('/supplies/', supply).respond(supplyAddResponse);
   }));
 
+  afterEach(function() {
+         $httpMock.verifyNoOutstandingExpectation();
+         $httpMock.verifyNoOutstandingRequest();
+       });
+	   
   //check controller available
   it('controller should exist', function() {
     expect($controller).not.to.equal(null);
   });
 
-  it('should fail', function() {
-    expect(false).to.equal(true);
-  });
-
   it('should fetch all supplies',function() {
-    $httpMock.expectGET('/supplies').respond(supplies);
+    $httpMock.expectGET('/supplies/').respond(supplies);
     $httpMock.flush();
 
     expect($scope.supplies.length).to.equal(2);
   });
 
   it('should post and add a supply',function() {
-    $httpMock.expectPOST('/supplies',supply).respond(supplyAddResponse);
-    $httpMock.flush();
-
+    $httpMock.expectPOST('/supplies/',supply).respond(supplyAddResponse);
+    $scope.addSupply();
+	$httpMock.flush();
     expect($scope.supplies.length).to.equal(3);
   });
-
+/*
   it('should update a supply',function() {
     $httpMock.expectPUT('/supplies/3',supplyEdit).respond(supplyEditResponse);
     $httpMock.flush();
@@ -91,6 +93,6 @@ describe('supplies module', function() {
     $httpMock.expectDELETE('/supplies/3').respond(supplyDeleteResponse);
     $httpMock.flush();
     
-  });
+  }); */
 
 });
