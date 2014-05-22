@@ -8,6 +8,9 @@ var sinonChai = require('sinon-chai');
 var expect = chai.expect;
 chai.use(sinonChai);
 
+var Hashids = require('hashids');
+var hashids = new Hashids(process.env.INVITE_SALT, 8);
+
 var invitations = require('../../routes/invitations');
 
 var succeedingStub = function(functionName, parameters) {
@@ -146,9 +149,9 @@ describe('Invitations', function() {
       invitations.addInvitations(req, res);
 
       expect(sendInvitationStub).to.have.been.
-        calledWith(1, 'test1@example.com', 'test apartment');
+        calledWith(hashids.encrypt(1), 'test1@example.com', 'test apartment');
       expect(sendInvitationStub).to.have.been.
-        calledWith(2, 'test2@example.com', 'test apartment');
+        calledWith(hashids.encrypt(2), 'test2@example.com', 'test apartment');
 
       fetchApartmentStub.restore();
       saveInvitationsStub.restore();
@@ -183,7 +186,7 @@ describe('Invitations', function() {
 
     it('fetches the invitation', function() {
       var fetchInvitationStub = emptyStub('fetchInvitation');
-      var req = {params: {invite: 1}};
+      var req = {params: {invite: hashids.encrypt(1)}};
 
       invitations.getInvitation(req, res);
 
@@ -193,7 +196,7 @@ describe('Invitations', function() {
 
     it('returns 404 if invitation not found', function() {
       var fetchInvitationStub = failingStub('fetchInvitation');
-      var req = {params: {invite: 1}};
+      var req = {params: {invite: hashids.encrypt(1)}};
 
       resMock.expects('json').once().
         withArgs(404, {error: 'error getting invitation'});
@@ -208,7 +211,7 @@ describe('Invitations', function() {
       var fetchInvitationStub = succeedingStub('fetchInvitation',
                                                {attributes: {apartment_id: 5}});
       var fetchApartmentStub = emptyStub('fetchApartment');
-      var req = {params: {invite: 1}};
+      var req = {params: {invite: hashids.encrypt(1)}};
 
       invitations.getInvitation(req, res);
 
@@ -222,7 +225,7 @@ describe('Invitations', function() {
       var fetchInvitationStub = succeedingStub('fetchInvitation',
                                       {attributes: {id: 1, apartment_id: 5}});
       var fetchApartmentStub = failingStub('fetchApartment');
-      var req = {params: {invite: 1}};
+      var req = {params: {invite: hashids.encrypt(1)}};
 
       resMock.expects('json').once().
         withArgs(404, {error: 'failed to fetch apartment'});
@@ -285,7 +288,7 @@ describe('Invitations', function() {
 
     it('fetches invitation', function() {
       var fetchInvitationStub = emptyStub('fetchInvitation');
-      var req = {params: {invite: 1}};
+      var req = {params: {invite: hashids.encrypt(1)}};
 
       invitations.deleteInvitation(req, res);
 
@@ -296,7 +299,7 @@ describe('Invitations', function() {
 
     it('returns 503 if failed to fetch invitation', function() {
       var fetchInvitationStub = failingStub('fetchInvitation');
-      var req = {params: {invite: 1}};
+      var req = {params: {invite: hashids.encrypt(1)}};
 
       resMock.expects('json').once().
         withArgs(503, {error: 'failed to get invitation'});
@@ -310,7 +313,7 @@ describe('Invitations', function() {
       var fetchInvitationStub = succeedingStub('fetchInvitation',
                                                {attributes: {apartment_id: 1}});
       var addUserToApartmentStub = emptyStub('addUserToApartment');
-      var req = {params: {invite: 2}, user: {id: 4}};
+      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4}};
 
       invitations.deleteInvitation(req, res);
 
@@ -328,7 +331,7 @@ describe('Invitations', function() {
         function(userId, apartmentId, thenFun, otherFun) {
           otherFun();
         });
-      var req = {params: {invite: 2}, user: {id: 4}};
+      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4}};
 
       resMock.expects('json').once().
         withArgs(503, {error: 'failed to add user to apartment'});
@@ -347,7 +350,7 @@ describe('Invitations', function() {
           thenFun();
         });
       var destroyInvitationStub = emptyStub('destroyInvitation');
-      var req = {params: {invite: 2}, user: {id: 4}};
+      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4}};
 
       invitations.deleteInvitation(req, res);
 
@@ -367,7 +370,7 @@ describe('Invitations', function() {
           thenFun();
         });
       var destroyInvitationStub = failingStub('destroyInvitation');
-      var req = {params: {invite: 2}, user: {id: 4}};
+      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4}};
 
       resMock.expects('json').once().
         withArgs(503, {error: 'failed to destroy invitation'});
@@ -387,7 +390,7 @@ describe('Invitations', function() {
           thenFun();
         });
       var destroyInvitationStub = succeedingStub('destroyInvitation');
-      var req = {params: {invite: 2}, user: {id: 4}};
+      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4}};
 
       resMock.expects('send').once().withArgs(200);
 

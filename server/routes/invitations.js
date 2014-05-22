@@ -8,6 +8,8 @@ var InvitationModel = require('../models/invitation').model;
 var InvitationCollection = require('../models/invitation').collection;
 var UserModel = require('../models/user').model;
 var nodemailer = require('nodemailer');
+var Hashids = require('hashids');
+var hashids = new Hashids(process.env.INVITE_SALT, 8);
 
 var Invitations = {
   setup: function(app) {
@@ -40,7 +42,8 @@ var Invitations = {
             res.json(503, {error: 'Error creating invitations'});
           } else {
             resp.forEach(function(invitation) {
-              Invitations.sendInvitation(invitation.id, invitation.email,
+              var hashedId = hashids.encrypt(invitation.id);
+              Invitations.sendInvitation(hashedId, invitation.email,
                                          apartmentName);
             });
             res.json(resp);
@@ -53,7 +56,8 @@ var Invitations = {
       });
   },
   getInvitation: function(req, res) {
-    Invitations.fetchInvitation(req.params.invite,
+    var inviteNumber = hashids.decrypt(req.params.invite)[0];
+    Invitations.fetchInvitation(inviteNumber,
       function then(model) {
         Invitations.fetchApartment(model.attributes.apartment_id,
           function then(model2) {
@@ -81,12 +85,13 @@ var Invitations = {
       });
   },
   deleteInvitation: function(req, res) {
-    Invitations.fetchInvitation(req.params.invite,
+    var inviteNumber = hashids.decrypt(req.params.invite)[0];
+    Invitations.fetchInvitation(inviteNumber,
       function then(model) {
         Invitations.addUserToApartment(req.user.id,
                                        model.attributes.apartment_id,
           function then() {
-            Invitations.destroyInvitation(req.params.invite,
+            Invitations.destroyInvitation(inviteNumber,
               function then() { res.send(200); },
               function otherwise(error) {
                 console.log(error);
