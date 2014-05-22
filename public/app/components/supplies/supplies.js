@@ -1,44 +1,45 @@
+// AngularJS supplies controller
+
 'use strict';
 
 angular.module('main.supplies', ['ui.bootstrap']);
 
-// Angular controller for supplies
 angular.module('main.supplies').controller('SuppliesCtrl',
   function ($scope, $http, $timeout) {
 
-    //alert msg show length in ms
-    var alertLength = 2000;
+    // alert msg show length in ms
+    var alertLength = 4000;
 
-    //hide supplies add box
+    // hide supplies add box
   	$scope.hideAddBox = true;
 
-    //empty model
+    // empty model
     $scope.supply = {name: ''};
 
-    //emtpy supplies
+    // empty supplies
     $scope.supplies = {};
 
-  	//get apll supplies
-    $http.get('/supplies/').
+  	// get all supplies
+    $http.get('/supplies').
       success(function(data) {
         $scope.supplies = data.supplies;
       }).
-      error(function(data, status, headers, config){
+      error(function(data, status, headers, config) {
         showErr(data.error);
       });
 
-    //show add fields
-    $scope.showAdd = function(){
+    // show add fields
+    $scope.showAdd = function() {
     	$scope.hideAddBox = $scope.hideAddBox === false ? true: false;
     };
 
-    //disabled add button
-    $scope.disabled = function(){
+    // disabled add button
+    $scope.disabled = function() {
       return $scope.supply.name == '' ? true : false;
-    }
+    };
 
-    //add a supply
-    $scope.addSupply = function(){
+    // add a supply
+    $scope.addSupply = function() {
 
     	var supply = angular.copy($scope.supply);
     	supply.status = 0;
@@ -59,9 +60,8 @@ angular.module('main.supplies').controller('SuppliesCtrl',
       $scope.supplies[ind].edit = true;
     }
 
-    //update a supply
+    // update a supply
     $scope.updateSupply = function(index){
-
     	$http.put('/supplies/'+$scope.supplies[index].id, $scope.supplies[index]).
 	      success(function(data) {
           $scope.supplies[index].edit = false;
@@ -71,7 +71,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
         });
     };
 
-    //delete a supply
+    // delete a supply
     $scope.deleteSupply = function(id, index){
     	$http.delete('/supplies/'+id).
 	      success(function(data) {
@@ -83,7 +83,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
         });
     };
 
-    //reset the supplies add input field
+    // reset the supplies add input field
     $scope.reset = function(){
     	$scope.supply.name = '';
       $scope.hideAddBox = true;
@@ -93,14 +93,14 @@ angular.module('main.supplies').controller('SuppliesCtrl',
       return $scope.supplies.length == 0 && $scope.hideAddBox ? true : false;
     };
 
-    //show and hide an error msg
+    // show and hide an error msg
     function showErr(msg){
       $scope.errormsg = msg;
       $scope.error = true;
       $timeout(function(){$scope.error=false;},alertLength);
     }
 
-    //show and hide a success msg
+    // show and hide a success msg
     function showSucc(msg){
       $scope.successmsg = msg;
       $scope.success = true;
