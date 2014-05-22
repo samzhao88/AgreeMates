@@ -251,7 +251,13 @@ function updatePayment(req, res) {
                 res.json(503, {error: 'Database error.'});
               });
           } else {
-            res.send(200);
+            new BillModel({id: billId, apartment_id: apartmentId})
+              .save({paid: false})
+              .then(function() {
+                res.send(200);
+              }).otherwise(function() {
+                res.json(503, {error: 'Database error.'});
+              });
           }
         }).otherwise(function() {
           res.json(503, {error: 'Database error.'});
