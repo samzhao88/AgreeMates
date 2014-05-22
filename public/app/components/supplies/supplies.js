@@ -73,8 +73,8 @@ angular.module('main.supplies').controller('SuppliesCtrl',
     };
 
     // delete a supply
-    $scope.deleteSupply = function(id, index){
-    	$http.delete('/supplies/'+id).
+    $scope.deleteSupply = function(index){
+    	$http.delete('/supplies/' + $scope.supplies[index].id).
 	      success(function(data) {
           showSucc('Supply "' + $scope.supplies[index].name + '" successfully deleted!');
           $scope.supplies.splice(index, 1);
