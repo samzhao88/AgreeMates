@@ -46,7 +46,7 @@
 			      <div class="form-group">
 			        <label class="col-sm-2 control-label">Frequency</label>
 			        <div class="col-sm-6">
-					      <input type="radio" name="interval" value="0" ng-model="bill.interval">One-Time 
+					      <input type="radio" name="interval" value="0" ng-model="bill.interval">One-Time
 					      <input type="radio" name="interval" value="3" ng-model="bill.interval">Monthly
 			        </div>
 			      </div>
@@ -68,7 +68,7 @@
         </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-	        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addBill()">Add</button>
+	        <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="addBill()">Add</button>
 	      </div>
 
 	    </div>
@@ -77,13 +77,13 @@
 
 	<!-- Bill table -->
 	<!-- add a filter to table later on -->
-	<div class="clearfix" id="bill-filter">
-		<div class="btn-group">
-		  <button type="button" class="btn btn-default" ng-click="setTable('unresolved')" ng-class="{ 'active' : table === 'unresolved' }">Unresolved</button>			
+	<div class="clearfix">
+		<div class="btn-group" ng-hide="emptyBillList()">
+		  <button type="button" class="btn btn-default" ng-click="setTable('unresolved')" ng-class="{ 'active' : table === 'unresolved' }">Unresolved</button>
 		  <button type="button" class="btn btn-default" ng-click="setTable('resolved')" ng-class="{ 'active' : table === 'resolved' }">Resolved</button>
 		</div>
 	</div>
-	<table ng-show="!emptyBillList()" class="table table-striped table-hover clearfix text-center" id="bill-table">
+	<table ng-hide="emptyBillList()" class="table table-striped table-hover clearfix text-center" id="bill-table">
 		<!-- Table Header -->
 		<tr>
 			<th class="text-center">Bill</th>
@@ -116,11 +116,11 @@
 	      </div>
 		    <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="resetDelete()">Cancel</button>
-	        <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deleteBill()">Delete</button>    
+	        <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deleteBill()">Delete</button>
 	      </div>
 	    </div>
 	  </div>
-	</div>		
+	</div>
 
 	<!-- Edit bill modal -->
 	<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -158,7 +158,7 @@
 		      <div class="form-group">
 		        <label class="col-sm-2 control-label">Frequency</label>
 		        <div class="col-sm-6">
-				      <input type="radio" name="frequency" value="0" ng-model="oldBill.frequency">One-Time 
+				      <input type="radio" name="frequency" value="0" ng-model="oldBill.frequency">One-Time
 				      <input type="radio" name="frequency" value="3" ng-model="oldBill.frequency">Monthly
 		        </div>
 		      </div>
@@ -181,7 +181,7 @@
 
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-	        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="updateBill()" ng-disabled="!isOwner()">Update</button>
+	        <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="updateBill()" ng-disabled="!isOwner()">Edit</button>
 	      </div>
 
 	    </div>
@@ -189,8 +189,8 @@
 	</div>
 
 	<!-- Roommates balance table -->
-	<h3>Balance</h3>
-	<table class="table table-hover table-striped text-center">
+	<h3 ng-hide="emptyBillList()">Balance</h3>
+	<table ng-hide="emptyBillList()" class="table table-hover table-striped text-center">
 		<tr>
 			<th class="text-center">Roommate</th>
 			<th class="text-center">Owed to them</th>
@@ -205,6 +205,6 @@
 		</tr>
 	</table>
 
-	<div class="alert alert-warning" ng-show="emptyBillList()">No bills here, add some!</div>
+	<div class="alert alert-warning" id="empty-bills-alert" ng-show="emptyBillList()">No bills here, add some!</div>
 
 </div>

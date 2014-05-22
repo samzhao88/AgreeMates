@@ -14,12 +14,8 @@ a:hover {
   background-color: #263645;
 }
 
-#bill-filter {
-  margin-top: 34px;
-}
-
 #bill-table {
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 .history-date {
@@ -188,7 +184,15 @@ html, body {
 
 #supply-add-button, #chores-add-button {
   float: right;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+#empty-bills-alert {
+  margin-top: 20px;
+}
+
+#chores-empty-alert, #supplies-empty-alert {
+  margin-top: -20px;
 }
 
 .supply-form-buttons {
