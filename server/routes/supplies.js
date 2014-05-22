@@ -73,7 +73,7 @@ function addSupply(req, res) {
         history_string: historyString, date: new Date()})
         .save()
         .then(function() {})
-        .otherwise(function(error) {console.log(error)});
+        .otherwise(function() {});
 
       res.json({id: supply.id, name: supply.name, status: supply.status});
     }).otherwise(function(error) {
@@ -130,10 +130,27 @@ function deleteSupply(req, res) {
     return;
   }
 
-  new SupplyModel({id: supplyId, apartment_id: apartmentId})
-    .destroy()
-    .then(function() {
-      res.send(200);
+  new SupplyModel({id: supplyId})
+    .fetch()
+    .then(function(model) {
+      var historyString = req.user.attributes.first_name + ' ' +
+        req.user.attributes.last_name + ' deleted Supply "' +
+        model.attributes.name + '"';
+
+      new SupplyModel({id: supplyId, apartment_id: apartmentId})
+        .destroy()
+        .then(function() {
+          new HistoryModel({apartment_id: apartmentId,
+            history_string: historyString, date: new Date()})
+            .save()
+            .then(function() {})
+            .otherwise(function() {});
+
+          res.send(200);
+        })
+        .otherwise(function() {
+          res.json(503, {error: 'Database error.'});
+        });
     })
     .otherwise(function() {
       res.json(503, {error: 'Database error.'});

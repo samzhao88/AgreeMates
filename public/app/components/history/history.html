@@ -5,7 +5,7 @@
 
   <dl data-ng-repeat="item in history" class="dl-horizontal">
     <dt class="history-date">{{format(item.date)}}</dt>
-    <dd class="history-string">{{item.history_string}} {{item.id}}</dd>
+    <dd class="history-string">{{item.history_string}}</dd>
   </dl>
 
   <button type="button" class="btn btn-primary" ng-click="loadMore()">Load More</button>
