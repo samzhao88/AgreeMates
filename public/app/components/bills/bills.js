@@ -54,7 +54,7 @@ angular.module('main.bills').controller('BillsCtrl',
     }).
     error(function(data, status, headers, config){
         console.log(data);
-    });    
+    });
 
   	//get all unresolved bills and set them to default
     $http.get('/bills', {params: {type: 'unresolved'}}).
@@ -63,6 +63,17 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.bills = $scope.unresolvedBills;
       $scope.table = 'unresolved';
       $scope.updateBalanceModel();
+      //put all paid bills' id into checkboxes
+      for (var i = 0; i < $scope.bills.length; i++) {
+        for (var j = 0; j < $scope.bills[i].payments.length; j++) {
+          if ($scope.bills[i].payments[j].userId == $scope.userId && $scope.bills[i].payments[j].paid) {
+            //if this bill is not checked already
+            if ($scope.checkboxes.indexOf($scope.bills[i].id) < 0) {
+              $scope.checkboxes.push($scope.bills[i].id);
+            }
+          }
+        };
+      };
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -94,10 +105,10 @@ angular.module('main.bills').controller('BillsCtrl',
         }
       };
 
-      //for each bill's payments, 
+      //for each bill's payments,
       for (var i = 0; i < $scope.unresolvedBills.length; i++) {
         //if the user if the creator, update the amount others owe to him
-        if ($scope.unresolvedBills[i].creatorId == $scope.userId) {          
+        if ($scope.unresolvedBills[i].creatorId == $scope.userId) {
           for (var j = 0; j < $scope.balances.length; j++) {
             for (var k = 0; k < $scope.unresolvedBills[i].payments.length; k++) {
               if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId && !$scope.unresolvedBills[i].payments[k].paid) {
@@ -107,13 +118,13 @@ angular.module('main.bills').controller('BillsCtrl',
               }
             };
           };
-        } 
-        //if the user is not the creator, update the amount he owe to that creator
+        }
+        //if the user is not the creator, update the amount he owes to that creator
         else {
           for (var j = 0; j < $scope.balances.length; j++) {
             if ($scope.balances[j].userId == $scope.unresolvedBills[i].creatorId) {
               for (var k = 0; k < $scope.unresolvedBills[i].payments.length; k++) {
-                if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId && !$scope.unresolvedBills[i].payments[k].paid) {
+                if ($scope.userId == $scope.unresolvedBills[i].payments[k].userId && !$scope.unresolvedBills[i].payments[k].paid) {
                   //$scope.balances[j].userOwed.push({"bill": $scope.unresolvedBills[i].name, "amount": parseFloat($scope.unresolvedBills[i].payments[k].amount)});
                   $scope.balances[j].userOwed += parseFloat($scope.unresolvedBills[i].payments[k].amount);
                   $scope.balances[j].netBalance -= parseFloat($scope.unresolvedBills[i].payments[k].amount);
@@ -122,7 +133,7 @@ angular.module('main.bills').controller('BillsCtrl',
             }
           };
         }
-      };   
+      };
     }
 
     //select unresolved bills or resolved bills
@@ -133,7 +144,7 @@ angular.module('main.bills').controller('BillsCtrl',
     	} else {
     		$scope.bills = $scope.unresolvedBills;
         $scope.table = 'unresolved';
-    	}   	
+    	}
     };
 
     //get all roommates in the apartment
@@ -202,7 +213,7 @@ angular.module('main.bills').controller('BillsCtrl',
     //reset delete bill id and index
     $scope.resetDelete = function() {
       $scope.deleteId = -1;
-      $scope.deleteIdx = -1;      
+      $scope.deleteIdx = -1;
     }
 
     //delete a bill
@@ -234,7 +245,7 @@ angular.module('main.bills').controller('BillsCtrl',
           tempPayments.push({userId: $scope.updatedAmount[i].userId, amount: $scope.updatedAmount[i].amount, paid: false});
         }
       };
-      console.log(tempBill);
+
     	$http.put('/bills/'+$scope.oldBill.id, tempBill).
 	      success(function(data) {
           $scope.oldBill.payments = tempPayments;
@@ -260,15 +271,16 @@ angular.module('main.bills').controller('BillsCtrl',
         $scope.checkboxes.push(id);
         paid = "true";
       }
+
       $http.put('/bills/'+id+"/payment", {paid: paid}).
         success(function(data) {
           for (var i = 0; i < $scope.bills[index].payments.length; i++) {
-            if ($scope.bills[index].payments[i] == $scope.userId) {
+            if ($scope.bills[index].payments[i].userId == $scope.userId) {
               if (paid == "false") {
                 $scope.bills[index].payments[i].paid = false;
               } else {
-                $scope.bills[index].payments = true;
-              }                         
+                $scope.bills[index].payments[i].paid = true;
+              }
             }
           };
           $scope.updateBalanceModel();
@@ -280,20 +292,27 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //return a boolean indictaing whether the bill is paid by the user
     $scope.isPaid = function(id, index) {
-      var paid = false;
       for (var i = 0; i < $scope.bills[index].payments.length; i++) {
         if ($scope.bills[index].payments[i].userId == $scope.userId) {
-          paid = $scope.bills[index].payments[i].paid;
-          if ($scope.bills[index].payments[i].paid) {
-            //if this bill is not checked
-            if ($scope.checkboxes.indexOf(id) < 0) {
-              $scope.checkboxes.push(id);
-            }
-          }
+          return $scope.bills[index].payments[i].paid;
         }
       };
-      return paid;
+      return false;
     };
+
+    //return whether the user is responsible for this bill
+    $scope.isResponsible = function(id) {
+      for (var i = 0; i < $scope.bills.length; i++) {
+        if ($scope.bills[i].id == id) {
+          for (var j = 0; j < $scope.bills[i].payments.length; j++) {
+            if ($scope.bills[i].payments[j].userId == $scope.userId) {
+              return true;
+            }
+          };
+        }
+      };
+      return false;
+    }
 
     //return the amount owned by the current user for a bill
     $scope.amountOwed = function(id, index) {
@@ -354,6 +373,13 @@ angular.module('main.bills').controller('BillsCtrl',
     }
 
     $scope.isOwner = function(billId) {
+      //when bill id is not defined
+      if ($scope.updateIdx === undefined || $scope.updateIdx == -1) {
+        return false;
+      } else if (billId === undefined) {
+        billId = $scope.bills[$scope.updateIdx].id;
+      }
+
       for (var i = 0; i < $scope.bills.length; i++) {
         if ($scope.bills[i].id == billId && $scope.bills[i].creatorId == $scope.userId) {
           return true;
@@ -384,7 +410,7 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.bill = {};
       $scope.selectedRoommates = [];
       $scope.oldBill = {};
-      $scope.updateIdx = 0;
+      $scope.updateIdx = -1;
       $scope.updatedAmount = [];
     };
 
@@ -395,6 +421,10 @@ angular.module('main.bills').controller('BillsCtrl',
 
     $scope.convertDate = function(date) {
       return date.split('T')[0];
+    };
+
+    $scope.today = function() {
+      return moment().format('YYYY-MM-DD');
     }
 
     //formate the date
@@ -404,7 +434,6 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //show and hide an error msg
     function showErr(msg){
-      console.log(data);
       $scope.errormsg = msg;
       $scope.error = true;
       $timeout(function(){$scope.error=false;},alertLength);

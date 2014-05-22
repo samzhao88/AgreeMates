@@ -44,4 +44,8 @@ angular.module('main.history').controller('HistoryCtrl',
         .error(function() {});
     };
 
+    $scope.emptyHistory = function() {
+      return $scope.history.length === 0;
+    };
+
 });

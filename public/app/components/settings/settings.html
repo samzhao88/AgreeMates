@@ -9,13 +9,13 @@
 
   <hr>
 
-  <button type="button" data-toggle="modal" ng-click="populateInfo()" data-target="#change-info-modal" class="btn btn-primary pull-right">Edit Info</button>
+  <button type="button" data-toggle="modal" ng-click="populateInfo()" data-target="#change-info-modal" class="btn btn-success pull-right">Edit Info</button>
   <h2>My Apartment</h2><br>
 
   <p><strong>Name</strong>: {{apartment.name}}</p>
   <p><strong>Address</strong>: {{apartment.address}}</p>
 
-  <button type="button" ng-click="showInvite()" data-toggle="modal" data-target="#invite-modal" class="btn btn-primary pull-right">Invite Roommates</button>
+  <button type="button" ng-click="showInvite()" data-toggle="modal" data-target="#invite-modal" class="btn btn-success pull-right">Invite Roommates</button>
   <h2>Roommates</h2><br>
 
   <div class="row">
@@ -49,7 +49,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button ng-click="sendInvite()" type="submit" data-dismiss="modal" class="btn btn-primary">Invite</button>
+            <button ng-click="sendInvite()" type="submit" data-dismiss="modal" class="btn btn-success">Invite</button>
           </div>
         </form>
       </div>
@@ -80,7 +80,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button ng-click="editApartment()" type="submit" data-dismiss="modal" class="btn btn-primary">Save</button>
+          <button ng-click="editApartment()" type="submit" data-dismiss="modal" class="btn btn-success">Edit</button>
         </div>
       </form>
     </div>

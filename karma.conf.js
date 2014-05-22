@@ -24,8 +24,9 @@ module.exports = function(config) {
 
     // list of files to exclude
     exclude: [
+      'app/vendor/bootstrap/**/*.js',
       'app/vendor/jquery/src/**/*.js',
-      'app/vendor/bootstrap/**/*.js'
+      'app/vendor/momentjs/**/*.js'
     ],
 
 
