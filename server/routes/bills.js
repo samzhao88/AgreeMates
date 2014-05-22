@@ -221,7 +221,7 @@ function updatePayment(req, res) {
 			       'duedate', '=', duedate)
                         .fetch()
                         .then(function(reocurringMade) {
-                          if(compareDates(reocurringMade.attributes.duedate, duedate)) {
+                          if(datesEqual(reocurringMade.attributes.duedate, duedate)) {
                             res.send(200);
                           } else {
                             var createdate = new Date();
@@ -267,6 +267,7 @@ function updatePayment(req, res) {
                 res.json(503, {error: 'Database error.'});
               });
           } else {
+            // Unresolve the bill
             new BillModel({id: billId, apartment_id: apartmentId})
               .save({paid: false})
               .then(function() {
@@ -440,7 +441,7 @@ function setup(app) {
 }
 
 // Compares two dates to check for month, day, and year equality
-function compareDates(a, b) {
+function datesEqual(a, b) {
   if(a === undefined || b === undefined || a === null || b === null) {
     return false;
   }
