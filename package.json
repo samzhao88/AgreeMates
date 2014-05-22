@@ -23,7 +23,8 @@
     "rcfinder": "~0.1.6",
     "nodemailer": "^0.6.3",
     "angular-local-storage": "0.0.1",
-    "dotenv": "^0.2.8"
+    "dotenv": "^0.2.8",
+    "hashids": "~0.3.3"
   },
   "devDependencies": {
     "mocha": "*",
