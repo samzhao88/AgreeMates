@@ -44,7 +44,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
     	var supply = angular.copy($scope.supply);
     	supply.status = 0;
 
-    	$http.post('/supplies/',supply).
+    	$http.post('/supplies',supply).
 	      success(function(data) {
 	        $scope.supplies.splice(0,0,data);
 	       	$scope.reset();
