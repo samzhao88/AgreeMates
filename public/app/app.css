@@ -203,6 +203,10 @@ html, body {
   margin-bottom: 0 !important;
 }
 
+#chores-filter {
+  margin-bottom: 15px;
+  }  
+
 .supply-form-buttons {
   float: left;
   margin-left: 10px;
@@ -224,4 +228,37 @@ html, body {
 
 .messages .list-group-item {
   border-radius: 0;
+}
+
+
+
+/*classes for rotating responsiblity chores input UI*/
+.item, .placeholder {
+  vertical-align: top;
+  text-align: left;
+  font-weight: 700;
+}
+
+.placeholder {
+  text-align: left;
+    background: #AEF;
+}
+
+.testing {
+    vertical-align: top;
+  text-align: left;
+}
+
+#right-align {
+  position:relative;
+    float:right;
+
+}
+
+.minimalList {
+  min-height: 35px;
+}
+
+#chores_add_modal {
+  
 }
