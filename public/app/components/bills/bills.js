@@ -63,12 +63,13 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.bills = $scope.unresolvedBills;
       $scope.table = 'unresolved';
       $scope.updateBalanceModel();
+      //put all paid bills' id into checkboxes
       for (var i = 0; i < $scope.bills.length; i++) {
         for (var j = 0; j < $scope.bills[i].payments.length; j++) {
           if ($scope.bills[i].payments[j].userId == $scope.userId && $scope.bills[i].payments[j].paid) {
             //if this bill is not checked already
-            if ($scope.checkboxes.indexOf($scope.bills[i].payments[j].userId) < 0) {
-              $scope.checkboxes.push($scope.bills[i].payments[j].userId);
+            if ($scope.checkboxes.indexOf($scope.bills[i].id) < 0) {
+              $scope.checkboxes.push($scope.bills[i].id);
             }
           }       
         };
@@ -378,7 +379,7 @@ angular.module('main.bills').controller('BillsCtrl',
       } else if (billId === undefined) {
         billId = $scope.bills[$scope.updateIdx].id;
       }
-      
+
       for (var i = 0; i < $scope.bills.length; i++) {
         if ($scope.bills[i].id == billId && $scope.bills[i].creatorId == $scope.userId) {
           return true;
