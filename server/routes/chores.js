@@ -207,12 +207,13 @@ function getChores(req,res){
 	var apartmentId = req.user.attributes.apartment_id;
 	var user = req.user.attributes.id;
 	
-	// Check apartment, user and chore are associated with the same apartment.
+	// Check that the chore being marked as completed
 	
 	
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
 	.fetch()
 	.then(function(chore){
+		console.log(chore);
 		// If the chore is not reocurring mark as completed and send 200
 		if(!chore.get('completed')){
 			new ChoreModel({id: choreId})
@@ -233,7 +234,7 @@ function getChores(req,res){
 													console.log('hisory not recorded');
 													});
 								
-							}else{ // Need to create the next chore in the reocurring cycle
+							}else if(isValidDate(chore.get('duedate'))){ // Need to create the next chore in the reocurring cycle
 							var newChore = {apartment_id: chore.get('apartment_id'),
 										name: chore.get('name'),
 										duedate: chore.get('duedate'),
@@ -309,7 +310,6 @@ function editChore(req,res){
 	var interval = req.body.interval;
 	var rotating = req.body.rotating;
 	var number_in_rotation = req.body.number_in_rotation;
-
 	
 	//Check name has valid format
 	if(!isValidName(name)){
@@ -424,7 +424,6 @@ function deleteChore(req,res){
       res.json(400, {error: 'Invalid supply ID.'});
       return;
     }
-	var choreName;
 	new ChoreModel({id: choreId, apartment_id: apartmentId})
 		.fetch()
 		.then(function(model){

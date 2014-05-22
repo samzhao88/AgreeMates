@@ -132,6 +132,7 @@ describe('Chores', function(){
 			chores.addChore(req2, res);
 		});
 		
+		//Revise still passing
 		it('should return 400 if rotating chore and number_in_rotation less than zero', function(){
 			var req1 = {user: {attributes: {}}, body: {name: 'test', interval: 0, duedate: "December 31, 2020 11:13:00", roommates: [1],number_in_rotation: 1, rotating: true},params: {chore: 0.5}};
 			var req2 = {user: {attributes: {}}, body: {name: 'test', interval: 0, duedate: "December 31, 2020 11:13:00", roommates: [1],number_in_rotation: 1, rotating: true},params: {chore: "test"}};
