@@ -63,6 +63,18 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.bills = $scope.unresolvedBills;
       $scope.table = 'unresolved';
       $scope.updateBalanceModel();
+      for (var i = 0; i < $scope.bills.length; i++) {
+        for (var j = 0; j < $scope.bills[i].payments.length; j++) {
+          if ($scope.bills[i].payments[j].userId == $scope.userId) {
+            if ($scope.bills[i].payments[j].paid) {
+              //if this bill is not checked
+              if ($scope.checkboxes.indexOf($scope.bills[i].payments[j].userId) < 0) {
+                $scope.checkboxes.push($scope.bills[i].payments[j].userId);
+              }
+            }
+          }       
+        };
+      };
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -108,12 +120,12 @@ angular.module('main.bills').controller('BillsCtrl',
             };
           };
         } 
-        //if the user is not the creator, update the amount he owe to that creator
+        //if the user is not the creator, update the amount he owes to that creator
         else {
           for (var j = 0; j < $scope.balances.length; j++) {
             if ($scope.balances[j].userId == $scope.unresolvedBills[i].creatorId) {
               for (var k = 0; k < $scope.unresolvedBills[i].payments.length; k++) {
-                if ($scope.balances[j].userId == $scope.unresolvedBills[i].payments[k].userId && !$scope.unresolvedBills[i].payments[k].paid) {
+                if ($scope.userId == $scope.unresolvedBills[i].payments[k].userId && !$scope.unresolvedBills[i].payments[k].paid) {
                   //$scope.balances[j].userOwed.push({"bill": $scope.unresolvedBills[i].name, "amount": parseFloat($scope.unresolvedBills[i].payments[k].amount)});
                   $scope.balances[j].userOwed += parseFloat($scope.unresolvedBills[i].payments[k].amount);
                   $scope.balances[j].netBalance -= parseFloat($scope.unresolvedBills[i].payments[k].amount);
@@ -234,7 +246,7 @@ angular.module('main.bills').controller('BillsCtrl',
           tempPayments.push({userId: $scope.updatedAmount[i].userId, amount: $scope.updatedAmount[i].amount, paid: false});
         }
       };
-      console.log(tempBill);
+
     	$http.put('/bills/'+$scope.oldBill.id, tempBill).
 	      success(function(data) {
           $scope.oldBill.payments = tempPayments;
@@ -250,6 +262,8 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //mark a bill as paid or not paid
     $scope.payBill = function(id, index) {
+      console.log("begin: ");
+      console.log($scope.checkboxes);
       var paid = "false";
       //check or uncheck
       var idx = $scope.checkboxes.indexOf(id);
@@ -260,17 +274,20 @@ angular.module('main.bills').controller('BillsCtrl',
         $scope.checkboxes.push(id);
         paid = "true";
       }
+      console.log($scope.checkboxes);
       $http.put('/bills/'+id+"/payment", {paid: paid}).
         success(function(data) {
+          console.log($scope.checkboxes);
           for (var i = 0; i < $scope.bills[index].payments.length; i++) {
-            if ($scope.bills[index].payments[i] == $scope.userId) {
+            if ($scope.bills[index].payments[i].userId == $scope.userId) {
               if (paid == "false") {
                 $scope.bills[index].payments[i].paid = false;
               } else {
-                $scope.bills[index].payments = true;
+                $scope.bills[index].payments[i].paid = true;
               }                         
             }
           };
+          
           $scope.updateBalanceModel();
         }).
         error(function(data, status, headers, config){
@@ -284,16 +301,31 @@ angular.module('main.bills').controller('BillsCtrl',
       for (var i = 0; i < $scope.bills[index].payments.length; i++) {
         if ($scope.bills[index].payments[i].userId == $scope.userId) {
           paid = $scope.bills[index].payments[i].paid;
-          if ($scope.bills[index].payments[i].paid) {
-            //if this bill is not checked
-            if ($scope.checkboxes.indexOf(id) < 0) {
-              $scope.checkboxes.push(id);
-            }
-          }
+          // if ($scope.bills[index].payments[i].paid) {
+          //   //if this bill is not checked
+          //   if ($scope.checkboxes.indexOf(id) < 0) {
+          //     $scope.checkboxes.push(id);
+          //   }
+          // }
+          return paid;
         }
       };
       return paid;
     };
+
+    //return whether the user is responsible for this bill
+    $scope.isResponsible = function(id) {
+      for (var i = 0; i < $scope.bills.length; i++) {
+        if ($scope.bills[i].id == id) {
+          for (var j = 0; j < $scope.bills[i].payments.length; j++) {          
+            if ($scope.bills[i].payments[j].userId == $scope.userId) {
+              return true;
+            }
+          };
+        }
+      };
+      return false;      
+    } 
 
     //return the amount owned by the current user for a bill
     $scope.amountOwed = function(id, index) {
@@ -311,6 +343,9 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //set the oldBill to the bill that is selected to update
     $scope.prepareUpdate = function(id, index) {
+      if (!$scope.isOwner(id)) {
+        return
+      }
       $scope.reset();
       $scope.updateIdx = index;
       //find the bill that is selected

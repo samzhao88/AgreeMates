@@ -101,7 +101,7 @@
 			<td data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, $index)">${{amountOwed(bill.id, $index)}}</td>
 			<td data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, $index)">{{bill.payTo}}</td>
 			<td data-toggle="modal" data-target="#editModal" ng-click="prepareUpdate(bill.id, $index)">{{format(bill.dueDate)}}</td>
-			<td><input type="checkbox" ng-click="payBill(bill.id, $index)" ng-checked="isPaid(bill.id, $index)"></td>
+			<td><input type="checkbox" ng-click="payBill(bill.id, $index)" ng-checked="isPaid(bill.id, $index)" ng-show="isResponsible(bill.id)"></td>
 			<td><i class="ion-close-circled delete-icon" data-toggle="modal" data-target="#deleteModal" ng-click="prepareDelete(bill.id, $index)" ng-show="isOwner(bill.id)"></i></td>
 		</tr>
 	</table>
