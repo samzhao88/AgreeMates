@@ -5,7 +5,7 @@ var expect = chai.expect;
 describe('supplies module', function() {
 
   var $httpMock, $scope, $controller;
-  
+
   var suppliesModule;
   beforeEach(function() {
     suppliesModule = module('main.supplies');
@@ -17,13 +17,13 @@ describe('supplies module', function() {
 
   var supplies = {supplies: [
     {
-      'id': 1, 
-      'name': 'toilet paper', 
+      'id': 1,
+      'name': 'toilet paper',
       'status': 1
     },
     {
-      'id': 2, 
-      'name': 'oranges', 
+      'id': 2,
+      'name': 'oranges',
       'status': 0
     }
   ]};
@@ -45,9 +45,13 @@ describe('supplies module', function() {
     'status': 0
   };
 
-  var supplyEditResponse = {'200'};
+  var supplyEditResponse = {
+    'status': 200
+  };
 
-  var supplyDeleteResponse = {'200'};
+  var supplyDeleteResponse = {
+    'status': 200
+  };
 
   beforeEach(inject(function($injector) {
     $httpMock = $injector.get('$httpBackend');
@@ -90,7 +94,7 @@ describe('supplies module', function() {
   it('should delete a supply',function() {
     $httpMock.expectDELETE('/supplies/3').respond(supplyDeleteResponse);
     $httpMock.flush();
-    
+
   });
 
 });
