@@ -8,6 +8,10 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var compress = require('compression');
+
+var dotenv = require('dotenv');
+dotenv.load();
+
 var Bookshelf  = require('bookshelf');
 var passport = require('passport');
 var router = require('./routes');

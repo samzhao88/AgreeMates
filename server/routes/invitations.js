@@ -8,8 +8,106 @@ var InvitationModel = require('../models/invitation').model;
 var InvitationCollection = require('../models/invitation').collection;
 var UserModel = require('../models/user').model;
 var nodemailer = require('nodemailer');
+var Hashids = require('hashids');
+var hashids = new Hashids(process.env.INVITE_SALT, 8);
 
 var Invitations = {
+  setup: function(app) {
+    app.post('/invitations', Invitations.addInvitations);
+    app.get('/invitations/:invite', Invitations.getInvitation);
+    app.delete('/invitations/:invite', Invitations.deleteInvitation);
+  },
+  addInvitations: function(req, res) {
+    if (req.user === undefined || req.body === undefined) {
+      res.json(400, {error: 'Missing user or body'});
+      return;
+    }
+
+    var apartmentId = req.user.attributes.apartment_id;
+    if (apartmentId === undefined) {
+      res.json(404, {error: 'could not fetch id'});
+      return;
+    }
+
+    Invitations.fetchApartment(apartmentId,
+      function then(apartment) {
+        var emails = req.body.emails;
+        var apartmentName = apartment.attributes.name;
+        var invitations = [];
+        for (var i = 0; i < emails.length; i++) {
+          invitations[i] = Invitations.createInvitation(apartmentId, emails[i]);
+        }
+        Invitations.saveInvitations(invitations, function(resp) {
+          if (resp.length !== invitations.length) {
+            res.json(503, {error: 'Error creating invitations'});
+          } else {
+            resp.forEach(function(invitation) {
+              var hashedId = hashids.encrypt(invitation.id);
+              Invitations.sendInvitation(hashedId, invitation.email,
+                                         apartmentName);
+            });
+            res.json(resp);
+          }
+        });
+      },
+      function otherwise(error) {
+        console.log(error);
+        res.json(404, {error: 'error getting apartment'});
+      });
+  },
+  getInvitation: function(req, res) {
+    var inviteNumber = hashids.decrypt(req.params.invite)[0];
+    Invitations.fetchInvitation(inviteNumber,
+      function then(model) {
+        Invitations.fetchApartment(model.attributes.apartment_id,
+          function then(model2) {
+            var user = req.user;
+            if (user != null) {
+              res.render('components/invitations/index.html', {
+                invId: model.attributes.id,
+                aptName: model2.attributes.name,
+                aptAddress: model2.attributes.address
+              });
+            } else {
+              res.render('components/invitations/login.html', {
+                invId: model.attributes.id
+              });
+            }
+          },
+          function otherwise(error) {
+            console.log(error);
+            res.json(404, {error: 'failed to fetch apartment'});
+          });
+      },
+      function otherwise(error) {
+        console.log(error);
+        res.json(404, {error: 'error getting invitation'});
+      });
+  },
+  deleteInvitation: function(req, res) {
+    var inviteNumber = hashids.decrypt(req.params.invite)[0];
+    Invitations.fetchInvitation(inviteNumber,
+      function then(model) {
+        Invitations.addUserToApartment(req.user.id,
+                                       model.attributes.apartment_id,
+          function then() {
+            Invitations.destroyInvitation(inviteNumber,
+              function then() { res.send(200); },
+              function otherwise(error) {
+                console.log(error);
+                res.json(503, {error: 'failed to destroy invitation'});
+              });
+          },
+          function otherwise(error) {
+            console.log(error);
+            res.json(503, {error: 'failed to add user to apartment'});
+          });
+      },
+      function otherwise(error) {
+        console.log(error);
+        res.json(503, {error: 'failed to get invitation'});
+      });
+  },
   fetchApartment: function(apartmentId, thenFun, otherwiseFun) {
     new ApartmentModel({id: apartmentId})
       .fetch()
@@ -77,104 +175,6 @@ var Invitations = {
         console.log('Message sent: ' + response.message);
       }
     });
-  },
-  addInvitations: function(req, res) {
-    if (req.user === undefined || req.body === undefined) {
-      res.json(400, {error: 'Missing user or body'});
-      return;
-    }
-
-    var apartmentId = req.user.attributes.apartment_id;
-    if (apartmentId === undefined) {
-      res.json(404, {error: 'could not fetch id'});
-      return;
-    }
-
-    Invitations.fetchApartment(apartmentId,
-      function(apartment) {
-        var emails = req.body.emails;
-        var apartmentName = apartment.attributes.name;
-        var invitations = [];
-        for (var i = 0; i < emails.length; i++) {
-          invitations[i] = Invitations.createInvitation(apartmentId, emails[i]);
-        }
-        Invitations.saveInvitations(invitations, function(resp) {
-          if (resp.length !== invitations.length) {
-            res.json(503, {error: 'Error creating invitations'});
-          } else {
-            resp.forEach(function(invitation) {
-              Invitations.sendInvitation(invitation.id, invitation.email,
-                                         apartmentName);
-            });
-            res.json(resp);
-          }
-        });
-      },
-      function(error) {
-        console.log(error);
-        res.json(404, {error: 'error getting apartment'});
-      });
-  },
-  getInvitation: function(req, res) {
-    Invitations.fetchInvitation(req.params.invite,
-      function(model) {
-        Invitations.fetchApartment(model.attributes.apartment_id,
-          function(model2) {
-            var user = req.user;
-            if (user != null) {
-              res.render('components/invitations/index.html', {
-                invId: model.attributes.id,
-                aptName: model2.attributes.name,
-                aptAddress: model2.attributes.address
-              });
-            } else {
-              res.render('components/invitations/login.html', {
-                invId: model.attributes.id
-              });
-            }
-          },
-          function(error) {
-            console.log(error);
-            res.json(404, {error: 'failed to fetch apartment'});
-          });
-      },
-      function(error) {
-        console.log(error);
-        res.json(404, {error: 'error getting invitation'});
-      });
-  },
-  deleteInvitation: function(req, res) {
-    Invitations.fetchInvitation(req.params.invite,
-      function(model) {
-        Invitations.addUserToApartment(req.user.id,
-                                       model.attributes.apartment_id,
-          function() {
-            Invitations.destroyInvitation(req.params.invite,
-              function() { res.send(200); },
-              function(error) {
-                console.log(error);
-                res.json(503, {error: 'failed to destroy invitation'});
-              });
-          },
-          function(error) {
-            console.log(error);
-            res.json(503, {error: 'failed to add user to apartment'});
-          });
-      },
-      function(error) {
-        console.log(error);
-        res.json(503, {error: 'failed to get invitation'});
-      });
-  },
-  setup: function(app) {
-    // Add invitation to database
-    app.post('/invitations', Invitations.addInvitations);
-
-    // Get invitation information
-    app.get('/invitations/:invite', Invitations.getInvitation);
-
-    // Removes invitation from the database
-    app.delete('/invitations/:invite', Invitations.deleteInvitation);
   }
 };
 
