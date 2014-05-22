@@ -201,7 +201,6 @@ function getChores(req,res){
 		
   } 
 
-	//**NEED to finish before I leave**
   // Marks a chore as  completed and if it is reoccuring creates a new chore
   function completeChore(req, res){
 	var choreId = req.params.chore;
@@ -211,14 +210,84 @@ function getChores(req,res){
 	// Check apartment, user and chore are associated with the same apartment.
 	
 	
-	new ChoreModel({id: choreId})
+	new ChoreModel({apartment_id: apartmentId, id: choreId})
 	.fetch()
-	.then(function(choreModel){
+	.then(function(chore){
 		// If the chore is not reoccuring mark as completed and send 200
+		if(chore.interval === 0){
+			new ChoreModel({id: choreId})
+			.save({completed: true}, {patch: true})
+			.then(function(){
+				var historyString = req.user.attributes.first_name + ' ' +
+								req.user.attributes.last_name+ ' edited chore ' + chore.get('name');
+								
+				new HistoryModel({apartment_id: chore.get('apartment_id'),
+								history_string: historyString,
+								date: new Date()})
+								.save()
+								.then(function(){})
+								.otherwise(function(){
+								console.log('hisory not recorded');
+								});
+			});
+		}else{
 		
+		var newChore = {apartment_id: chore.get('apartment_id'),
+					name: chore.get('name'),
+					duedate: chore.get('duedate'),
+					createdate: chore.get('createdate'),
+					user_id: user,
+					completed: false,
+					interval: chore.get('interval'),
+					rotating: chore.get('rotating'),
+					number_in_rotation: chore.get('number_in_rotation')};
 		// If the chore is reoccuring use the same method we have down below
 		// with the cron job. In which we create a new chore based upon the chore model info
-	
+		//If we have a reocurring_id use that otherwise use the id of our parent.
+			newChore.reocurring_id = newChore.reocurring_id || chore.id;
+			incrementDate(newChore.duedate, newChore.interval); 
+			Bookshelf.DB.knex('users_chores')
+			.where('chore_id', '=', chore.get('id'))
+			.then(function(users_chores){
+				var orderIndex = [];
+				var users = [];
+				for(var j = 0; j < users_chores.length; j++){
+					//Rotating algorithm
+					orderIndex[j] = (users_chores[j].order_index - chore.get('number_in_rotation'));
+					if(orderIndex[j] < 0){
+						orderIndex[j] = orderIndex[j]+users_chores.length;
+					}
+					users[j] = users_chores[j].user_id;
+				}
+				ChoreDao.createChore(newChore, users, orderIndex, 
+						function(choreModel, userResp){
+							var response = {chore: choreModel.attributes, users: userResp};
+							if(userResp.length !== users.length){
+								res.json(503,{error: 'DataBase error'});
+							}else{
+								new UserModel({id: choreModel.get('user_id')})
+									.fetch()
+									.then(function(userModel){ 
+								
+										var historyString = userModel.get('first_name') + ' ' +
+											userModel.get('last_name')+ ' completed chore ' + choreModel.get('name');
+											
+										new HistoryModel({apartment_id: choreModel.get('apartment_id'),
+															history_string: historyString,
+															date: new Date()})
+															.save()
+															.then(function(){})
+															.otherwise(function(error){console.log(error)});
+								});
+								res.send(200, response);
+							}
+						}, function(){
+					console.error('Chore Cron Job: Error creating chore');
+				});
+			});
+		
+		}
+
 	}).otherwise(function(){
 		res.json(503, {error: 'Database error'});
 	})
