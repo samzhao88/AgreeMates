@@ -7,6 +7,7 @@ var BillCollection = require('../models/bill').collection;
 var UserModel = require('../models/user').model;
 var PaymentModel = require('../models/payment').model;
 var PaymentCollection = require('../models/payment').collection;
+var HistoryModel = require('../models/history').model;
 var Bookshelf = require('bookshelf');
 
 // Gets all bills for an apartment
@@ -151,6 +152,13 @@ function addBill(req, res) {
     interval: interval, duedate: duedate, createdate: createdate})
     .save()
     .then(function(model) {
+      var historyString = req.user.attributes.first_name + ' ' +
+        req.user.attributes.last_name + ' added bill "' +
+        name.trim() + '"';      
+      new HistoryModel( {apartment_id: apartmentId,
+        history_string: historyString, date: new Date()})
+        .save();
+
       for(var i = 0; i < roommates.length; i++) {
         // add payment models for each of the payments for the bill
         new PaymentModel({paid: false, amount: roommates[i].amount,
@@ -192,6 +200,19 @@ function updatePayment(req, res) {
     .update({paid: paid})
     .then(function() {
 
+      Bookshelf.DB.knex('bills')
+        .where('id', '=', billId)
+        .where('apartment_id', '=', apartmentId)
+        .select('bills.name')
+        .then(function(model) {
+          var historyString = req.user.attributes.first_name + ' ' +
+            req.user.attributes.last_name + ' paid their portion of bill "' +
+            model[0].name.trim() + '"';
+	  new HistoryModel({apartment_id: apartmentId,
+            history_string: historyString, date: new Date()})
+            .save()
+        });
+
       // Check if all payments for bill have been paid
       // if so, mark bill as paid
       new PaymentCollection()
@@ -207,7 +228,13 @@ function updatePayment(req, res) {
                          'apartment_id', '=', apartmentId)
                   .fetch({withRelated: ['payment']})
                   .then(function(oldBill) {
-   
+                    var historyString = 'All users have paid their portions of ' +
+                      'the bill "' + oldBill.attributes.name + '" the bill ' +
+                      'is now resolved';
+                    new HistoryModel({apartment_id: apartmentId,
+                      history_string: historyString, date: new Date()})
+                      .save()
+                     
                     // If the bill is reocurring we need to make a new
                     // instance of it and it's payments
                     if(oldBill.attributes.interval === 3) {
@@ -320,6 +347,12 @@ function editBill(req, res) {
       new BillModel({id: billId, apartment_id: apartmentId})
         .save({name: name, amount: total, duedate: date, interval: interval})
         .then(function(model) {
+          var historyString = req.user.attributes.first_name + ' ' + 
+            req.user.attributes.last_name + ' edited bill "' + name + '"';
+	  new HistoryModel({apartment_id: apartmentId,
+            history_string: historyString, date: new Date()})
+            .save()      
+ 
           // Add new payments for all the users who need to pay
           for(var i = 0; i < roommates.length; i++) {
             new PaymentModel({paid: false,
