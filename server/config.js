@@ -7,7 +7,7 @@ var root = path.normalize(__dirname + '/..');
 //sets the configuration for development or production based upon env
 var config = {
   root: root,
-  port: process.env.PORT,
+  port: process.env.PORT || 3000,
   db: {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
