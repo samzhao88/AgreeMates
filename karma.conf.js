@@ -16,6 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'app/vendor/angular/angular.js',
+	  'app/vendor/jquery/dist/jquery.min.js',
       'app/vendor/angular-mocks/angular-mocks.js',
       '**/*.js'
     ],
@@ -24,7 +25,8 @@ module.exports = function(config) {
     // list of files to exclude
     exclude: [
       'app/vendor/bootstrap/**/*.js',
-      'app/vendor/jquery/**/*.js'
+      'app/vendor/jquery/src/**/*.js',
+      'app/vendor/momentjs/**/*.js'
     ],
 
 

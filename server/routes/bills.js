@@ -207,37 +207,52 @@ function updatePayment(req, res) {
                          'apartment_id', '=', apartmentId)
                   .fetch({withRelated: ['payment']})
                   .then(function(oldBill) {
-
+   
                     // If the bill is reocurring we need to make a new
                     // instance of it and it's payments
                     if(oldBill.attributes.interval === 3) {
                       var duedate = createDueDate(oldBill.attributes.duedate);
-                      var createdate = new Date();
-                      new BillModel({apartment_id: apartmentId,
-                                    name: oldBill.attributes.name,
-                                    user_id: oldBill.attributes.user_id,
-                                    amount: oldBill.attributes.amount,
-                                    paid: false,
-                                    interval: oldBill.attributes.interval,
-                                    duedate: duedate, createdate: createdate,
-                                    reocurring_id: oldBill.attributes.reocurring_id})
-                        .save()
-                        .then(function(newBill) {
-                          // Now add new payments for the new bill. They will
-                          // be the same as the payments for the previous bill
-                          // except for the bill_id field
-                          var payments = oldBill.relations.payment.models;
-                          for(var i = 0; i < payments.length; i++) {
-                            new PaymentModel({paid: false,
-                                             amount: payments[i].attributes.amount,
-                                             user_id: payments[i].attributes.user_id,
-                                             bill_id: newBill.attributes.id})
+
+                      // Look for if the recurring bill was already generated
+                      // if it was then we don't generate it again
+                      new BillCollection()
+                        .query('where', 'reocurring_id', '=', 
+			       oldBill.attributes.reocurring_id)
+                        .fetch()
+                        .then(function(reocurringMade) {
+                          if(needInstance(reocurringMade, duedate)) {
+                            var createdate = new Date();
+                            new BillModel({apartment_id: apartmentId,
+                                name: oldBill.attributes.name,
+                                user_id: oldBill.attributes.user_id,
+                                amount: oldBill.attributes.amount,
+                                paid: false,
+                                interval: oldBill.attributes.interval,
+                                duedate: duedate, createdate: createdate,
+                                reocurring_id: oldBill.attributes.reocurring_id})
                               .save()
-                              .otherwise(function(error) {
-                                res.json(503, {error: 'Database error.'});
-                              });
-                          }
-                          res.send(200);
+                              .then(function(newBill) {
+                              // Now add new payments for the new bill. They will
+                              // be the same as the payments for the previous bill
+                              // except for the bill_id field
+                              var payments = oldBill.relations.payment.models;
+                              for(var i = 0; i < payments.length; i++) {
+                                new PaymentModel({paid: false,
+                                                 amount: payments[i].attributes.amount,
+                                                 user_id: payments[i].attributes.user_id,
+                                                 bill_id: newBill.attributes.id})
+                                  .save()
+                                  .otherwise(function(error) {
+                                    res.json(503, {error: 'Database error.'});
+                                  });
+                              }
+                              res.send(200);
+                            }).otherwise(function(error) {
+                              res.json(503, {error: 'Database error.'});
+                            });
+                          } else {
+                            res.send(200);
+			  }
                         }).otherwise(function(error) {
                           res.json(503, {error: 'Database error.'});
                         });
@@ -251,7 +266,14 @@ function updatePayment(req, res) {
                 res.json(503, {error: 'Database error.'});
               });
           } else {
-            res.send(200);
+            // Unresolve the bill
+            new BillModel({id: billId, apartment_id: apartmentId})
+              .save({paid: false})
+              .then(function() {
+                res.send(200);
+              }).otherwise(function() {
+                res.json(503, {error: 'Database error.'});
+              });
           }
         }).otherwise(function() {
           res.json(503, {error: 'Database error.'});
@@ -397,15 +419,13 @@ function createDueDate(date) {
 
 // Checks if an array of payment models are all paid
 function allPaymentsPaid(payments) {
-  var allPaid = true;
   for (var i = 0; i < payments.length; i++) {
     var payment = payments.models[i].attributes;
     if (payment.paid !== true) {
-      allPaid = false;
-      break;
+      return false;
     }
   }
-  return allPaid;
+  return true;
 }
 
 // Sets up all routes
@@ -415,6 +435,24 @@ function setup(app) {
   app.put('/bills/:bill/payment', updatePayment);
   app.put('/bills/:bill', editBill);
   app.delete('/bills/:bill', deleteBill);
+}
+
+// Takes a collection of bills with the same reocurring id
+// and a new date for a recurring bill. Goes through and if the
+// new date is past all of the bills in the collections duedates
+// then return true to generate a new instance of the reocurring bill
+function needInstance(billCollection, newDate) {
+  if(billCollection === undefined || newDate === undefined || 
+     billCollection === null || newDate === null) {
+    return false;
+  }
+  for(var i = 0; i < billCollection.length; i++) {
+    var billDate = billCollection.models[i].attributes.duedate;
+    if(newDate <= billDate) {
+      return false;
+    }
+  }
+  return true;
 }
 
 module.exports.getBills = getBills;
