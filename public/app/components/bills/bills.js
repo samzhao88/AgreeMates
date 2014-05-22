@@ -394,6 +394,25 @@ angular.module('main.bills').controller('BillsCtrl',
       return false;
     }
 
+    //split the bill amount evenly among all selected roommates
+    $scope.splitBill = function() {
+      var numRoommates = $scope.selectedRoommates.length;
+      var amount = $scope.bill.total / numRoommates;
+
+      for (var i = 0; i < $scope.responsible.length; i++) {
+        var responsible = false;
+        for (var j = 0; j < $scope.selectedRoommates.length; j++) {
+          if ($scope.selectedRoommates[j] == $scope.responsible[i].id) {
+            responsible = true;
+            $scope.responsible[i].amount = amount;
+          }
+        };
+        if (!responsible) {
+          $scope.responsible[i].amount = '';
+        }
+      };      
+    }
+
     // $scope.showBalancedetail = function(arr) {
     //   if (arr.length == 0) {
     //     return "$0";
