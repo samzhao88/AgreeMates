@@ -6,8 +6,8 @@ angular.module('main.apartment', []);
 angular.module('main.apartment').controller('AptAddCtrl',
   function ($http, $scope) {
 
-    $scope.add = function(apartment) {
-      $http.post('/apartment', apartment)
+    $scope.addApartment = function() {
+      $http.post('/apartment', $scope.apartment)
         .success(function() {
           window.location.href = './';
 
