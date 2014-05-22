@@ -36,7 +36,6 @@ var chores = function(app) {
 				res.json({chores: chores});
 				return;
 			}
-			console.log(rows[0]);
 			var lastChoreId = -1;
 			var name, dueDate, createDate, interval, completed;
 			for(var i = 0; i < rows.length; i++){
