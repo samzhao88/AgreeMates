@@ -219,7 +219,8 @@ function getChores(req,res){
 			new ChoreModel({id: choreId})
 					.save({completed: true}, {patch: true})
 					.then(function(){
-							if(chore.interval === 0){ // Only need to log history of who completed chore
+								//One time chore	or		reocurring chore past duedate
+							if(chore.interval === 0|| (!isValidDate(chore.get('duedate')))){ // Only need to log history of who completed chore
 									var historyString = req.user.attributes.first_name + ' ' +
 													req.user.attributes.last_name+ ' edited chore ' + chore.get('name');
 													
