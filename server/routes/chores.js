@@ -9,6 +9,7 @@ var UserModel = require('../models/user').model;
 var Bookshelf = require('bookshelf');
 var ChoreDao = require('./choreDao');
 var CronJob = require('cron').CronJob;
+var HistoryModel = require('../models/history').model;
 
 
 //Get all chores for an apartment
@@ -101,48 +102,6 @@ function getChores(req,res){
 		});
 }
 
-
-// Get the chore information
- /* app.get('/chores/:chore', function(req, res) {
-  	if (req.user === undefined) {
-		res.json(401, {error: 'Unauthorized user.'});
-		return;
-	}
-    var apartmentId = req.user.attributes.apartment_id;
-	var choreId = req.params.chore;
-
-	if (!isValidId(choreId)) {
-      res.json(400, {error: 'Invalid supply ID.'});
-      return;
-    }
-
-	new ChoreModel({apartment_id: apartmentId, id: choreId})
-		.fetch()
-		.then(function(model){
-			var chore = model.attributes;
-			var userChores = [];
-			new UserChoreModel({chore_id: chore.id})
-			.fetch()
-			.then(function(ucModel){
-				for(var j = 0; j <ucModel.length; j++){
-					var userChore = ucModel.models[i].attributes;
-					userChores.push({
-						user_id: userChore.user_id,
-						order_index: userChore.oder_index
-					});
-					if(j === ucModel.length - 1){
-						res.json({chore: chore, users: userChores});
-					}
-				}
-			}).otherwise(function(){
-				res.json(503, {error:'Database error'});
-			});
-		}).otherwise(function(){
-			res.json(503,{error: 'Database error.'});
-		});
-
-  });*/
-
   // Process chore form and adds to database
 
 	function addChore(req,res){
@@ -220,6 +179,20 @@ function getChores(req,res){
 						if(userResp.length !== roommates.length){
 							res.json(503,{error: 'DataBase error'});
 						}else{
+							new UserModel({id: choreModel.get('user_id')}).
+							fetch()
+							.then(function(userModel){ 
+							
+								var historyString = userModel.get('first_name') + ' ' +
+								userModel.get('last_name')+ ' created chore ' + choreModel.get('name');
+								
+								new HistoryModel({apartment_id: choreModel.get('apartment_id'),
+													history_string: historyString,
+													date: new Date()})
+													.save()
+													.then(function(){})
+													.otherwise(function(error){console.log(error)});
+							});
 							res.send(200, response);
 						}
 						}, function(){
@@ -310,6 +283,17 @@ function editChore(req,res){
 						if(resp.length !== userChore.length){
 							res.json(503,{error: 'DataBase error'});
 						}else{
+							var historyString = req.user.attributes.first_name + ' ' +
+								req.user.attributes.last_name+ ' edited chore ' + choreModel.get('name');
+								
+							new HistoryModel({apartment_id: choreModel.get('apartment_id'),
+												history_string: historyString,
+												date: new Date()})
+												.save()
+												.then(function(){})
+												.otherwise(function(){
+													console.log('hisory not recorded');
+												});
 							res.send(200);
 						}
 					})
@@ -325,11 +309,6 @@ function editChore(req,res){
 
   // Remove chore from database
 function deleteChore(req,res){
-	if (req.user === undefined) {
-		res.json(401, {error: 'Unauthorized user.'});
-		return;
-	}
-
     var apartmentId = req.user.attributes.apartment_id;
 
 	var choreId = req.params.chore;
@@ -338,26 +317,38 @@ function deleteChore(req,res){
       res.json(400, {error: 'Invalid supply ID.'});
       return;
     }
-
-	new UserChoreModel().query('where', 'chore_id', '=', choreId)
-		.destroy()
-		.then(function(choremodel){
-			new ChoreModel({id: choreId, apartment_id: apartmentId})
-			.destroy()
-			.then(function(){
-				res.send(200);
-			}).otherwise(function() {
-				res.json(503, {error: 'Database error'});
-			});
-		}).otherwise(function() {
-			res.json(503, {error: 'Database error'})
+	var choreName;
+	new ChoreModel({id: choreId, apartment_id: apartmentId})
+		.fetch()
+		.then(function(model){
+			new UserChoreModel().query('where', 'chore_id', '=', choreId)
+				.destroy()
+				.then(function(choremodel){
+					new ChoreModel({id: choreId, apartment_id: apartmentId})
+					.destroy()
+					.then(function(){
+						var historyString = req.user.attributes.first_name + ' ' +
+							req.user.attributes.last_name + ' deleted chore ' + model.get('name');
+								
+							new HistoryModel({apartment_id: model.get('apartment_id'),
+												history_string: historyString,
+												date: new Date()})
+												.save()
+												.then(function(){})
+												.otherwise(function(error){console.log(error)});
+						res.send(200);
+					}).otherwise(function() {
+						res.json(503, {error: 'Database error'});
+					});
+				}).otherwise(function() {
+					res.json(503, {error: 'Database error'})
+				});
 		});
   }
   
   				   //Sec, min, hours, day of month, months, day of week
 				   // Set the cron job to 11:59 PM
 var job = new CronJob('0 59 23 * * *', function(){
-	
 	var startDate = new Date();
 	startDate.setHours(0);
 	startDate.setMinutes(0);
@@ -469,7 +460,7 @@ function setup(app){
 	 app.post('/chores', checkLogin,addChore);
 	 app.post('/chores/complete/:chore', checkLogin, completeChore);
 	 app.put('/chores/:chore', checkLogin,editChore);
-	  app.delete('/chores/:chore', deleteChore);
+	  app.delete('/chores/:chore', checkLogin, deleteChore);
  }
  
 module.exports.getChores = getChores;
