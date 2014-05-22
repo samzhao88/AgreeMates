@@ -124,9 +124,7 @@ function addBill(req, res) {
   var total = req.body.total;
   var interval = req.body.interval;
   var duedate = req.body.date;
-  var date = new Date();
-  var createdate = (date.getMonth() + 1) + '/' + date.getDate() +
-    '/' + date.getFullYear();
+  var createdate = new Date();
   var roommates = req.body.roommates;
 
   // Check if the fields are acceptable
