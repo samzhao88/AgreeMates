@@ -127,11 +127,6 @@ function getChores(req,res){
 			return;
 		}
 		
-		// Check createdate is valid
-		if(!isValidDate(createdate)){
-			res.json(400, {error: 'Invalid create date.'});
-			return;
-		}
 		// Check duedate is valid valid
 		if(!isValidDate(duedate)){
 			res.json(400, {error: 'Invalid due date'});
@@ -140,7 +135,11 @@ function getChores(req,res){
 		
 		// Check valid roommates ie all in the same apartment
 		if(!isValidRoommates(roommates)){
-			res.json(400, {error: 'Invalid roommates'});
+			res.json(400, {error: 'Invalid users assigned to chore'});
+			return;
+		}
+		if(!isInt(number_in_rotation)){
+			res.json(400, {error: 'Invalid number in chore rotation'});
 			return;
 		}
 		
@@ -202,6 +201,7 @@ function getChores(req,res){
   } 
 
   // Marks a chore as  completed and if it is reoccuring creates a new chore
+  // Need to check that chore is not already complete
   function completeChore(req, res){
 	var choreId = req.params.chore;
 	var apartmentId = req.user.attributes.apartment_id;
@@ -278,12 +278,12 @@ function getChores(req,res){
 															.save()
 															.then(function(){})
 															.otherwise(function(error){console.log(error)});
-								});
+									});
 								res.send(200, response);
 							}
 						}, function(){
-					console.error('Chore Cron Job: Error creating chore');
-				});
+							console.error('Chore Cron Job: Error creating chore');
+						});
 			});
 		
 		}
@@ -303,6 +303,8 @@ function editChore(req,res){
 	var roommates = req.body.roommates;
 	var interval = req.body.interval;
 	
+
+	
 	if(!isValidDate(dueDate)){
 		res.json(400, {error: 'Invalid due date.'});
 		return;
@@ -311,11 +313,21 @@ function editChore(req,res){
 		res.json(400, {error: 'Invalid chore name.'});
 		return;
 	}
+	
+	if(!isValidInterval(interval)){
+			res.json(400, {error: 'Invalid interval.'});
+			return;
+	}
+		
 	if(!isValidRoommates(roommates)){
 		res.json(400,{error: 'Invalid users empty'});
 		return;
 	}
 	
+	if(!isInt(choreId)){
+		res.json(400,{error: 'Invalid chore id'});
+		return;
+	}
 	//Check that if its aa rotating chore 
 
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
@@ -496,7 +508,7 @@ var job = new CronJob('0 59 23 * * *', function(){
 	  
 	  //Checks that roommates has one user id
 	  function isValidRoommates(roommates){
-		return roommates.length > 0;
+		return roommates !== undefined&&roommates.length > 0;
 	  }
 	  
 	  //Checks that interval is a valid integer
