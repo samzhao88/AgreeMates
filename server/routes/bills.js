@@ -215,15 +215,12 @@ function updatePayment(req, res) {
 
                       // Look for if the recurring bill was already generated
                       // if it was then we don't generate it again
-                      new BillModel()
+                      new BillCollection()
                         .query('where', 'reocurring_id', '=', 
-			       oldBill.attributes.reocurring_id, 'AND', 
-			       'duedate', '=', duedate)
+			       oldBill.attributes.reocurring_id)
                         .fetch()
                         .then(function(reocurringMade) {
-                          if(datesEqual(reocurringMade.attributes.duedate, duedate)) {
-                            res.send(200);
-                          } else {
+                          if(needInstance(reocurringMade, duedate)) {
                             var createdate = new Date();
                             new BillModel({apartment_id: apartmentId,
                                 name: oldBill.attributes.name,
@@ -251,10 +248,14 @@ function updatePayment(req, res) {
                               }
                               res.send(200);
                             }).otherwise(function(error) {
+				console.log(error);
                               res.json(503, {error: 'Database error.'});
                             });
+                          } else {
+                            res.send(200);
 			  }
                         }).otherwise(function(error) {
+			    console.log(error);
                           res.json(503, {error: 'Database error.'});
                         });
                     } else {
@@ -420,15 +421,13 @@ function createDueDate(date) {
 
 // Checks if an array of payment models are all paid
 function allPaymentsPaid(payments) {
-  var allPaid = true;
   for (var i = 0; i < payments.length; i++) {
     var payment = payments.models[i].attributes;
     if (payment.paid !== true) {
-      allPaid = false;
-      break;
+      return false;
     }
   }
-  return allPaid;
+  return true;
 }
 
 // Sets up all routes
@@ -440,13 +439,24 @@ function setup(app) {
   app.delete('/bills/:bill', deleteBill);
 }
 
-// Compares two dates to check for month, day, and year equality
-function datesEqual(a, b) {
-  if(a === undefined || b === undefined || a === null || b === null) {
+// Takes a collection of bills with the same reocurring id
+// and a new date for a recurring bill. Goes through and if the
+// new date is past all of the bills in the collections duedates
+// then return true to generate a new instance of the reocurring bill
+function needInstance(billCollection, newDate) {
+  if(billCollection === undefined || newDate === undefined || 
+     billCollection === null || newDate === null) {
     return false;
   }
-  return a.getDate() === b.getDate() && a.getMonth() === b.getMonth() &&
-         a.getFullYear() === b.getFullYear();
+  for(var i = 0; i < billCollection.length; i++) {
+    var billDate = billCollection.models[i].attributes.duedate;
+    console.log(billDate);
+    console.log(newDate);
+    if(newDate <= billDate) {
+      return false;
+    }
+  }
+  return true;
 }
 
 module.exports.getBills = getBills;
