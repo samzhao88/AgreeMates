@@ -34,7 +34,6 @@
         <div class="hidden-xs" id="user-info">
           <img src="{{profile_pic}}" class="user-image img-circle">
           <p id="user-welcome">Welcome, {{firstname}}!</p>
-          <a href="/logout" class="btn btn-danger btn-xs">Logout</a>
         </div>
 
 
@@ -76,6 +75,10 @@
 
             <li ng-class="{active: isActive('/settings')}">
               <a href='#/settings'>Settings</a>
+            </li>
+
+            <li>
+              <a href="/logout">Log Out</a>
             </li>
 
           </ul>

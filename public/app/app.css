@@ -18,6 +18,10 @@ a:hover {
   margin-top: 20px;
 }
 
+#side-menu {
+  margin-bottom: 10px;
+}
+
 .history-date {
   text-align: left !important;
 }
