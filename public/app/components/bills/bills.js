@@ -211,7 +211,6 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.prepareDelete = function(id, index) {
       $scope.deleteId = id;
       $scope.deleteIdx = index;
-      console.log(id + " " + index)
     }
 
     //reset delete bill id and index
