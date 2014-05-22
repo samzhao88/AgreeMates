@@ -129,7 +129,6 @@ function addMessage(req, res) {
           .save()
       res.json(model);
     }).otherwise(function(error) {
-      console.log(error);
       res.json(503, {error: 'Database error.'});
     });
 }
@@ -170,7 +169,6 @@ function editMessage(req, res) {
         .save()
       res.send(200);
     }).otherwise(function(error) {
-      console.log(error);
       res.json(503, {error: 'Database error.'});
     });
 }
@@ -215,13 +213,13 @@ function deleteMessage(req, res) {
             .destroy()
             .then(function() {
               res.send(200);
-            }).otherwise(function() {
+            }).otherwise(function(error) {
               res.json(503, {error: 'Error deleting message'});
             });
-        }).otherwise(function() {
+        }).otherwise(function(error) {
           res.json(503, {error: 'Error deleting comments'});
         });
-      }).otherwise(function() {
+      }).otherwise(function(error) {
         res.json(503, {error: 'Database error.'});
       });
 }
