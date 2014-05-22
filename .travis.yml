@@ -1,13 +1,25 @@
 language: node_js
 node_js:
-    - '0.10'
+- '0.10'
 before_script:
-    - npm install -g bower
-    - bower install
+- npm install -g bower
+- bower install
 deploy:
-    provider: heroku
-    app:
-        master: agreemates
-        develop: agreemates-develop
-    api_key:
-        secure: CSrNNtZONBWPdYo3Vs0cApPAuM292C7sIOL6PHYWJfNGI5+eFUMbA0tJb+DirP7corXkUhU2tidUWQIbpQFYldeavRSSBPu+QSsbqEnVsWI19Tt0B8RObT8PV693seRrrhHQcI19qwh4mJxWO3VE0ewiR30ipxU6klyYvSnHdZk=
+  provider: heroku
+  app:
+    master: agreemates
+    develop: agreemates-develop
+  api_key:
+    secure: CSrNNtZONBWPdYo3Vs0cApPAuM292C7sIOL6PHYWJfNGI5+eFUMbA0tJb+DirP7corXkUhU2tidUWQIbpQFYldeavRSSBPu+QSsbqEnVsWI19Tt0B8RObT8PV693seRrrhHQcI19qwh4mJxWO3VE0ewiR30ipxU6klyYvSnHdZk=
+env:
+  global:
+  - secure: QBHq12pR7oMuz36LYTo43+BnGp8mXajv784HW10kvmnu3mcyMoFQc7h2CC5r3xVKv2KOa+bwjcGILMWRFjQvzegACoGVeKmRZExzIkVlABItNEzphp/RNX8bxDY3zj2xHPaUZw6XWP9AbIRgqpKDBIAcmP3LelWCOoNc7OpFBUE=
+  - secure: RfpYCZLBAGp4tiVt0S6nOVOd3Hv+U0tYeHKVYpNqe+OFMOYUMhMbAf+7i0oRMny6hLA9x3ZZYTnPI3mRhih0rZEPNs+54KnWsN/o/wWMLZcdeLUfCQAGykQfRVjhdTVUzFnZwnQ7D+263+go3UAuE1jEWO0L5AG8ZSZjq9icf2A=
+  - secure: F80zmFTdUF2dbMXptCVl3ZHDKYys162uirTlunrlK61E4ubqb6fHZCexk7wTCv4enQVEKf/QTcVWxl8X2G++wIW1jTSzj5fKDxETZMEXmOWuZJKdn/k6Re/8imiIVBMP0G974H6Gp7af2zNiban3ArkBJLVI0lzDhDcFvWenxh4=
+  - secure: DNP5NxJuscUpVXYvwLnjq+otM0mtjbs/pWqDjoeuNOiIa9++yt6zcvpjdon7S5RwPQQD08FYmP4/0ZSvFQN4RsyiBv7Bm2QYTQcGrv1K6Hp6bwieKB8tGDZpeN4ld0vexcV0F5fiUzKaIle67EpvHTrZHHsYT5cVtyjWgUyjsyU=
+  - secure: IgetQTCULBhult3PdavfrN/e0WGttfrAq8/QuNTOgsWW+qUIFFnBGW8ikAE/TLXzSNPFW6h6bIFmPw7b0+fYWHUtQGwPFdP2tvd8WkqrkgPyFqr/pI9Uz6UVS/FX3c26Xoe1HhEh2WUfZOepJUZ8/+X5emGUzYopSqyV9GEovE0=
+  - secure: SabhkySjADeU932MjDzuRnzCSVi4BPi/MdVUpun9bczQIjs528XJ4eRnu6nftorCOpXYabCK4bOsGeGIThiRTMzLAhOitcreLtuD8loNymXF9dGwp0Xosk3uc8NMhJc2uPg1RtAhPX7I26ItwoZDATmYtmx2QtOf7qOmGXbZECc=
+  - secure: MZCEzLGnPWFd4IoUknagKAcmFIBn5dd0JsnvLY7z+xy8uKvYmG9bTMsAJ5vUPbIWD8jfJdS+EVCQ6zWjJEUcifvJZxcCmsuVGBcOr/1Yh3hRVKJ0vSnKNs6Lmkn0rqvd9lzpdVgEgInPIdHoqWNGY3CsXX4wmw4PpRhAKAGKgBY=
+  - secure: ANKjhCp5zFuB6sleuIzlnPr3yjq7ulIb6SFwFR9Ub2lM0SJ6jm3yfcOnT3ViHf8Qn13rTiRCnwSfI9uEQWba6woEjloi+UNTe+Q/8/qaW56t5EXNkq4ewDovCVDvWCZLbGiZ31RepGXF8Xe+odjUk5h+FGsWjIum5P/vSProrYo=
+│16:35:01:
+  secure: LcAphq6Mstt85pa/iTlInZ0G8OZ+ZK/nyiesTd8PCuPzoC2adpvOVJIcusy2Ksf8iZJ4gn2PYrGWO0L4b4CM0T24hKkJ26KnI3a0dvZRANWOXPeG+D8RW6mAgTZEZnzE783u6XXby+2ciCSFjqdGgTaAi7F2GrJ/MtFKrlWGc1k=

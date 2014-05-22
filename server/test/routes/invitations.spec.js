@@ -1,26 +1,19 @@
 // jshint camelcase: false
 'use strict';
 
-var app = require('../../app');
-require('../../models/user').model;
-var ApartmentModel = require('../../models/apartment').model;
-var invitations = require('../../routes/invitations');
-var Promise = require('bluebird');
-
+require('../../app');
 var chai = require('chai');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
 var expect = chai.expect;
 chai.use(sinonChai);
 
-//var agent = request.agent(app);
+var invitations = require('../../routes/invitations');
 
 describe('Invitations', function() {
   describe('addInvitations', function() {
     var res;
     var resMock;
-
-    Promise.prototype.otherwise = Promise.prototype.caught;
 
     beforeEach(function() {
       res = { json: function() {} };
@@ -55,125 +48,126 @@ describe('Invitations', function() {
       invitations.addInvitations(req, res);
     });
 
-    it('fetches the apartment', function() {
-      var aptModelStub = sinon.stub(ApartmentModel.prototype, 'fetch').
-        returns(Promise.resolve());
+    it('fetches the apartment if request is correct', function() {
+      var fetchApartmentStub = sinon.stub(invitations, 'fetchApartment');
       var req = {body: {emails: []}, user: {attributes: {apartment_id: 1}}};
 
       invitations.addInvitations(req, res);
 
-      expect(aptModelStub).to.have.been.calledOnce;
-      aptModelStub.restore();
+      expect(fetchApartmentStub).to.have.been.calledWith(1);
+      fetchApartmentStub.restore();
+    });
+
+    it('creates and saves all invitations if apartment is found', function() {
+      var fetchApartmentStub = sinon.stub(invitations, 'fetchApartment',
+        function(apartmentId, thenFunction) {
+          thenFunction({attributes: {name: 'test apartment'}});
+        });
+      var createInvitationStub = sinon.stub(invitations, 'createInvitation',
+        function(apartmentId, email) {
+          return {apartment_id: apartmentId, email: email};
+        });
+      var saveInvitationsStub = sinon.stub(invitations, 'saveInvitations');
+
+      var req = {body: {emails: ['test1@example.com', 'test2@example.com']},
+                 user: {attributes: {apartment_id: 1}}};
+
+      invitations.addInvitations(req, res);
+
+      expect(createInvitationStub).to.have.been.calledTwice;
+      expect(createInvitationStub).to.have.been.
+        calledWith(1, 'test1@example.com');
+      expect(createInvitationStub).to.have.been.
+        calledWith(1, 'test2@example.com');
+      expect(saveInvitationsStub).to.have.been.calledOnce;
+      expect(saveInvitationsStub).to.have.been.
+        calledWith([{apartment_id: 1, email: 'test1@example.com'},
+                    {apartment_id: 1, email: 'test2@example.com'}]);
+
+      fetchApartmentStub.restore();
+      createInvitationStub.restore();
+      saveInvitationsStub.restore();
+    });
+
+    it('returns 503 if failed to save all invitations', function() {
+      var fetchApartmentStub = sinon.stub(invitations, 'fetchApartment',
+        function(apartmentId, thenFunction) {
+          thenFunction({attributes: {name: 'test apartment'}});
+        });
+      var createInvitationStub = sinon.stub(invitations, 'createInvitation',
+        function(apartmentId, email) {
+          return {apartment_id: apartmentId, email: email};
+        });
+      var saveInvitationsStub = sinon.stub(invitations, 'saveInvitations',
+        function(invitations, responseFunction) {
+          var resp = []; // no saved invitations
+          responseFunction(resp);
+        });
+
+      var req = {body: {emails: ['test1@example.com', 'test2@example.com']},
+                 user: {attributes: {apartment_id: 1}}};
+
+      resMock.expects('json').once().
+        withArgs(503, {error: 'Error creating invitations'});
+
+      invitations.addInvitations(req, res);
+
+      fetchApartmentStub.restore();
+      createInvitationStub.restore();
+      saveInvitationsStub.restore();
+    });
+
+    it('sends emails for each saved invitation when all save', function() {
+      var fetchApartmentStub = sinon.stub(invitations, 'fetchApartment',
+        function(apartmentId, thenFunction) {
+          thenFunction({attributes: {name: 'test apartment'}});
+        });
+      var createInvitationStub = sinon.stub(invitations, 'createInvitation',
+        function(apartmentId, email) {
+          return {apartment_id: apartmentId, email: email};
+        });
+      var saveInvitationsStub = sinon.stub(invitations, 'saveInvitations',
+        function(invitations, responseFunction) {
+          var resp = [{id: 1, email: 'test1@example.com'},
+            {id: 2, email: 'test2@example.com'}];
+          responseFunction(resp);
+        });
+      var sendInvitationStub = sinon.stub(invitations, 'sendInvitation');
+
+      var req = {body: {emails: ['test1@example.com', 'test2@example.com']},
+                 user: {attributes: {apartment_id: 1}}};
+
+      resMock.expects('json').once().
+        withArgs([{email: 'test1@example.com', id: 1},
+                 {email: 'test2@example.com', id: 2}]);
+
+      invitations.addInvitations(req, res);
+
+      expect(sendInvitationStub).to.have.been.
+        calledWith(1, 'test1@example.com', 'test apartment');
+      expect(sendInvitationStub).to.have.been.
+        calledWith(2, 'test2@example.com', 'test apartment');
+
+      fetchApartmentStub.restore();
+      createInvitationStub.restore();
+      saveInvitationsStub.restore();
+      sendInvitationStub.restore();
     });
 
     it('returns 404 if failed to fetch apartment', function() {
-      var aptModelStub = sinon.stub(ApartmentModel.prototype, 'fetch').
-        returns(Promise.reject());
+      var fetchApartmentStub = sinon.stub(invitations, 'fetchApartment',
+        function(apartmentId, thenFun, otherwiseFun) {
+        otherwiseFun();
+      });
       var req = {body: {emails: []}, user: {attributes: {apartment_id: 1}}};
 
       resMock.expects('json').once().
         withArgs(404, {error: 'error getting apartment'});
-
       invitations.addInvitations(req, res);
 
-      expect(aptModelStub).to.have.been.calledOnce;
-      aptModelStub.restore();
+      expect(fetchApartmentStub).to.have.been.calledWith(1);
+      fetchApartmentStub.restore();
     });
   });
-
 });
 
-/*
-describe('Invitations API', function() {
-
-  describe('while not logged in', function() {
-    it('POST /invitations returns 400', function(done) {
-      agent
-        .post('/invitations')
-        .set('Content-Type', 'application/json')
-        .send({emails: []})
-        .expect(400, done);
-    });
-  });
-
-  describe('while logged in', function() {
-    this.timeout(5000);
-
-    var user_id;
-    var apt_id;
-
-    app.post('/testsignin', function(req, res) {
-      req.session.passport.user = user_id;
-      res.send(200);
-    });
-
-
-    before(function(done) {
-
-      new ApartmentModel({name: 'test', address: 'test'})
-        .save()
-        .then(function(apartment) {
-          apt_id = apartment.id;
-          new UserModel({apartment_id: apartment.id,
-                        first_name: 'test',
-                        last_name: 'user',
-                        email: 'some.email@example.com'})
-            .save()
-            .then(function(user) {
-              user_id = user.id;
-              done();
-            });
-        });
-    });
-
-    after(function(done) {
-      new UserModel({id: user_id})
-        .destroy()
-        .then(function() {
-          new ApartmentModel({id: apt_id})
-            .destroy()
-            .then(function() {
-              done();
-            });
-        });
-    });
-
-    beforeEach(function(done) {
-      agent.post('/testsignin').end(done);
-    });
-
-    describe('POST /invitations', function() {
-
-      it('returns 200 with proper data', function(done) {
-        agent
-          .post('/invitations')
-          .set('Content-Type', 'application/json')
-          .send({emails: []})
-          .expect(200, done);
-      });
-
-      it('returns 400 if no body', function(done) {
-        agent
-          .post('/invitations')
-          .set('Content-Type', 'application/json')
-          .expect(400, done);
-      });
-    });
-
-    describe('GET /invitations/:invite', function() {
-      it('renders invitation accept view if the invitation exists');
-      it('returns 404 if the invitation does not exist');
-      it('returns 404 if the apartment does not exist');
-    });
-
-    describe('DELETE /invitations/:invite', function() {
-      it('returns 200 if the invitation was destroyed properly');
-      it('returns 503 if invitation failed to be destroyed');
-      it('returns 503 if the user was not added to the apartment');
-      it('returns 404 if the invitation does not exist');
-    });
-
-  });
-
-});
-*/
