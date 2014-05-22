@@ -35,9 +35,9 @@ angular.module('main.settings').controller('SettingsCtrl',
 
       var emails = [];
       for (var i = 0; i < $scope.emails.length; i++) {
-        var email = $scope.emails[i].email.trim();
-        if (email !== undefined && email !== '') {
-          emails.push(email);
+        var email = $scope.emails[i].email;
+        if (email !== undefined && email.trim() !== '') {
+          emails.push(email.trim());
         }
       }
       if (emails.length === 0) {
