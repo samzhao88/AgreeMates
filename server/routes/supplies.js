@@ -1,159 +1,192 @@
 // Supplies routes
+// jshint camelcase: false
 
 'use strict';
 
 var SupplyModel = require('../models/supply').model;
 var SupplyCollection = require('../models/supply').collection;
+var HistoryModel = require('../models/history').model;
 
-var supplies = function(app) {
+// Gets all supplies for the user's apartment
+function getSupplies(req, res) {
+  if (req.user === undefined) {
+    res.json(401, {error: 'Unauthorized user.'});
+    return;
+  }
 
-  // Get all supplies for an apartment
-  app.get('/supplies', function(req, res) {
-    /* jshint camelcase: false */
+  var apartmentId = req.user.attributes.apartment_id;
 
-    if (req.user === undefined) {
-      res.json(401, {error: 'Unauthorized user.'});
-      return;
-    }
+  new SupplyCollection()
+    .query(function(qb) {
+      qb.where('apartment_id', '=', apartmentId);
+      qb.orderBy('id', 'desc');
+    })
+    .fetch()
+    .then(function(model) {
+      var supplies = [];
 
-    var apartmentId = req.user.attributes.apartment_id;
+      for (var i = 0; i < model.length; i++) {
+        var supply = model.models[i].attributes;
+        supplies.push({
+          id: supply.id,
+          name: supply.name,
+          status: supply.status
+        });
+      }
 
-    new SupplyCollection()
-      .query('where', 'apartment_id', '=', apartmentId)
-      .fetch()
-      .then(function(model) {
-        var supplies = [];
+      res.json({supplies: supplies});
+    }).otherwise(function() {
+      res.json(503, {error: 'Database error.'});
+    });
+}
 
-        for (var i = 0; i < model.length; i++) {
-          var supply = model.models[i].attributes;
-          supplies.push({
-            id: supply.id,
-            name: supply.name,
-            status: supply.status
-          });
-        }
+// Adds a supply to the user's apartment
+function addSupply(req, res) {
+  if (req.user === undefined) {
+    res.json(401, {error: 'Unauthorized user.'});
+    return;
+  }
 
-        res.json({supplies: supplies});
-      }).otherwise(function() {
-        res.json(503, {error: 'Database error.'});
-      });
-  });
+  var apartmentId = req.user.attributes.apartment_id;
+  var name = req.body.name;
+  var status = req.body.status;
 
-  // Create a new supply
-  app.post('/supplies', function(req, res) {
-    /* jshint camelcase: false */
+  if (!isValidName(name)) {
+    res.json(400, {error: 'Invalid supply name.'});
+    return;
+  } else if (!isValidStatus(status)) {
+    res.json(400, {error: 'Invalid supply status.'});
+    return;
+  }
 
-    if (req.user === undefined) {
-      res.json(401, {error: 'Unauthorized user.'});
-      return;
-    }
+  new SupplyModel({apartment_id: apartmentId,
+    name: name.trim(), status: status})
+    .save()
+    .then(function(model) {
+      var supply = model.attributes;
 
-    var apartmentId = req.user.attributes.apartment_id;
-    var name = req.body.name;
-    var status = req.body.status;
+      var historyString = req.user.attributes.first_name + ' ' +
+        req.user.attributes.last_name + ' added Supply "' +
+        name.trim() + '"';
 
-    if (!isValidName(name)) {
-      res.json(400, {error: 'Invalid supply name.'});
-      return;
-    } else if (!isValidStatus(status)) {
-      res.json(400, {error: 'Invalid supply status.'});
-      return;
-    }
+      new HistoryModel({apartment_id: apartmentId,
+        history_string: historyString, date: new Date()})
+        .save()
+        .then(function() {})
+        .otherwise(function() {});
 
-    new SupplyModel({apartment_id: apartmentId,
-      name: name.trim(), status: status})
-      .save()
-      .then(function(model) {
-        var supply = model.attributes;
-        res.json({id: supply.id, name: supply.name, status: supply.status});
-      }).otherwise(function() {
-        res.json(503, {error: 'Database error.'});
-      });
-  });
+      res.json({id: supply.id, name: supply.name, status: supply.status});
+    }).otherwise(function(error) {
+      console.log(error);
+      res.json(503, {error: 'Database error.'});
+    });
+}
 
-  // Update a single supply
-  app.put('/supplies/:supply', function(req, res) {
-    /* jshint camelcase: false */
+// Updates a supply
+function updateSupply(req, res) {
+  if (req.user === undefined) {
+    res.json(401, {error: 'Unauthorized user.'});
+    return;
+  }
 
-    if (req.user === undefined) {
-      res.json(401, {error: 'Unauthorized user.'});
-      return;
-    }
+  var apartmentId = req.user.attributes.apartment_id;
+  var supplyId = req.params.supply;
+  var name = req.body.name;
+  var status = req.body.status;
 
-    var apartmentId = req.user.attributes.apartment_id;
-    var supplyId = req.params.supply;
-    var name = req.body.name;
-    var status = req.body.status;
+  if (!isValidId(supplyId)) {
+    res.json(400, {error: 'Invalid supply ID.'});
+    return;
+  } else if (!isValidName(name)) {
+    res.json(400, {error: 'Invalid supply name.'});
+    return;
+  } else if (!isValidStatus(status)) {
+    res.json(400, {error: 'Invalid supply status.'});
+    return;
+  }
 
-    if (!isValidId(supplyId)) {
+  new SupplyModel({id: supplyId, apartment_id: apartmentId})
+    .save({name: name.trim(), status: status}, {patch: true})
+    .then(function() {
+      res.send(200);
+    })
+    .otherwise(function() {
       res.json(400, {error: 'Invalid supply ID.'});
-      return;
-    } else if (!isValidName(name)) {
-      res.json(400, {error: 'Invalid supply name'});
-      return;
-    } else if (!isValidStatus) {
-      res.json(400, {error: 'Invalid supply status.'});
-      return;
-    }
+    });
+}
 
-    new SupplyModel({id: supplyId, apartment_id: apartmentId})
-      .save({name: name.trim(), status: status}, {patch: true})
-      .then(function() {
-        res.send(200);
-      })
-      .otherwise(function() {
-        res.json(400, {error: 'Invalid supply ID.'});
-      });
-  });
-
-  // Delete a single supply
-  app.delete('/supplies/:supply', function(req, res) {
-    /* jshint camelcase: false */
-
-    if (req.user === undefined) {
-      res.json(401, {error: 'Unauthorized user.'});
-      return;
-    }
-
-    var apartmentId = req.user.attributes.apartment_id;
-    var supplyId = req.params.supply;
-
-    if (!isValidId(supplyId)) {
-      res.json(400, {error: 'Invalid supply ID.'});
-      return;
-    }
-
-    new SupplyModel({id: supplyId, apartment_id: apartmentId})
-      .destroy()
-      .then(function() {
-        res.send(200);
-      })
-      .otherwise(function() {
-        res.json(503, {error: 'Database error.'});
-      });
-  });
-
-  // Checks if a supply name is valid
-  function isValidName(name) {
-    return name !== undefined && name !== null && name !== '';
+// Deletes a supply
+function deleteSupply(req, res) {
+  if (req.user === undefined) {
+    res.json(401, {error: 'Unauthorized user.'});
+    return;
   }
 
-  // Checks if a supply ID is valid
-  function isValidId(id) {
-    return isInt(id) && id > 0;
+  var apartmentId = req.user.attributes.apartment_id;
+  var supplyId = req.params.supply;
+
+  if (!isValidId(supplyId)) {
+    res.json(400, {error: 'Invalid supply ID.'});
+    return;
   }
 
-  // Checks if a supply status is valid
-  function isValidStatus(status) {
-    return isInt(status) && [0, 1, 2].indexOf(parseInt(status)) !== -1;
-  }
+  new SupplyModel({id: supplyId})
+    .fetch()
+    .then(function(model) {
+      var historyString = req.user.attributes.first_name + ' ' +
+        req.user.attributes.last_name + ' deleted Supply "' +
+        model.attributes.name + '"';
 
-  // Checks if a value is an integer
-  function isInt(value) {
-    /* jshint eqeqeq: false */
-    return !isNaN(value) && parseInt(value) == value;
-  }
+      new SupplyModel({id: supplyId, apartment_id: apartmentId})
+        .destroy()
+        .then(function() {
+          new HistoryModel({apartment_id: apartmentId,
+            history_string: historyString, date: new Date()})
+            .save()
+            .then(function() {})
+            .otherwise(function() {});
 
-};
+          res.send(200);
+        })
+        .otherwise(function() {
+          res.json(503, {error: 'Database error.'});
+        });
+    })
+    .otherwise(function() {
+      res.json(503, {error: 'Database error.'});
+    });
+}
 
-module.exports = supplies;
+// Checks if a supply name is valid
+function isValidName(name) {
+  return name !== undefined && name !== null && name !== '';
+}
+
+// Checks if a supply ID is valid
+function isValidId(id) {
+  return isInt(id) && id > 0;
+}
+
+// Checks if a supply status is valid
+function isValidStatus(status) {
+  return isInt(status) && [0, 1, 2].indexOf(parseInt(status)) !== -1;
+}
+
+// Checks if a value is an integer
+function isInt(value) {
+  return !isNaN(value) && parseInt(value) == value;
+}
+
+// Sets up all routes
+function setup(app) {
+  app.get('/supplies', getSupplies);
+  app.post('/supplies', addSupply);
+  app.put('/supplies/:supply', updateSupply);
+  app.delete('/supplies/:supply', deleteSupply);
+}
+
+module.exports.getSupplies = getSupplies;
+module.exports.addSupply = addSupply;
+module.exports.updateSupply = updateSupply;
+module.exports.deleteSupply = deleteSupply;
+module.exports.setup = setup;

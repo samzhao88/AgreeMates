@@ -90,12 +90,11 @@ angular.module('main.supplies').controller('SuppliesCtrl',
     };
 
     $scope.emptySupplyList = function(){
-      return $scope.supplies.length == 0 && $scope.hideAddBox ? true : false; 
+      return $scope.supplies.length == 0 && $scope.hideAddBox ? true : false;
     };
 
     //show and hide an error msg
     function showErr(msg){
-      console.log(data);
       $scope.errormsg = msg;
       $scope.error = true;
       $timeout(function(){$scope.error=false;},alertLength);

@@ -21,6 +21,16 @@
   document.body.scrollLeft = scroll.left;
 }());
 
+// Closes menu when clicking in mobile viewport
+$(function() {
+  $('.sidebar-collapse a').click(function() {
+    var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+    if (width < 768) {
+      $(".sidebar-collapse").collapse('hide');
+    }
+  });
+});
+
 // Define the "main" module and inject all other modules as dependencies
 var app = angular.module('main',
   [
@@ -32,6 +42,7 @@ var app = angular.module('main',
     'main.profile',
     'main.nav',
     'main.apartment',
+    'main.history',
     'main.invitations',
     'LocalStorageModule',
     'ngRoute'
@@ -70,6 +81,11 @@ app.config(function($routeProvider) {
     templateUrl: 'components/profile/profile.html',
     module: 'main.profile',
     controller: 'ProfileCtrl'
+  }).
+    when('/history', {
+    templateUrl: 'components/history/history.html',
+    module: 'main.history',
+    controller: 'HistoryCtrl'
   }).
     when('/invitations/:invite', {
     module: 'main.invitations',
