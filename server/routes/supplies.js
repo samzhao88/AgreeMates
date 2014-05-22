@@ -19,7 +19,7 @@ function getSupplies(req, res) {
   new SupplyCollection()
     .query(function(qb) {
       qb.where('apartment_id', '=', apartmentId);
-      qb.orderBy('id', 'desc');
+      qb.orderBy('status', 'asc');
     })
     .fetch()
     .then(function(model) {
