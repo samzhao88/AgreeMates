@@ -200,7 +200,7 @@ function getChores(req,res){
 		
   } 
 
-  // Marks a chore as  completed and if it is reoccuring creates a new chore
+  // Marks a chore as  completed and if it is reocurring creates a new chore
   // Need to check that chore is not already complete
   function completeChore(req, res){
 	var choreId = req.params.chore;
@@ -213,79 +213,84 @@ function getChores(req,res){
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
 	.fetch()
 	.then(function(chore){
-		// If the chore is not reoccuring mark as completed and send 200
-		if(chore.interval === 0){
+		// If the chore is not reocurring mark as completed and send 200
+		if(!chore.get('completed')){
 			new ChoreModel({id: choreId})
-			.save({completed: true}, {patch: true})
-			.then(function(){
-				var historyString = req.user.attributes.first_name + ' ' +
-								req.user.attributes.last_name+ ' edited chore ' + chore.get('name');
+					.save({completed: true}, {patch: true})
+					.then(function(){
+							if(chore.interval === 0){ // Only need to log history of who completed chore
+									var historyString = req.user.attributes.first_name + ' ' +
+													req.user.attributes.last_name+ ' edited chore ' + chore.get('name');
+													
+									new HistoryModel({apartment_id: chore.get('apartment_id'),
+													history_string: historyString,
+													date: new Date()})
+													.save()
+													.then(function(){
+														res.send(200, null);
+													})
+													.otherwise(function(){
+													console.log('hisory not recorded');
+													});
 								
-				new HistoryModel({apartment_id: chore.get('apartment_id'),
-								history_string: historyString,
-								date: new Date()})
-								.save()
-								.then(function(){})
-								.otherwise(function(){
-								console.log('hisory not recorded');
+							}else{ // Need to create the next chore in the reocurring cycle
+							var newChore = {apartment_id: chore.get('apartment_id'),
+										name: chore.get('name'),
+										duedate: chore.get('duedate'),
+										createdate: chore.get('createdate'),
+										user_id: user,
+										completed: false,
+										interval: chore.get('interval'),
+										rotating: chore.get('rotating'),
+										number_in_rotation: chore.get('number_in_rotation')};
+								// If the chore is reocurring use the same method we have down below
+								// with the cron job. In which we create a new chore based upon the chore model info
+								//If we have a reocurring_id use that otherwise use the id of our parent.
+								newChore.reocurring_id = newChore.reocurring_id || chore.id;
+								incrementDate(newChore.duedate, newChore.interval); 
+								Bookshelf.DB.knex('users_chores')
+								.where('chore_id', '=', chore.get('id'))
+								.then(function(users_chores){
+									var orderIndex = [];
+									var users = [];
+									for(var j = 0; j < users_chores.length; j++){
+										//Rotating algorithm
+										orderIndex[j] = (users_chores[j].order_index - chore.get('number_in_rotation'));
+										if(orderIndex[j] < 0){
+											orderIndex[j] = orderIndex[j]+users_chores.length;
+										}
+										users[j] = users_chores[j].user_id;
+									}
+									ChoreDao.createChore(newChore, users, orderIndex, 
+											function(choreModel, userResp){
+												var response = {chore: choreModel.attributes, users: userResp};
+												if(userResp.length !== users.length){
+													res.json(503,{error: 'DataBase error'});
+												}else{
+													new UserModel({id: choreModel.get('user_id')})
+														.fetch()
+														.then(function(userModel){ 
+													
+															var historyString = userModel.get('first_name') + ' ' +
+																userModel.get('last_name')+ ' completed chore ' + choreModel.get('name');
+																
+															new HistoryModel({apartment_id: choreModel.get('apartment_id'),
+																				history_string: historyString,
+																				date: new Date()})
+																				.save()
+																				.then(function(){})
+																				.otherwise(function(error){console.log(error)});
+														});
+													res.send(200, response);
+												}
+											}, function(){
+												console.error('Chore Cron Job: Error creating chore');
+											});
 								});
+							}
 			});
 		}else{
-		
-		var newChore = {apartment_id: chore.get('apartment_id'),
-					name: chore.get('name'),
-					duedate: chore.get('duedate'),
-					createdate: chore.get('createdate'),
-					user_id: user,
-					completed: false,
-					interval: chore.get('interval'),
-					rotating: chore.get('rotating'),
-					number_in_rotation: chore.get('number_in_rotation')};
-		// If the chore is reoccuring use the same method we have down below
-		// with the cron job. In which we create a new chore based upon the chore model info
-		//If we have a reocurring_id use that otherwise use the id of our parent.
-			newChore.reocurring_id = newChore.reocurring_id || chore.id;
-			incrementDate(newChore.duedate, newChore.interval); 
-			Bookshelf.DB.knex('users_chores')
-			.where('chore_id', '=', chore.get('id'))
-			.then(function(users_chores){
-				var orderIndex = [];
-				var users = [];
-				for(var j = 0; j < users_chores.length; j++){
-					//Rotating algorithm
-					orderIndex[j] = (users_chores[j].order_index - chore.get('number_in_rotation'));
-					if(orderIndex[j] < 0){
-						orderIndex[j] = orderIndex[j]+users_chores.length;
-					}
-					users[j] = users_chores[j].user_id;
-				}
-				ChoreDao.createChore(newChore, users, orderIndex, 
-						function(choreModel, userResp){
-							var response = {chore: choreModel.attributes, users: userResp};
-							if(userResp.length !== users.length){
-								res.json(503,{error: 'DataBase error'});
-							}else{
-								new UserModel({id: choreModel.get('user_id')})
-									.fetch()
-									.then(function(userModel){ 
-								
-										var historyString = userModel.get('first_name') + ' ' +
-											userModel.get('last_name')+ ' completed chore ' + choreModel.get('name');
-											
-										new HistoryModel({apartment_id: choreModel.get('apartment_id'),
-															history_string: historyString,
-															date: new Date()})
-															.save()
-															.then(function(){})
-															.otherwise(function(error){console.log(error)});
-									});
-								res.send(200, response);
-							}
-						}, function(){
-							console.error('Chore Cron Job: Error creating chore');
-						});
-			});
-		
+			res.json(400, {error: 'Chore is already complete'});
 		}
 
 	}).otherwise(function(){
@@ -299,28 +304,49 @@ function editChore(req,res){
 	var apartmentId = req.user.attributes.apartment_id;
 	var choreId = req.params.chore;
 	var name = req.body.name;
-	var dueDate = req.body.duedate;
+	var duedate = req.body.duedate;
 	var roommates = req.body.roommates;
 	var interval = req.body.interval;
-	
+	var rotating = req.body.rotating;
+	var number_in_rotation = req.body.number_in_rotation;
 
 	
-	if(!isValidDate(dueDate)){
-		res.json(400, {error: 'Invalid due date.'});
-		return;
-	}
+	//Check name has valid format
 	if(!isValidName(name)){
 		res.json(400, {error: 'Invalid chore name.'});
 		return;
 	}
 	
+	// Check valid interval
 	if(!isValidInterval(interval)){
-			res.json(400, {error: 'Invalid interval.'});
-			return;
+		res.json(400, {error: 'Invalid interval.'});
+		return;
 	}
 		
+	// Check duedate is valid valid
+	if(!isValidDate(duedate)){
+		res.json(400, {error: 'Invalid due date'});
+		return;
+	}
+		
+		// Check valid roommates ie all in the same apartment
 	if(!isValidRoommates(roommates)){
-		res.json(400,{error: 'Invalid users empty'});
+		res.json(400, {error: 'Invalid users assigned to chore'});
+		return;
+	}
+	if(!isInt(number_in_rotation)){
+		res.json(400, {error: 'Invalid number in chore rotation'});
+		return;
+	}
+		
+	if(rotating && number_in_rotation <= 0){
+		res.json(400, {error: 'Invalid number assigned per week'});
+		return;
+	}
+		
+	// Check valid number_in_rotation
+	if(number_in_rotation > roommates.length){
+		res.json(400, {error: 'Invalid number in chore rotation'});
 		return;
 	}
 	
@@ -331,7 +357,7 @@ function editChore(req,res){
 	//Check that if its aa rotating chore 
 
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
-	.save({name: name.trim(), duedate: dueDate, interval: interval},{patch: true})
+	.save({name: name.trim(), duedate: duedate, interval: interval},{patch: true})
 	.then(function(choreModel) {
 	// Go through users_chores assocaited with chore
 		new UserChoreModel().query('where', 'chore_id', '=', choreId)
@@ -429,7 +455,7 @@ function deleteChore(req,res){
   
   				   //Sec, min, hours, day of month, months, day of week
 				   // Set the cron job to 11:59 PM
-var job = new CronJob('0 59 23 * * *', function(){
+var choreUpdateor = new CronJob('0 59 23 * * *', function(){
 	var startDate = new Date();
 	startDate.setHours(0);
 	startDate.setMinutes(0);
@@ -508,7 +534,7 @@ var job = new CronJob('0 59 23 * * *', function(){
 	  
 	  //Checks that roommates has one user id
 	  function isValidRoommates(roommates){
-		return roommates !== undefined&&roommates.length > 0;
+		return roommates !== undefined && roommates.length > 0;
 	  }
 	  
 	  //Checks that interval is a valid integer

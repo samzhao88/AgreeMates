@@ -20,7 +20,7 @@ exports.createChore =	function(chore, users, orderIndex, success, error){
 					interval: chore.interval,
 					rotating: chore.rotating,
 					number_in_rotation: chore.number_in_rotation,
-					reocurring_id: chore.reocurring_id || 0
+					reocurring_id: chore.reocurring_id||0
 					})
 					.save()
 					.then(function(choreModel){
