@@ -131,19 +131,19 @@
  			 <th class="text-center">Due</th>
 			  <th class="text-center">Delete</th>
  		 </tr>
-      <tr data-ng-repeat ="chore in chores" >
-    		<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
+      <tr data-ng-repeat="chore in chores" >
+    		<td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  			 	<span class="name">{{chore.name}}</span>
 				</td>
 				<td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
-					<div ng-repeat="responsible in chore.users">
-          	<ul ng-class="{highlight: isResponsible(chore, responsible)}" ng-model="currResponsible">{{responsible.first_name}} </ul>
- 				 </div>
+					<ul class="list-unstyled" id="responsible-list">
+						<li ng-repeat="responsible in chore.users" ng-class="{highlight: isResponsible(chore, responsible)}" ng-model="currResponsible">{{responsible.first_name}}</li>
+					</ul>
 				</td>
- 			 <td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
+ 			 <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  			 	<span class="recurring">{{convertfrequency(chore.interval)}}</span>
  			 </td>
- 			 <td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
+ 			 <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  				 <span class="due date">{{format(chore.duedate)}}</span>
  			 </td>
  			 <td width>

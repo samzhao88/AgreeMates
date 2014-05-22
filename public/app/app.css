@@ -195,6 +195,10 @@ html, body {
   margin-top: -20px;
 }
 
+#responsible-list {
+  margin-bottom: 0 !important;
+}
+
 .supply-form-buttons {
   float: left;
   margin-left: 10px;
