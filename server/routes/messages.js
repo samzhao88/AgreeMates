@@ -5,6 +5,7 @@
 var MessageModel = require('../models/message').model;
 var CommentModel = require('../models/comment').model;
 var UserModel = require('../models/user').model;
+var HistoryModel = require('../models/history').model;
 var Bookshelf = require('bookshelf');
 
 // Gets all messages
@@ -120,8 +121,15 @@ function addMessage(req, res) {
     subject: subject, body: text, date: date})
     .save()
     .then(function (model) {
+      var historyString = req.user.attributes.first_name + ' ' + 
+        req.user.attributes.last_name + ' added a message "' + 
+        subject.trim() + '" to the message board';
+        new HistoryModel({apartment_id: apartmentId,
+          history_string: historyString, date: new Date()})
+          .save()
       res.json(model);
-    }).otherwise(function() {
+    }).otherwise(function(error) {
+      console.log(error);
       res.json(503, {error: 'Database error.'});
     });
 }
@@ -154,8 +162,15 @@ function editMessage(req, res) {
   new MessageModel({id: messageId, apartment_id: apartmentId, user_id: userId})
     .save({subject: subject, body: text})
     .then(function() {
+      var historyString = req.user.attributes.first_name + ' ' +
+        req.user.attributes.last_name + ' edited their message "' +
+        subject.trim() + '"';
+      new HistoryModel({apartment_id: apartmentId,
+        history_string: historyString, date: new Date()})
+        .save()
       res.send(200);
-    }).otherwise(function() {
+    }).otherwise(function(error) {
+      console.log(error);
       res.json(503, {error: 'Database error.'});
     });
 }
@@ -176,26 +191,39 @@ function deleteMessage(req, res) {
     return;
   }
 
-  // Destroy all of the comments on the message and then
-  // destroy the message itself. The user must be the one
-  // who created the message.
-  new CommentModel()
-    .query('where', 'message_id', '=', messageId, 'AND',
-           'user_id', '=', userId)
-    .destroy()
-    .then(function() {
-      new MessageModel()
-        .query('where', 'id', '=', messageId, 'AND',
-               'apartment_id', '=', apartmentId)
+
+  new MessageModel({id: messageId})
+    .fetch()
+    .then(function(model) {
+      var historyString = req.user.attributes.first_name + ' ' +
+        req.user.attributes.last_name + ' deleted the message "' +
+        model.attributes.subject.trim() + '"';
+      new HistoryModel({apartment_id: apartmentId,
+        history_string: historyString, date: new Date()})
+        .save()
+      // Destroy all of the comments on the message and then
+      // destroy the message itself. The user must be the one
+      // who created the message.
+      new CommentModel()
+        .query('where', 'message_id', '=', messageId, 'AND',
+               'user_id', '=', userId)
         .destroy()
         .then(function() {
-          res.send(200);
+          new MessageModel()
+            .query('where', 'id', '=', messageId, 'AND',
+                   'apartment_id', '=', apartmentId)
+            .destroy()
+            .then(function() {
+              res.send(200);
+            }).otherwise(function() {
+              res.json(503, {error: 'Error deleting message'});
+            });
         }).otherwise(function() {
-          res.json(503, {error: 'Error deleting message'});
+          res.json(503, {error: 'Error deleting comments'});
         });
-    }).otherwise(function() {
-      res.json(503, {error: 'Error deleting comments'});
-    });
+      }).otherwise(function() {
+        res.json(503, {error: 'Database error.'});
+      });
 }
 
 // Checks if a bill ID is valid

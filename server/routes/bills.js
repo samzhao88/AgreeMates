@@ -387,24 +387,36 @@ function deleteBill(req, res) {
     return;
   }
 
-  // Destroy all the payments for a bill and then destroy
-  // the bill.
-  new PaymentModel()
-    .query('where', 'bill_id', '=', billId)
-    .destroy()
-    .then(function() {
-      new BillModel()
-        .query('where', 'id', '=',  billId, 'AND',
-               'apartment_id', '=', apartmentId)
+  new BillModel({id: billId})
+    .fetch()
+    .then(function (model) {
+      var historyString = req.user.attributes.first_name + ' ' +
+        req.user.attributes.last_name + ' deleted the bill "' +
+        model.attributes.name.trim() + '"';
+      new HistoryModel({apartment_id: apartmentId,
+        history_string: historyString, date: new Date()})
+        .save()
+      // Destroy all the payments for a bill and then destroy
+      // the bill.
+      new PaymentModel()
+        .query('where', 'bill_id', '=', billId)
         .destroy()
         .then(function() {
-          res.send(200);
-        }).otherwise(function() {
-          res.json(503, {error: 'Database error.'})
+          new BillModel()
+            .query('where', 'id', '=',  billId, 'AND',
+                   'apartment_id', '=', apartmentId)
+            .destroy()
+            .then(function() {
+              res.send(200);
+            }).otherwise(function() {
+              res.json(503, {error: 'Database error.'})
+            });
+        }).otherwise(function(error) {
+          res.json(503, {error: 'Database error.'});
         });
-    }).otherwise(function(error) {
-      res.json(503, {error: 'Database error.'});
-    });
+      }).otherwise(function() {
+        res.json(503, {error: 'Database error.'});
+      });
 }
 
 // Checks if a bill ID is valid
