@@ -151,6 +151,7 @@ angular.module('main.bills').controller('BillsCtrl',
     $http.get('/apartment/users').
     success(function(data) {
       $scope.roommates = data.users;
+      $scope.responsible = angular.copy($scope.roommates);
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -161,11 +162,12 @@ angular.module('main.bills').controller('BillsCtrl',
     	var bill = angular.copy($scope.bill);
       //process each roommate's payment amount
       bill.roommates = [];
-      for (var i = 0; i < $scope.roommates.length; i++) {
-        if ($scope.selectedRoommates.indexOf($scope.roommates[i].id) > -1) {
-          bill.roommates.push({"id": $scope.roommates[i].id, "amount": $scope.roommates[i].amount});
+      for (var i = 0; i < $scope.responsible.length; i++) {
+        if ($scope.selectedRoommates.indexOf($scope.responsible[i].id) > -1) {
+          bill.roommates.push({"id": $scope.responsible[i].id, "amount": $scope.responsible[i].amount});
         };
       };
+
     	$http.post('/bills/', bill).
 	      success(function(data) {
           //simulate the new bill into existing bills;
@@ -184,6 +186,7 @@ angular.module('main.bills').controller('BillsCtrl',
           };
 	        $scope.unresolvedBills.push(newBill);
           $scope.updateBalanceModel();
+          $scope.updateIdx = -1;
           showSucc("Bill "+bill.name+" successfully added!");
 	       	$scope.reset();
 	      }).
@@ -208,6 +211,7 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.prepareDelete = function(id, index) {
       $scope.deleteId = id;
       $scope.deleteIdx = index;
+      console.log(id + " " + index)
     }
 
     //reset delete bill id and index
@@ -220,9 +224,10 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.deleteBill = function() {
     	$http.delete('/bills/'+$scope.deleteId).
 	      success(function(data) {
-	        $scope.bills.splice($scope.deleteIdx, 1);
-          $scope.updateBalanceModel();
           showSucc("Bill "+ $scope.bills[$scope.deleteIdx].name+" successfully deleted!");
+	        $scope.bills.splice($scope.deleteIdx, 1);
+          $scope.updateBalanceModel();    
+          $scope.updateIdx = -1;   
 	      }).
         error(function(data, status, headers, config){
           console.log(data);
@@ -331,6 +336,7 @@ angular.module('main.bills').controller('BillsCtrl',
     //set the oldBill to the bill that is selected to update
     $scope.prepareUpdate = function(id, index) {
       $scope.reset();
+      $scope.prepareDelete(id, index);
       $scope.updateIdx = index;
       //find the bill that is selected
       for (var i = 0; i < $scope.bills.length; i++) {
@@ -374,10 +380,11 @@ angular.module('main.bills').controller('BillsCtrl',
 
     $scope.isOwner = function(billId) {
       //when bill id is not defined
-      if ($scope.updateIdx === undefined || $scope.updateIdx == -1) {
-        return false;
-      } else if (billId === undefined) {
-        billId = $scope.bills[$scope.updateIdx].id;
+      if (billId === undefined) {
+        if ($scope.updateIdx === undefined || $scope.updateIdx == -1) {
+          return false;
+        } 
+        billId = $scope.bills[$scope.updateIdx].id;               
       }
 
       for (var i = 0; i < $scope.bills.length; i++) {
@@ -412,6 +419,7 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.oldBill = {};
       $scope.updateIdx = -1;
       $scope.updatedAmount = [];
+      $scope.responsible = angular.copy($scope.roommates);
     };
 
     //return whether there are any unresolved bills
