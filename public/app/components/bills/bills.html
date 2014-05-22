@@ -20,56 +20,65 @@
 	        <h4 class="modal-title" id="myModalLabel">Add Bill</h4>
 	      </div>
 
-	      <div class="modal-body">
-			    <form class="form-horizontal" role="form">
-			      <div class="form-group">
-			        <label class="col-sm-2 control-label">Name</label>
-			        <div class="col-sm-6">
-			          <input type="text" class="form-control" ng-model="bill.name" placeholder="Rent" required>
-			        </div>
-			      </div>
-			      <div class="form-group">
-			        <label class="col-sm-2 control-label">Amount</label>
-			         <div class="col-sm-6">
-                <div class="input-group">
-                  <span class="input-group-addon">$</span>
-			            <input type="number" class="form-control" ng-model="bill.total" required>
-                </div>
-			        </div>
-			      </div>
-			      <div class="form-group">
-			        <label class="col-sm-2 control-label">Date</label>
-			        <div class="col-sm-6">
-			          <input type="date" class="form-control" ng-model="bill.date" required>
-			        </div>
-			      </div>
-			      <div class="form-group">
-			        <label class="col-sm-2 control-label">Frequency</label>
-			        <div class="col-sm-6">
-					      <input type="radio" name="interval" value="0" ng-model="bill.interval">One-Time
-					      <input type="radio" name="interval" value="3" ng-model="bill.interval">Monthly
-			        </div>
-			      </div>
-			      <div class="form-group">
-			        <label class="col-sm-2 control-label">Responsible</label>
-			        <div class="col-sm-6">
-					      <ul class="list-unstyled" ng-repeat="roommate in roommates">
-					        <li>
-                    <input type="checkbox" value={{roommate.id}} ng-click="toggleSelection(roommate.id)"> {{roommate.first_name}} {{roommate.last_name}}
-                    <div class="input-group">
-                      <span class="input-group-addon">$</span>
-                      <input type="number" class="form-control" ng-model="roommate.amount">
-                    </div>
-                  </li>
-					      </ul>
-			        </div>
-			      </div>
-			    </form>
-        </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-	        <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="addBill()">Add</button>
-	      </div>
+        <form class="form-horizontal" role="form" name="addBillForm" ng-submit="addBill()">
+  	      <div class="modal-body">
+  			      <div class="form-group">
+  			        <label class="col-sm-2 control-label">Name</label>
+  			        <div class="col-sm-6">
+                  <div ng-class="{'has-error': addBillForm.name.$dirty &amp;&amp; addBillForm.name.$invalid}">
+                    <input type="text" class="form-control" name="name" ng-model="bill.name" required>
+                  </div>
+  			        </div>
+  			      </div>
+  			      <div class="form-group">
+  			        <label class="col-sm-2 control-label">Amount</label>
+  			         <div class="col-sm-6">
+                  <div class="input-group" ng-class="{'has-error': addBillForm.amount.$dirty &amp;&amp; addBillForm.amount.$invalid}">
+                    <span class="input-group-addon">$</span>
+  			            <input type="number" name="amount" class="form-control" ng-model="bill.total" min="0" required>
+                  </div>
+  			        </div>
+  			      </div>
+  			      <div class="form-group">
+  			        <label class="col-sm-2 control-label">Date</label>
+  			        <div class="col-sm-6">
+                  <div ng-class="{'has-error': addBillForm.date.$dirty &amp;&amp; addBillForm.date.$invalid}">
+  			            <input type="date" name="date" class="form-control" ng-model="bill.date" min="{{today()}}" required>
+                  </div>
+  			        </div>
+  			      </div>
+  			      <div class="form-group">
+  			        <label class="col-sm-2 control-label">Frequency</label>
+  			        <div class="col-sm-6">
+                  <label class="radio-inline">
+                    <input type="radio" name="interval" value="0" ng-model="bill.interval" required> One-Time
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="interval" value="3" ng-model="bill.interval"> Monthly
+                  </label>
+  			        </div>
+  			      </div>
+  			      <div class="form-group">
+  			        <label class="col-sm-2 control-label">Responsible</label>
+  			        <div class="col-sm-6">
+  					      <ul class="list-unstyled" ng-repeat="roommate in roommates">
+  					        <li>
+                      <input type="checkbox" value={{roommate.id}} ng-click="toggleSelection(roommate.id)"> {{roommate.first_name}} {{roommate.last_name}}
+                      <div class="input-group">
+                        <span class="input-group-addon">$</span>
+                        <input type="number" class="form-control" ng-model="roommate.amount">
+                      </div>
+                    </li>
+  					      </ul>
+  			        </div>
+  			      </div>
+          </div>
+
+  	      <div class="modal-footer">
+  	        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
+  	        <button type="submit" class="btn btn-success">Add</button>
+  	      </div>
+        </form>
 
 	    </div>
 	  </div>
@@ -193,9 +202,9 @@
 	<table ng-hide="emptyBillList()" class="table table-hover table-striped text-center">
 		<tr>
 			<th class="text-center">Roommate</th>
-			<th class="text-center">Owed to them</th>
-			<th class="text-center">They owe you</th>
-			<th class="text-center">Net Balance</th>
+			<th class="text-center">You Owe</th>
+			<th class="text-center">They Owe</th>
+			<th class="text-center">Balance</th>
 		</tr>
 		<tr ng-repeat="balance in balances">
 			<td>{{balance.first_name}} {{balance.last_name}}</td>
