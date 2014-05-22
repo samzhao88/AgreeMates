@@ -8,8 +8,10 @@
     <dd class="history-string">{{item.history_string}}</dd>
   </dl>
 
-  <button type="button" class="btn btn-primary" ng-click="loadMore()">Load More</button>
+  <button type="button" class="btn btn-primary" ng-hide="emptyHistory()" ng-click="loadMore()">Load More</button>
 
   <p id="nothing-loaded-message" ng-show="showNothingMoreMessage()">Nothing more to load</p>
+
+  <div class="alert alert-warning" ng-show="emptyHistory()">No history here yet!</div>
 
 </div>
