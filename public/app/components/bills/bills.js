@@ -65,12 +65,10 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.updateBalanceModel();
       for (var i = 0; i < $scope.bills.length; i++) {
         for (var j = 0; j < $scope.bills[i].payments.length; j++) {
-          if ($scope.bills[i].payments[j].userId == $scope.userId) {
-            if ($scope.bills[i].payments[j].paid) {
-              //if this bill is not checked
-              if ($scope.checkboxes.indexOf($scope.bills[i].payments[j].userId) < 0) {
-                $scope.checkboxes.push($scope.bills[i].payments[j].userId);
-              }
+          if ($scope.bills[i].payments[j].userId == $scope.userId && $scope.bills[i].payments[j].paid) {
+            //if this bill is not checked already
+            if ($scope.checkboxes.indexOf($scope.bills[i].payments[j].userId) < 0) {
+              $scope.checkboxes.push($scope.bills[i].payments[j].userId);
             }
           }       
         };
@@ -262,8 +260,6 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //mark a bill as paid or not paid
     $scope.payBill = function(id, index) {
-      console.log("begin: ");
-      console.log($scope.checkboxes);
       var paid = "false";
       //check or uncheck
       var idx = $scope.checkboxes.indexOf(id);
@@ -274,10 +270,9 @@ angular.module('main.bills').controller('BillsCtrl',
         $scope.checkboxes.push(id);
         paid = "true";
       }
-      console.log($scope.checkboxes);
+
       $http.put('/bills/'+id+"/payment", {paid: paid}).
         success(function(data) {
-          console.log($scope.checkboxes);
           for (var i = 0; i < $scope.bills[index].payments.length; i++) {
             if ($scope.bills[index].payments[i].userId == $scope.userId) {
               if (paid == "false") {
@@ -286,8 +281,7 @@ angular.module('main.bills').controller('BillsCtrl',
                 $scope.bills[index].payments[i].paid = true;
               }                         
             }
-          };
-          
+          };         
           $scope.updateBalanceModel();
         }).
         error(function(data, status, headers, config){
@@ -297,20 +291,12 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //return a boolean indictaing whether the bill is paid by the user
     $scope.isPaid = function(id, index) {
-      var paid = false;
       for (var i = 0; i < $scope.bills[index].payments.length; i++) {
         if ($scope.bills[index].payments[i].userId == $scope.userId) {
-          paid = $scope.bills[index].payments[i].paid;
-          // if ($scope.bills[index].payments[i].paid) {
-          //   //if this bill is not checked
-          //   if ($scope.checkboxes.indexOf(id) < 0) {
-          //     $scope.checkboxes.push(id);
-          //   }
-          // }
-          return paid;
+          return $scope.bills[index].payments[i].paid;
         }
       };
-      return paid;
+      return false;
     };
 
     //return whether the user is responsible for this bill
@@ -343,9 +329,6 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //set the oldBill to the bill that is selected to update
     $scope.prepareUpdate = function(id, index) {
-      if (!$scope.isOwner(id)) {
-        return
-      }
       $scope.reset();
       $scope.updateIdx = index;
       //find the bill that is selected
@@ -389,6 +372,13 @@ angular.module('main.bills').controller('BillsCtrl',
     }
 
     $scope.isOwner = function(billId) {
+      //when bill id is not defined
+      if ($scope.updateIdx === undefined || $scope.updateIdx == -1) {
+        return false;
+      } else if (billId === undefined) {
+        billId = $scope.bills[$scope.updateIdx].id;
+      }
+      
       for (var i = 0; i < $scope.bills.length; i++) {
         if ($scope.bills[i].id == billId && $scope.bills[i].creatorId == $scope.userId) {
           return true;
@@ -419,7 +409,7 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.bill = {};
       $scope.selectedRoommates = [];
       $scope.oldBill = {};
-      $scope.updateIdx = 0;
+      $scope.updateIdx = -1;
       $scope.updatedAmount = [];
     };
 
