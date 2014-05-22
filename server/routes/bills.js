@@ -248,14 +248,12 @@ function updatePayment(req, res) {
                               }
                               res.send(200);
                             }).otherwise(function(error) {
-				console.log(error);
                               res.json(503, {error: 'Database error.'});
                             });
                           } else {
                             res.send(200);
 			  }
                         }).otherwise(function(error) {
-			    console.log(error);
                           res.json(503, {error: 'Database error.'});
                         });
                     } else {
@@ -450,8 +448,6 @@ function needInstance(billCollection, newDate) {
   }
   for(var i = 0; i < billCollection.length; i++) {
     var billDate = billCollection.models[i].attributes.duedate;
-    console.log(billDate);
-    console.log(newDate);
     if(newDate <= billDate) {
       return false;
     }
