@@ -394,7 +394,7 @@ angular.module('main.bills').controller('BillsCtrl',
       return false;
     }
 
-    // $scope.showBalance = function(arr) {
+    // $scope.showBalancedetail = function(arr) {
     //   if (arr.length == 0) {
     //     return "$0";
     //   }
@@ -410,6 +410,15 @@ angular.module('main.bills').controller('BillsCtrl',
     //   };
     //   return result + " = $" + total;
     // }
+
+    $scope.showBalance = function(num) {
+      if (num < 0) {
+        num = num * -1;
+        return '-$' + num;
+      } else {
+        return '$' + num;
+      }
+    }
 
     //clear the bill
     $scope.reset = function() {

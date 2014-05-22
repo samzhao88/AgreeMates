@@ -210,7 +210,7 @@
 			<td>{{balance.first_name}} {{balance.last_name}}</td>
 			<td>${{balance.userOwed}}</td>
 			<td>${{balance.owedToUser}}</td>
-			<td>${{balance.netBalance}}</td>
+			<td>{{showBalance(balance.netBalance)}}</td>
 		</tr>
 	</table>
 
