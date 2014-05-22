@@ -22,7 +22,6 @@
     "beforeEach": false,
     "after":      false,
     "afterEach":  false,
-    "chai":       false,
     "inject":     false
   },
 

@@ -26,6 +26,11 @@ angular.module('main.history').controller('HistoryCtrl',
     };
 
     $scope.loadMore = function() {
+      if ($scope.history.length === 0) {
+        addedItems = false;
+        return;
+      }
+
       var lastId = $scope.history[$scope.history.length - 1].id;
 
       $http.get('/history/' + lastId)
@@ -37,6 +42,10 @@ angular.module('main.history').controller('HistoryCtrl',
           }
         })
         .error(function() {});
+    };
+
+    $scope.emptyHistory = function() {
+      return $scope.history.length === 0;
     };
 
 });

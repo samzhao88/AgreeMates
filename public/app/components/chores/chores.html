@@ -9,9 +9,7 @@
 	</div>
 	<hr>
 
-	<div id="chores-add-button">
-		<button type="button" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-success" ng-click="cancel(); chore.interval = 0">Add Chore</button>
-	</div>
+	<button data-toggle="modal" id="chores-add-button" data-target="#chores_add_modal" class="btn btn-success pull-right" ng-click="cancel(); chore.interval = 0">Add Chore</button>
 
   <!-- Add chores modal -->
 	<div class="modal fade" id="chores_add_modal" tabindex="-1" role="dialog" aria-labelledby="addChoreLabel" aria-hidden="true">
@@ -63,7 +61,7 @@
 
         <div class="modal-footer">
         	<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addChore(chore)">Add</button>
+          <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="addChore(chore)">Add</button>
         </div>
 
       </div>
@@ -116,7 +114,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-        	<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="editChore()">Edit</button>
+        	<button type="button" class="btn btn-success" data-dismiss="modal" ng-click="editChore()">Edit</button>
 				</div>
 
       </div>
@@ -124,7 +122,7 @@
 	</div>
 
 	<!-- Chores table -->
-	<table class="table table-striped table-hover text-center">
+	<table class="table table-striped table-hover clearfix text-center">
     <tbody>
     	<tr ng-show="!emptyChoreList()">
  		   <th class="text-center">Name</th>
@@ -133,19 +131,19 @@
  			 <th class="text-center">Due</th>
 			  <th class="text-center">Delete</th>
  		 </tr>
-      <tr data-ng-repeat ="chore in chores" >
-    		<td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
+      <tr data-ng-repeat="chore in chores" >
+    		<td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  			 	<span class="name">{{chore.name}}</span>
 				</td>
 				<td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
-					<div ng-repeat="responsible in chore.users">
-          	<ul ng-class="{highlight: isResponsible(chore, responsible)}" ng-model="currResponsible">{{responsible.first_name}} </ul>
- 				 </div>
+					<ul class="list-unstyled" id="responsible-list">
+						<li ng-repeat="responsible in chore.users" ng-class="{highlight: isResponsible(chore, responsible)}" ng-model="currResponsible">{{responsible.first_name}}</li>
+					</ul>
 				</td>
- 			 <td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
+ 			 <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  			 	<span class="recurring">{{convertfrequency(chore.interval)}}</span>
  			 </td>
- 			 <td data-toggle= "modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
+ 			 <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
  				 <span class="due date">{{format(chore.duedate)}}</span>
  			 </td>
  			 <td width>
@@ -155,6 +153,6 @@
 		</tbody>
 	</table>
 
-	<div class="alert alert-warning" ng-show="emptyChoreList()">No chores here, add some!</div>
+	<div class="alert alert-warning" id="chores-empty-alert" ng-show="emptyChoreList()">No chores here, add some!</div>
 
 </div>
