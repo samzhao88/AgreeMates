@@ -91,6 +91,7 @@ var chores = function(app) {
   });
 
 
+<<<<<<< Updated upstream
 // Get the chore information
   app.get('/chores/:chore', function(req, res) {
   	if (req.user === undefined) {
@@ -138,14 +139,22 @@ var chores = function(app) {
 		res.json(401, {error: 'Unauthorized user.'});
 		return;
 	}
+=======
+	function addChore(req,res){
+
+>>>>>>> Stashed changes
 		var name = req.body.name;
-		var apartmentId = req.user.attributes.apartment_id;
-		var userId = req.user.attributes.id;
+		var apartmentId = req.body.apartment_id;
+		var userId = req.body.userId;
 		var duedate = req.body.duedate;
+<<<<<<< Updated upstream
 		var date = new Date();
 		var createDate = (date.getMonth() + 1) + '/' + date.getDate()
 			+'/' + date.getFullYear();
 
+=======
+		var createdate = new Date();
+>>>>>>> Stashed changes
 		var interval = req.body.interval;
 
 
@@ -168,6 +177,7 @@ var chores = function(app) {
 					user_id: userId,
 					completed: false,
 					interval: interval,
+<<<<<<< Updated upstream
 					})
 					.save()
 					.then(function(choreModel){
@@ -204,6 +214,33 @@ var chores = function(app) {
 						if(resp.length !== userChore.length){
 							res.json(503,{error: 'DataBase error'});
 						}else{
+=======
+					rotating: rotating,
+					number_in_rotation: number_in_rotation};
+		console.log(newChore);
+		ChoreDao.createChore(newChore, roommates, null,
+						function(choreModel, userResp){
+						var response = {chore: choreModel.attributes, users: userResp};
+						if(userResp.length !== roommates.length){
+							res.json(503,{error: 'DataBase error'});
+						}
+						else
+						{
+							new UserModel({id: choreModel.get('user_id')}).
+							fetch()
+							.then(function(userModel){ 
+							
+								var historyString = userModel.get('first_name') + ' ' +
+								userModel.get('last_name')+ ' created chore ' + choreModel.get('name');
+								
+								new HistoryModel({apartment_id: choreModel.get('apartment_id'),
+													history_string: historyString,
+													date: new Date()})
+													.save()
+													.then(function(){})
+													.otherwise(function(error){console.log(error)});
+							});
+>>>>>>> Stashed changes
 							res.send(200, response);
 						}
 					})
@@ -313,6 +350,7 @@ var chores = function(app) {
 		});
   });
 
+<<<<<<< Updated upstream
   //Checks if a chore name is valid
   function isValidName(name) {
     return name !== undefined && name !== null && name !== '';
@@ -330,3 +368,20 @@ var chores = function(app) {
 };
 
 module.exports = chores;
+=======
+function setup(app){
+	 app.get('/chores', checkLogin,getChores);
+	 app.post('/chores', checkLogin, addChore);
+	 app.post('/chores/complete/:chore', checkLogin, completeChore);
+	 app.put('/chores/:chore', checkLogin,editChore);
+	  app.delete('/chores/:chore', checkLogin, deleteChore);
+ }
+ 
+module.exports.getChores = getChores;
+module.exports.addChore = addChore;
+module.exports.completeChore = completeChore;
+module.exports.editChore = editChore;
+module.exports.deleteChore = deleteChore;
+module.exports.setup = setup;
+module.exports.checkLogin = checkLogin;
+>>>>>>> Stashed changes
