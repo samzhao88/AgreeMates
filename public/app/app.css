@@ -321,10 +321,77 @@ html, body {
 
 }
 
+
 .positiveBalance {
   color: green;
 }
 
 .negativeBalance {
   color: red;
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #2c3e50;
+}
+
+a {
+  color: #fff;
+}
+
+a:hover {
+  color: #ddd;
+  text-decoration: none;
+}
+
+#accept-invite-content {
+  text-align: center;
+}
+
+#accept-invite-title {
+  font-weight: 700;
+  font-size: 52px;
+  font-family: 'Open Sans', Arial, sans-serif;
+  text-align: center;
+  color: #fff;
+  margin-top: 0;
+  padding-top: 50px;
+}
+
+#accept-invite-description {
+  color: #bbb;
+  text-align: center;
+  font-family: 'Open Sans', Arial, sans-serif;
+  margin-bottom: 20px;
+}
+
+#accept-invite-text {
+  color: #fff;
+  max-width: 600px;
+  text-align: center;
+  margin: 0 auto;
+  margin-top: 80px;
+}
+
+@media (max-width: 768px) {
+  #accept-invite-description {
+    margin-bottom: 60px;
+  }
+}
+
+#accept-invite-button {
+  margin-top: 20px;
+}
+
+#accept-invite-wrap {
+  height: auto;
+  margin: 0 auto -30px;
+  min-height: 100%;
+  padding: 0 0 30px;
+}
+
+#accept-invite-footer {
+  height: 30px;
+  text-align: center;
 }

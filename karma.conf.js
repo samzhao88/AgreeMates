@@ -19,7 +19,6 @@ module.exports = function(config) {
       'app/vendor/jquery/dist/jquery.min.js',
       'app/vendor/angular-mocks/angular-mocks.js',
       'app/vendor/jquery-ui/ui/minified/jquery-ui.min.js',
-      'app/vendor/jqueryui-touch-punch/jquery.ui.touch-punch.min.js',
       '**/*.js'
     ],
 
@@ -28,6 +27,7 @@ module.exports = function(config) {
     exclude: [
       'app/vendor/bootstrap/**/*.js',
       'app/vendor/jquery/src/**/*.js',
+      'app/vendor/jqueryui-touch-punch/**/*.js',
       'app/vendor/momentjs/**/*.js'
     ],
 
