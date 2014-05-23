@@ -224,6 +224,7 @@ function ($scope, $http, $timeout) {
 
         $scope.chore.users = angular.copy($scope.responsibleList);
         console.log($scope.chore.users);
+
         $scope.chore.roommates = [];
         for (var i = 0; i < $scope.responsibleList.length; i++)
         {
@@ -267,6 +268,7 @@ function ($scope, $http, $timeout) {
             for(var i = 0; i < $scope.chore.users.length; i++)
             {
                 $scope.chore.users[i].user_id = $scope.chore.users[i].id
+                $scope.chore.users[i].order_index = i;
             }
           $scope.chores[$scope.gindex] = angular.copy($scope.chore);
         })
@@ -398,7 +400,14 @@ function ($scope, $http, $timeout) {
     if (chore.interval == 0) {
       return "highlight";
     } else {
-      return user.order_index == 0;
+        if (chore.rotating == false)
+        {
+            return "highlight";
+        }
+        else
+        {
+            return (user.order_index < chore.number_in_rotation);
+        }
     }
   };
 
