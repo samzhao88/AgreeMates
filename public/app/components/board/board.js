@@ -12,7 +12,6 @@ angular.module('main.board').controller('BoardCtrl',
     $http.get('/messages').
     	success(function(data) {
       	$scope.messages = data.messages;
-        console.log(data);
     	});
 
     //get the user to know which messages/comments can be edited
@@ -23,25 +22,24 @@ angular.module('main.board').controller('BoardCtrl',
 
     //add a message
     $scope.addMessage = function(){
-    	
+
     	var message = angular.copy($scope.newMessage);
 
     	$http.post('/messages', message).
 	      	success(function(data) {
             data.comments = [];
+            data.author = $scope.user.first_name;
 	        	$scope.messages.splice(0,0,data);
 	        	$scope.reset();
 	      	}).
         	error(function(data, status, headers, config){
-          		console.log(data);
           		$scope.errormsg = data.error;
           		$scope.error = true;
-          		$timeout(function(){$scope.error=false;},1000);
+          		$timeout(function(){$scope.error=false;},4000);
         	});
     };
 
-    $scope.deleteMessage = function(id, index){
-
+    $scope.deleteMessage = function(id, index) {
     	$http.delete('/messages/'+id).
 	      	success(function(data) {
 	        	$scope.messages.splice(index, 1);
@@ -49,9 +47,8 @@ angular.module('main.board').controller('BoardCtrl',
         	error(function(data, status, headers, config){
           		$scope.errormsg = data.error;
           		$scope.error = true;
-          		$timeout(function(){$scope.error=false;},1000);
+          		$timeout(function(){$scope.error=false;},4000);
         	});
-
     };
 
     //update a message
@@ -62,7 +59,6 @@ angular.module('main.board').controller('BoardCtrl',
 	        	$scope.messages[index].edit = false;
 	      	}).
         	error(function(data, status, headers, config){
-          		console.log(data);
           		$scope.errormsg = data.error;
         	});
 
@@ -81,12 +77,12 @@ angular.module('main.board').controller('BoardCtrl',
 
     	$http.post('/messages/'+comment.msg_id+'/comments/', comment).
 	      	success(function(data) {
+            data.author = $scope.user.first_name;
 	        	$scope.messages[msg_ind].comments.push(data);
             $scope.messages[msg_ind].newComment = {};
             $scope.messages[msg_ind].showComments = true;
 	      	}).
         	error(function(data, status, headers, config){
-          		console.log(data);
           		$scope.errormsg = data.error;
         	});
     };
@@ -94,14 +90,11 @@ angular.module('main.board').controller('BoardCtrl',
     //delete a comment
     $scope.deleteComment = function(id, msg_id, ind, msg_ind){
 
-      console.log($scope.messages[msg_ind].comments[ind]);
-
     	$http.delete('messages/'+msg_id+'/comments/'+id).
 	      	success(function(data) {
 	        	$scope.messages[msg_ind].comments.splice(ind, 1);
 	      	}).
         	error(function(data, status, headers, config){
-          		console.log(data);
           		$scope.errormsg = data.error;
         	});
     };
@@ -115,7 +108,7 @@ angular.module('main.board').controller('BoardCtrl',
     };
 
     $scope.format = function(date){
-      return moment(date).calendar();
+      return moment(date).fromNow();
     }
 
 });

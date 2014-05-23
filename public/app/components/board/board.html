@@ -1,57 +1,76 @@
-<!-- view for message board -->
+<!-- Message board view-->
+
 <div class="col-lg-12">
-  <div class="boardHeader clearfix">
+
+  <div class="clearfix">
 	  <h1 class="pull-left">Message Board</h1>
 	  <div class="pull-right alert alert-success" ng-show="success">{{successmsg}}</div>
 		<div class="pull-right alert alert-danger" ng-show="error">{{errormsg}}</div>
 	</div>
   <hr>
 
-  <ul class="list-group clearfix">
-    <li class="list-group-item">
-      <div class="clearfix" id="add-message-box">
-        <form role="form">
-          <input type="text" class="form-control" autofocus ng-model="newMessage.subject" placeholder="Subject" required><br>
- 				  <textarea class="form-control" ng-model="newMessage.body" placeholder="Message" required></textarea><br>
- 				  <button type="submit" ng-disabled="!postButton()" class="btn btn-success pull-right" ng-click="addMessage()">Post Message</button><br>
- 			  </form>
+  <div id="message-add-button">
+    <button type="button" data-toggle="modal" data-target="#addModal" class="btn btn-success">Add Message</button>
+  </div>
+
+  <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="addModalLabel">Add Message</h4>
+        </div>
+        <form role="form" name="addForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <input type="text" class="form-control" name="subject" ng-model="newMessage.subject" placeholder="Subject" required>
+            </div>
+            <div class="form-group">
+              <textarea class="form-control" name="body" ng-model="newMessage.body" placeholder="Body" required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
+            <button type="submit" class="btn btn-success" data-dismiss="modal" ng-click="addMessage()">Add</button>
+          </div>
+        </form>
       </div>
-      <div>
-  			{{message.body}}
-  		</div>
-    </li>
-  	<li data-ng-repeat="message in messages" class="list-group-item clearfix message">
-  		<div>
-  		  <h3 class="message-subject">{{message.subject}} 
-  		  	<span ng-show="user.id==message.user_id" ng-click="deleteMessage(message.id, $index)" class="pull-right glyphicon glyphicon-remove"></span>
-  		  	<br><small>Posted by {{message.author}} - {{format(message.date)}}</small>
-  		  </h3>
-  		</div>
-     	<div ng-show="(!message.edit || user.id!=message.user_id)" ng-click="message.edit=true">
-  			{{message.body}}
-  		</div>
-  		<div ng-show="!(!message.edit || user.id!=message.user_id)" class="edit">
- 				<textarea class="form-control" ng-model="message.body" placeholder="Message" required></textarea><br>
- 				<button type="submit" ng-show="!message.body==''" class="btn btn-success pull-right" ng-click="updateMessage(message.id, $index)">Update Message</button><br>
- 		</div>
-  		<br>
-  		<div ng-click="message.showComments = true" ng-hide="message.showComments || message.comments.length == 0">
-  			<h5><b>Show comments</b></h5>
-  		</div>
-  		<ul class="list-group comments">
-  			<li ng-show="message.showComments" ng-repeat="comment in message.comments" class="list-group-item comment">
-          		<h4 class="comment-body">
-          			<small>Posted by {{comment.author}} - {{format(message.date)}}</small>
-          			<span ng-show="user.id==comment.user_id" ng-click="deleteComment(comment.id, message.id, $index, $parent.$index)" class="pull-right glyphicon glyphicon-remove"></span>
-          		</h4>
-          		{{comment.body}}
-        	</li>
-  			<li class="list-group-item comment clearfix add-comment-box">
-  				<form ng-submit="addComment($index)" role="form">
- 				   <input type="text" class="form-control" ng-model="message.newComment.body" placeholder="Comment" required>
+    </div>
+  </div>
+
+  <div class="panel-group clearfix" id="messages-list" ng-hide="messages.length === 0">
+    <div class="panel panel-default message-panel" data-ng-repeat="message in messages">
+      <a class="message-collapse" data-toggle="collapse" data-parent="#messages-list" data-target="#collapse{{$index}}">
+        <div class="panel-heading message-panel-heading">
+          <h4 class="panel-title">
+            {{message.subject}} <small>- {{message.author}}</small> <span class="badge pull-right">{{message.comments.length}}</span>
+          </h4>
+        </div>
+      </a>
+      <div id="collapse{{$index}}" class="panel-collapse collapse">
+        <div class="panel-body message-panel-body">
+          <p class="message-date pull-left">{{format(message.date)}}</p>
+          <i ng-show="user.id === message.user_id" class="pull-right ion-close-round message-delete" ng-click="deleteMessage(message.id, $index)"></i>
+          <p class="clearfix message-body">{{message.body}}</p>
+          <ul class="list-group comments">
+            <li ng-repeat="comment in message.comments" class="list-group-item comment">
+              <i ng-show="user.id==comment.user_id" ng-click="deleteComment(comment.id, message.id, $index, $parent.$index)" class="pull-right ion-close-round comment-delete"></i>
+              <h4 class="comment-body">
+                <small>{{comment.author}} - {{format(comment.date)}}</small>
+              </h4>
+              {{comment.body}}
+            </li>
+          </ul>
+
+          <form ng-submit="addComment($index)" role="form">
+              <input type="text" class="form-control" ng-model="message.newComment.body" placeholder="Comment" required>
           </form>
-        </li>
-  		</ul>
-  	</li>
-  </ul>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-warning" id="empty-messages-alert" ng-show="messages.length === 0">No bills here, add some!</div>
+
 </div>
