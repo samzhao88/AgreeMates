@@ -308,7 +308,7 @@ editChore: function(req,res){
 	var interval = req.body.interval;
 	var rotating = req.body.rotating;
 	var number_in_rotation = req.body.number_in_rotation;
-	
+	console.log(number_in_rotation);
 	//Check name has valid format
 	if(!isValidName(name)){
 		res.json(400, {error: 'Invalid chore name.'});
