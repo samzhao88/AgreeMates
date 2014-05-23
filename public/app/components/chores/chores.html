@@ -24,8 +24,8 @@
           <h4 class="modal-title" id="addChoreLabel">Add Chore</h4>
         </div>
 
-        <div class="modal-body"> 
-          <form class="form-horizontal" role="form" name="choreForm" ng-submit="">   
+        <div class="modal-body">
+          <form class="form-horizontal" role="form" name="choreForm" ng-submit="">
             <div class="form-group">
             <label class="col-sm-3 control-label" for="xone"> Name </label>
             <div class="col-sm-5">
@@ -37,41 +37,41 @@
             <div class="form-group">
                 <label class="col-sm-3 control-label" for="xtwo">Frequency</label>
                 <div class="col-sm-5">
-                    <input type="radio" id="xtwo" name="interval" value="0" ng-model="chore.interval">&nbsp;One-Time 
+                    <input type="radio" id="xtwo" name="interval" value="0" ng-model="chore.interval">&nbsp;One-Time
                     <input type="radio" id="xtwo" name="interval" value="7" ng-model="chore.interval">&nbsp;Weekly
                 </div>
               </div>
 
               <div class="form-group">
                 <label class ="col-sm-3 control-label" for="xfour">{{setModal(chore.interval)}} Date</label>
-              
+
                 <div class = "col-sm-5">
                 <input type="date" class="form-control" id="xfour" name="bday" ng-model="chore.duedate" min="{{today()}}" required>
                 </div>
               </div>
-                
+
                 <table >
                 <tr>
                 <th><label class="">People in Apartment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label></th>
                 <th><label class="">Persons Responsible For Chore</label></th>
                 </tr>
-                
+
                 <td class = "testing">
 
-                    <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="menuList" 
+                    <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="menuList"
                     ng-class="{'minimalList':menuEmpty()}">
                     <div ng-repeat="user in menuList" class="item">
                     <span>{{user.first_name}}</span>
                     </div>
                     </ul>
-                  <!--<div ng-show="menuList.length==0">No One Left</div>-->    
+                  <!--<div ng-show="menuList.length==0">No One Left</div>-->
                 </td>
-                  
+
                 <td class = "testing">
                     <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="responsibleList" ng-class="{'minimalList':responsibleEmpty()}">
                     <div ng-repeat="responsible in responsibleList" class="item">
                     <span>{{responsible.first_name}}</span>
-                    </div>  
+                    </div>
                     </ul>
                 </td>
                 </tr>
@@ -89,13 +89,13 @@
                     <label ng-class="{'hide': populate_rotation()}"> Pick a number in rotation </label>
                     <span ng-repeat="option in rotation_number">
                           <input type="radio" name="numbers" ng-model="chore.rotation_number" value="{{option}}"> {{option}}
-                    </span> 
+                    </span>
                 </div>
                 <!--<div>list1: {{menuList }}</div>-->
                 <!--<div>list2: {{responsibleList }}</div>-->
                 </form>
       </div>
-            
+
         <div class="modal-footer">
 
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
@@ -118,8 +118,8 @@
             <h4 class="modal-title" id="editChoreLabel">Edit Chore</h4>
         </div>
 
-        <div class="modal-body"> 
-          <form class="form-horizontal" role="form" name="choreForm" ng-submit="">   
+        <div class="modal-body">
+          <form class="form-horizontal" role="form" name="choreForm" ng-submit="">
             <div class="form-group">
             <label class="col-sm-3 control-label" for="xone"> Name </label>
             <div class="col-sm-5">
@@ -131,41 +131,41 @@
             <div class="form-group">
                 <label class="col-sm-3 control-label" for="xtwo">Frequency</label>
                 <div class="col-sm-5">
-                    <input type="radio" id="xtwo" name="interval" value="0" ng-model="chore.interval">&nbsp;One-Time 
+                    <input type="radio" id="xtwo" name="interval" value="0" ng-model="chore.interval">&nbsp;One-Time
                     <input type="radio" id="xtwo" name="interval" value="7" ng-model="chore.interval">&nbsp;Weekly
                 </div>
               </div>
 
               <div class="form-group">
                 <label class ="col-sm-3 control-label" for="xfour">{{setModal(chore.interval)}} Date</label>
-              
+
                 <div class = "col-sm-5">
                 <input type="date" class="form-control" id="xfour" name="bday" ng-model="chore.duedate" min="{{today()}}" required>
                 </div>
               </div>
-                
+
                 <table >
                 <tr>
                 <th><label class="">People in Apartment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label></th>
                 <th><label class="">Persons Responsible For Chore</label></th>
                 </tr>
-                
+
                 <td class = "testing">
 
-                    <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="menuList" 
+                    <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="menuList"
                     ng-class="{'minimalList':menuEmpty()}">
                     <div ng-repeat="user in menuList" class="item">
                     <span>{{user.first_name}}</span>
                     </div>
                     </ul>
-                  <!--<div ng-show="menuList.length==0">No One Left</div>-->    
+                  <!--<div ng-show="menuList.length==0">No One Left</div>-->
                 </td>
-                  
+
                 <td class = "testing">
                     <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="responsibleList" ng-class="{'minimalList':responsibleEmpty()}">
                     <div ng-repeat="responsible in responsibleList" class="item">
                     <span>{{responsible.first_name}}</span>
-                    </div>  
+                    </div>
                     </ul>
                 </td>
                 </tr>
@@ -183,7 +183,7 @@
                     <label ng-class="{'hide': populate_rotation()}"> Pick a number in rotation </label>
                     <span ng-repeat="option in rotation_number">
                           <input type="radio" name="numbers" ng-model="chore.rotation_number" value="{{option}}"> {{option}}
-                    </span> 
+                    </span>
                 </div>
                 <!--<div>list1: {{menuList }}</div>-->
                 <!--<div>list2: {{responsibleList }}</div>-->
@@ -228,23 +228,23 @@
                 <th><label class="">People in Apartment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label></th>
                 <th><label class="">Persons Responsible For Chore</label></th>
                 </tr>
-                
+
                 <td class = "testing">
 
-                    <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="menuList" 
+                    <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="menuList"
                     ng-class="{'minimalList':menuEmpty()}">
                     <div ng-repeat="user in menuList" class="item">
                     <span>{{user.first_name}}</span>
                     </div>
                     </ul>
-                     
+
                 </td>
-                  
+
                 <td class = "testing">
                     <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="responsibleList" ng-class="{'minimalList':responsibleEmpty()}">
                     <div ng-repeat="responsible in responsibleList" class="item">
                     <span>{{responsible.first_name}}</span>
-                    </div>  
+                    </div>
                     </ul>
                 </td>
                 </tr>
@@ -254,6 +254,7 @@
         </div>-->
 
         <div class="modal-footer">
+          <button type="button" class="btn btn-danger pull-left" data-dismiss="modal" data-toggle="modal" data-target="#deleteModal" ng-click="prepareDelete(chore.id, $index)">Delete</button>
           <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
           <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="editChore()">Edit</button>
         </div>
@@ -264,9 +265,9 @@
 
 
   <!-- add a filter to table later on -->
-  <div class="clearfix" id="chores-filter">
-    <div class="btn-group" ng-hide="emptyChoreList()">
-      <button type="button" class="btn btn-default" ng-click="setTable('unresolved')" ng-class="{ 'active' : table === 'unresolved' }">Uncompleted</button>      
+  <div class="clearfix" id="chores-filter" ng-hide="emptyChoreList()">
+    <div class="btn-group">
+      <button type="button" class="btn btn-default" ng-click="setTable('unresolved')" ng-class="{ 'active' : table === 'unresolved' }">Uncompleted</button>
       <button type="button" class="btn btn-default" ng-click="setTable('resolved')" ng-class="{ 'active' : table === 'resolved' }">Completed</button>
     </div>
   </div>
@@ -280,7 +281,6 @@
        <th class="text-center">Frequency</th>
        <th class="text-center">Due</th>
        <th class="text-center">Done?</th>
-       <th class="text-center">Delete</th>
      </tr>
       <tr data-ng-repeat="chore in chores" >
         <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
@@ -300,9 +300,6 @@
        <td>
         <input type="checkbox" ng-click="doChore(chore.id, $index)" ng-show="isDone(chore.id, $index)">
        </td>
-       <td width>
-         <i class="ion-close-circled delete-icon" data-toggle="modal" data-target="#deleteModal" ng-click="prepareDelete(chore.id, $index)"></i>
-        </td>
       </tr>
     </tbody>
   </table>
