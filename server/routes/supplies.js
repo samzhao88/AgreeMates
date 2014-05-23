@@ -85,7 +85,7 @@ var Supplies = {
         var supply = model.attributes;
 
         var historyString = req.user.attributes.first_name + ' ' +
-          req.user.attributes.last_name + ' added Supply "' +
+          req.user.attributes.last_name + ' added supply "' +
           name.trim() + '"';
 
         Supplies.saveHistory(apartmentId, historyString);
@@ -121,6 +121,11 @@ var Supplies = {
 
     Supplies.editSupply(supplyId, apartmentId, name.trim(), status,
       function then() {
+        var historyString = req.user.attributes.first_name + ' ' +
+          req.user.attributes.last_name + ' edited supply "' +
+          name.trim() + '"';
+        
+        Supplies.saveHistory(apartmentId, historyString);
         res.send(200);
       },
       function otherwise() {
@@ -143,11 +148,11 @@ var Supplies = {
 
     Supplies.fetchSupply(supplyId,
       function then(model) {
-        var historyString = req.user.attributes.first_name + ' ' +
-          req.user.attributes.last_name + ' deleted Supply "' +
-          model.attributes.name + '"';
         Supplies.destroySupply(supplyId, apartmentId,
           function then() {
+            var historyString = req.user.attributes.first_name + ' ' +
+              req.user.attributes.last_name + ' deleted supply "' +
+              model.attributes.name + '"';
             Supplies.saveHistory(apartmentId, historyString);
             res.send(200);
           },
@@ -161,15 +166,15 @@ var Supplies = {
   },
   fetchSupply: function(supplyId, thenFun, otherwiseFun) {
     new SupplyModel({id: supplyId})
-    .fetch()
-    .then(thenFun)
-    .otherwise(otherwiseFun);
+      .fetch()
+      .then(thenFun)
+      .otherwise(otherwiseFun);
   },
   destroySupply: function(supplyId, apartmentId, thenFun, otherwiseFun) {
     new SupplyModel({id: supplyId, apartment_id: apartmentId})
-    .destroy()
-    .then(thenFun)
-    .otherwise(otherwiseFun);
+      .destroy()
+      .then(thenFun)
+      .otherwise(otherwiseFun);
   },
   editSupply: function(supplyId, apartmentId, name, 
                        status, thenFun, otherwiseFun) {
@@ -193,13 +198,13 @@ var Supplies = {
   },
   querySupplies: function(apartmentId, thenFun, otherwiseFun) {
     new SupplyCollection()
-    .query(function(qb) {
-      qb.where('apartment_id', '=', apartmentId);
-      qb.orderBy('status', 'asc');
-    })
-    .fetch()
-    .then(thenFun)
-    .otherwise(otherwiseFun);
+      .query(function(qb) {
+        qb.where('apartment_id', '=', apartmentId);
+        qb.orderBy('status', 'asc');
+      })
+      .fetch()
+      .then(thenFun)
+      .otherwise(otherwiseFun);
   }
 };
 
