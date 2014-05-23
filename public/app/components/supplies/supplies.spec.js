@@ -2,7 +2,7 @@
 
 var expect = chai.expect;
 
-describe('supplies module', function() {
+describe('supplies module:', function() {
   var suppliesModule;
   beforeEach(function() {
     suppliesModule = module('main.supplies');
@@ -41,7 +41,7 @@ describe('supplies module', function() {
     'name': 'orange',
     'status': 0
   };
-  describe('supplies controller', function() {
+  describe('method', function() {
        var httpMock, scope, ctrl;
 	    beforeEach(inject(function($controller, $rootScope, $httpBackend)  {
 			httpMock = $httpBackend;
@@ -69,49 +69,52 @@ describe('supplies module', function() {
 		afterEach(function() {
 			httpMock.verifyNoOutstandingExpectation();
 			httpMock.verifyNoOutstandingRequest();
-       });	   
-	   
-	  it('should fetch all supplies',function() {
-		httpMock.expectGET('/supplies').respond(supplies);
-		httpMock.flush();
-		expect(scope.supplies.length).to.equal(2);
-	  });
-      describe('add supply', function() {
-		beforeEach(function() {
-			httpMock.expectPOST('/supplies',supply).respond(supplyAddResponse);
-			scope.supply = supply; 
-			scope.supplies = supplies;
-			scope.addSupply();
+        });
+		
+	    describe('get', function() { 
+		  it('should fetch all supplies',function() {
+			httpMock.expectGET('/supplies').respond(supplies);
 			httpMock.flush();
+			expect(scope.supplies.length).to.equal(2);
+		  });
+		});
+	  
+        describe('add', function() {
+			beforeEach(function() {
+				httpMock.expectPOST('/supplies',supply).respond(supplyAddResponse);
+				scope.supply = supply; 
+				scope.supplies = supplies;
+				scope.addSupply();
+				httpMock.flush();
+				
+			});
+			it('should display success',function() {
+				expect(scope.success).to.equal(true);
+				
+			});
 			
-		});
-		it('should display success',function() {
-			expect(scope.success).to.equal(true);
+			it('should display success message',function() {
+				expect(scope.successmsg).to.equal('Supply "new chore" successfully added!');
+			});
 			
-		});
-		
-		it('should display success message',function() {
-			expect(scope.successmsg).to.equal('Supply "new chore" successfully added!');
-		});
-		
-		it('should hava scope which include all chores',function() {
-			expect(scope.supplies.length).to.equal(3);
-		});
-		
-		it('should have correct status',function() {
-			expect(scope.supplies[0].status).to.equal(0);
-		});
-		
-		it('should have correct id',function() {
-			expect(scope.supplies[0].id).to.equal(3);
-		});
-		
-		it('should have correct name',function() {
-			expect(scope.supplies[0].name).to.equal('new chore');
-		});
-	});
+			it('should hava scope which include all chores',function() {
+				expect(scope.supplies.length).to.equal(3);
+			});
+			
+			it('should have correct status',function() {
+				expect(scope.supplies[0].status).to.equal(0);
+			});
+			
+			it('should have correct id',function() {
+				expect(scope.supplies[0].id).to.equal(3);
+			});
+			
+			it('should have correct name',function() {
+				expect(scope.supplies[0].name).to.equal('new chore');
+			});
+	    });
 	
-		describe('update supply', function() {
+		describe('update', function() {
 			beforeEach(function() {
 				httpMock.expectPUT('/supplies/1',supplies.supplies[0]).respond(supplyEditResponse);
 				scope.supplies = supplies.supplies;
@@ -144,7 +147,7 @@ describe('supplies module', function() {
 			});
 		});
 		
-		describe('delete supply', function() {
+		describe('delete', function() {
 			beforeEach(function() {
 				httpMock.expectDELETE('/supplies/1').respond(supplyDeleteResponse);
 				scope.supplies = supplies.supplies;
