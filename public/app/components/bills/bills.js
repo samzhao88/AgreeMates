@@ -24,6 +24,8 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.checkboxes = [];
     //the bill being updated
     $scope.oldBill = {};
+    //add roommates and their share of bill
+    $scope.roommates = []
     //all roommates id and their old amount when updating a bill, if a roommate has no amount, the default is 0
     $scope.updatedAmount = [];
     //index of bill being updated
@@ -51,6 +53,7 @@ angular.module('main.bills').controller('BillsCtrl',
     $http.get('/apartment/users').
     success(function(data) {
       $scope.roommates = data.users;
+      $scope.responsible = angular.copy($scope.roommates);
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -83,6 +86,16 @@ angular.module('main.bills').controller('BillsCtrl',
     $http.get('/bills', {params: {type: 'resolved'}}).
     success(function(data) {
       $scope.resolvedBills = data.bills;
+      for (var i = 0; i < $scope.resolvedBills.length; i++) {
+        for (var j = 0; j < $scope.resolvedBills[i].payments.length; j++) {
+          if ($scope.resolvedBills[i].payments[j].userId == $scope.userId && $scope.resolvedBills[i].payments[j].paid) {
+            //if this bill is not checked already
+            if ($scope.checkboxes.indexOf($scope.resolvedBills[i].id) < 0) {
+              $scope.checkboxes.push($scope.resolvedBills[i].id);
+            }
+          }
+        };
+      };      
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -146,16 +159,6 @@ angular.module('main.bills').controller('BillsCtrl',
         $scope.table = 'unresolved';
     	}
     };
-
-    //get all roommates in the apartment
-    $http.get('/apartment/users').
-    success(function(data) {
-      $scope.roommates = data.users;
-      $scope.responsible = angular.copy($scope.roommates);
-    }).
-    error(function(data, status, headers, config){
-        console.log(data);
-    });
 
     //add a new bill
     $scope.addBill = function() {
@@ -430,6 +433,7 @@ angular.module('main.bills').controller('BillsCtrl',
     //   return result + " = $" + total;
     // }
 
+    //put the dollar sign in front of the balance
     $scope.showBalance = function(num) {
       if (num < 0) {
         num = num * -1;
@@ -437,6 +441,32 @@ angular.module('main.bills').controller('BillsCtrl',
       } else {
         return '$' + num;
       }
+    }
+
+    //check if each roommate's amount add up to total amount
+    $scope.isValidResponsible = function(model) {
+      var amounts;
+      var total = $scope.bill.total;
+
+      if (model == "add") {
+        if ($scope.responsible == undefined) {
+          return false;
+        }
+        amounts = $scope.responsible;
+      } else {
+        if ($scope.updatedAmount == undefined) {
+          return false;
+        }
+        amounts = $scope.updatedAmount;
+      }
+
+      for (var i = 0; i < amounts.length; i++) {
+        if ($scope.selectedRoommates.indexOf(amounts[i].id) > -1) {
+          total -= amounts[i].amount;
+        };
+      };
+
+      return total == 0;
     }
 
     //clear the bill

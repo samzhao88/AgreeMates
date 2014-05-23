@@ -39,7 +39,6 @@ var app = angular.module('main',
     'main.supplies',
     'main.board',
     'main.settings',
-    'main.profile',
     'main.nav',
     'main.apartment',
     'main.history',
@@ -76,11 +75,6 @@ app.config(function($routeProvider) {
     templateUrl: 'components/settings/settings.html',
     module: 'main.settings',
     controller: 'SettingsCtrl'
-  }).
-    when('/profile', {
-    templateUrl: 'components/profile/profile.html',
-    module: 'main.profile',
-    controller: 'ProfileCtrl'
   }).
     when('/history', {
     templateUrl: 'components/history/history.html',

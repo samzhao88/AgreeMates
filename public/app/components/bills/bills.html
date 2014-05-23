@@ -77,7 +77,7 @@
 
   	      <div class="modal-footer">
   	        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-  	        <button type="submit" class="btn btn-success" data-dismiss="modal" ng-click="addBill()">Add</button>
+  	        <button type="submit" class="btn btn-success" data-dismiss="modal" ng-click="addBill()" ng-disabled="!isValidResponsible('add')">Add</button>
   	      </div>
         </form>
 
