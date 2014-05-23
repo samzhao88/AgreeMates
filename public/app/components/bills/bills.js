@@ -438,28 +438,38 @@ angular.module('main.bills').controller('BillsCtrl',
     //check if each roommate's amount add up to total amount
     $scope.isValidResponsible = function(model) {
       var amounts;
-      var total = $scope.bill.total;
+      var total;
 
+      //for adding bill, get total amount from $scope.bill.total and roommates' amount from $scope.responsible
       if (model == "add") {
         if ($scope.responsible == undefined) {
           return false;
         }
+        total = $scope.bill.total;
         amounts = $scope.responsible;
-      } else {
+        for (var i = 0; i < amounts.length; i++) {
+          if ($scope.selectedRoommates.indexOf(amounts[i].id) > -1) {
+            if (amounts[i].amount < 0) {
+              return false;
+            }
+            total -= amounts[i].amount;
+          };
+        };        
+      } else { //for adding bill, get total amount from $scope.oldBill.amount and roommates' amount from $scope.updatedAmount
         if ($scope.updatedAmount == undefined) {
           return false;
         }
+        total = $scope.oldBill.amount;
         amounts = $scope.updatedAmount;
+        for (var i = 0; i < amounts.length; i++) {
+          if ($scope.selectedRoommates.indexOf(amounts[i].userId) > -1) {
+            if (amounts[i].amount < 0) {
+              return false;
+            }
+            total -= amounts[i].amount;
+          };
+        };         
       }
-
-      for (var i = 0; i < amounts.length; i++) {
-        if ($scope.selectedRoommates.indexOf(amounts[i].id) > -1) {
-          if (amounts[i].amount < 0) {
-            return false;
-          }
-          total -= amounts[i].amount;
-        };
-      };
 
       return total == 0;
     }
