@@ -2,12 +2,33 @@
 
 'user strict';
 
-var app = require('../../app');
-var chores = require('../../routes/chores');
+require('../../app');
+var chai = require('chai');
 var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
+var expect = chai.expect;
+var chores = require('../../routes/chores');
+chai.use(sinonChai);
+
+var succeedingStub = function(functionName, parameters) {
+  return sinon.stub(invitations, functionName, function(id, thenFun) {
+    thenFun(parameters);
+  });
+};
+
+var failingStub = function(functionName, parameters) {
+  return sinon.stub(invitations, functionName, function(id, thenFun, otherFun) {
+    otherFun(parameters);
+  });
+};
+
+var emptyStub = function(functionName) {
+  return sinon.stub(invitations, functionName);
+};
 
 describe('Chores', function(){
-
+	describe('checkLogin', function(){
+	
 	var res, resMock;
 
 	beforeEach(function(){
@@ -19,8 +40,6 @@ describe('Chores', function(){
 		resMock.verify();
 	});
 
-	describe('checkLogin', function(){
-
 		it('should return 401 if user is undefined', function(){
 			var req = {};
 			resMock.expects('json').once().withArgs(401, {error: 'Unauthorized user.'});
@@ -29,6 +48,18 @@ describe('Chores', function(){
 	});
 
 	describe('addChore', function() {
+	
+	var res, resMock;
+
+	beforeEach(function(){
+		res = {json: function(){}};
+		resMock = sinon.mock(res);
+	});
+
+	afterEach(function(){
+		resMock.verify();
+	});
+
 		it('should return 400 if the chore name is invalid', function(){
 			var req1 = {user: {attributes: {}}, body: {name: undefined, duedate: '2014-05-08'}};
 			var req2 = {user: {attributes: {}}, body: {name: null, duedate: '2014-05-08'}};
@@ -81,6 +112,18 @@ describe('Chores', function(){
 	});
 
 	describe('editChore',function(){
+	
+	var res, resMock;
+
+	beforeEach(function(){
+		res = {json: function(){}};
+		resMock = sinon.mock(res);
+	});
+
+	afterEach(function(){
+		resMock.verify();
+	});
+
 		it('should return 400 if the new chore duedate is invalid', function(){
 			var req1 = {user: {attributes: {}}, body: {name: 'test', interval: 0, duedate: '2014-05-08'},params: {chore: 1}};
 			var req2 = {user: {attributes: {}}, body: {name: 'test', interval: 0, duedate: '2013-05-08'},params: {chore: 1}};
