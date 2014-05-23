@@ -2,66 +2,102 @@
 
 <div class="col-lg-12">
 
-	<div class="clearfix">
-		<h1 class="pull-left">Chores</h1>
-	  <div class="pull-right alert alert-success" ng-show="success">{{successmsg}}</div>
-		<div class="pull-right alert alert-danger" ng-show="error">{{errormsg}}</div>
-	</div>
-	<hr>
+  <div class="clearfix">
+    <h1 class="pull-left">Chores</h1>
+    <div class="pull-right alert alert-success" ng-show="success">{{successmsg}}</div>
+    <div class="pull-right alert alert-danger" ng-show="error">{{errormsg}}</div>
+  </div>
+  <hr>
 
-	<button data-toggle="modal" id="chores-add-button" data-target="#chores_add_modal" class="btn btn-success pull-right" ng-click="cancel(); chore.interval = 0">Add Chore</button>
+	<div id="chores-add-button">
+		<button type="button" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-primary" ng-click="cancel(); chore.interval = 0; chore.rotating = false; setList(); reset_responsibleList();">Add Chore</button>
+	</div>
+
 
   <!-- Add chores modal -->
-	<div class="modal fade" id="chores_add_modal" tabindex="-1" role="dialog" aria-labelledby="addChoreLabel" aria-hidden="true">
-  	<div class="modal-dialog">
-    	<div class="modal-content">
+  <div class="modal fade" id="chores_add_modal" tabindex="-1" role="dialog" aria-labelledby="addChoreLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="addChoreLabel">Add Chore</h4>
+          <h4 class="modal-title" id="addChoreLabel">Add Chore</h4>
         </div>
 
         <div class="modal-body">
-        	<form role="form">
-          	<div class="form-group">
-              <label for="xone"> Chore Name </label>
-              <input type="text" id="xone" ng-model="chore.name" class="form-control" placeholder="">
-            </div>
-
-            <table>
-              <tr>
-                <th width= "50%"><label for="xtwo">Frequency</label><br></th>
-                <th><label>Persons Responsible</label></th>
-              </tr>
-              <tr>
-                <td>
-                	<input type="radio" id="xtwo" name="interval" value="0" ng-model="chore.interval">One-Time<br>
-                  <input type="radio" id="xtwo" name="interval" value="7" ng-model="chore.interval">Weekly<br><br>
-                </td>
-                <td>
-                  <div data-ng-repeat="user in users">
-                    <label>
-                    	<input type="checkbox" id="xthree" ng-model="user.isChecked"/>  <span>{{user.first_name}}</span>
-                    </label>
-                    <br>
-                  </div>
-									<br>
-									<input type="checkbox" ng-model="chore.rotating"> Rotating Chore?
-                </td>
-              </tr>
-            </table>
-
+          <form class="form-horizontal" role="form">
             <div class="form-group">
-            	<label for="xfour">{{setModal(chore.interval)}} Date</label><br>
-              <input type="date" id="xfour" name="bday" ng-model="chore.duedate">
+            <label class="col-sm-3 control-label" for="xone"> Name </label>
+            <div class="col-sm-5">
+            <input type="text" id="xone" ng-model="chore.name" class="form-control" placeholder="">
             </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="xtwo">Frequency</label>
+                <div class="col-sm-5">
+                    <input type="radio" id="xtwo" name="interval" value="0" ng-model="chore.interval">&nbsp;One-Time 
+                    <input type="radio" id="xtwo" name="interval" value="7" ng-model="chore.interval">&nbsp;Weekly
+                </div>
+              </div>
 
-					</form>
-				</div>
+              <div class="form-group">
+                <label class ="col-sm-3 control-label" for="xfour">{{setModal(chore.interval)}} Date</label>
+              
+                <div class = "col-sm-5">
+                <input type="date" class="form-control" id="xfour" name="bday" ng-model="chore.duedate">
+                </div>
+              </div>
+                
+                <table>
+                <tr>
+                <th><label class="">People in Apartment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label></th>
+                <th><label class="">Persons Responsible For Chore</label></th>
+                </tr>
+                <tr>
+                <td class = "testing">
 
+                    <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="menuList" 
+                    ng-class="{'minimalList':menuEmpty()}">
+                    <div ng-repeat="user in menuList" class="item">
+                    <span>{{user.first_name}}</span>
+                    </div>
+                    </ul>
+                  <!--<div ng-show="menuList.length==0">No One Left</div>-->    
+                </td>
+                  
+                <td class = "testing">
+                    <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="responsibleList" ng-class="{'minimalList':responsibleEmpty()}">
+                    <div ng-repeat="responsible in responsibleList" class="item">
+                    <span>{{responsible.first_name}}</span>
+                    </div>  
+                    </ul>
+                </td>
+                </tr>
+                </table>
+                <div class="form-group" ng-class="{'hide': users_at_least_two()}">
+                <label class="col-sm-3 control-label" for="xfive">Rotating Responsibility?</label>
+                <div class="col-sm-5">
+                    <input type="radio" id="xfive" name="rotating" ng-model="chore.rotating" ng-value="true"> Yes
+                    <input type="radio" id="xfive" name="rotating" ng-model="chore.rotating" ng-value="false"> No
+
+                </div>
+                </div>
+
+                <div class ="form-group" ng-class ="{'hide': users_and_rotating()}">
+                    <label ng-class="{'hide': populate_rotation()}"> Pick a number in rotation </label>
+                    <span ng-repeat="option in rotation_number">
+                          <input type="radio" name="numbers" ng-model="chore.rotation_number" value="{{option}}"> {{option}}
+                    </span> 
+                </div>
+                <!--<div>list1: {{menuList }}</div>-->
+                <!--<div>list2: {{responsibleList }}</div>-->
+                </form>
+      </div>
         <div class="modal-footer">
-        	<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-          <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="addChore(chore)">Add</button>
+
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addChore(chore)">Add</button>
+
         </div>
 
       </div>
@@ -69,90 +105,103 @@
   </div>
 
 
-	<!-- Edit chore modal -->
-	<div class="modal fade" id="chores_edit_modal" tabindex="-1" role="dialog" aria-labelledby="editChoreLabel" aria-hidden="true">
+  <!-- Edit chore modal -->
+  <div class="modal fade" id="chores_edit_modal" tabindex="-1" role="dialog" aria-labelledby="editChoreLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
 
         <div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="editChoreLabel">Edit Chore</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="editChoreLabel">Edit Chore</h4>
         </div>
 
-				<div class="modal-body">
-					<form role="form">
-						<div class="form-group">
-							<label for="xone">Name</label>
-							<input type="text" id="xone" ng-model="chore.name" class="form-control">
-						</div>
-						<table>
-							<tr>
-								<th width="50%"><label for="xtwo">Frequency</label><br></th>
-								<th><label>Persons Responsible</label></th>
-							</tr>
-							<tr>
-								<td>
-									<input type="radio" name="interval" value="0" ng-model="chore.interval">One Time</br>
-									<input type="radio" name="interval" value="7" ng-model="chore.interval">Weekly<br><br>
-								</td>
-								<td>
-									<div data-ng-repeat="user in users">
-										<label>
-											<input type="checkbox" id="xthree" ng-model="user.isChecked"/>  <span>{{user.first_name}}</span>
-										</label>
-										<br>
-									</div>
-								</td>
-							</tr>
-						</table>
-						<div class="form-group">
-							<label for="xfour">Due Date</label><br>
-							<input type="date" id="xfour" name="bday" ng-model="chore.duedate">
-						</div>
-					</form>
-				</div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label for="xone">Name</label>
+              <input type="text" id="xone" ng-model="chore.name" class="form-control">
+            </div>
+            <table>
+              <tr>
+                <th ><label for="xtwo">Frequency</label><br></th>
+                <th><label>Persons Responsible</label></th>
+              </tr>
+              <tr>
+                <td>
+                  <input type="radio" name="interval" value="0" ng-model="chore.interval">One Time</br>
+                  <input type="radio" name="interval" value="7" ng-model="chore.interval">Weekly<br><br>
+                </td>
+                <td>
+                  <div data-ng-repeat="user in users">
+                    <label>
+                      <input type="checkbox" id="xthree" ng-model="user.isChecked"/>  <span>{{user.first_name}}</span>
+                    </label>
+                    <br>
+                  </div>
+                </td>
+              </tr>
+            </table>
+            <div class="form-group">
+              <label for="xfour">Due Date</label><br>
+              <input type="date" id="xfour" name="bday" ng-model="chore.duedate">
+            </div>
+          </form>
+        </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-        	<button type="button" class="btn btn-success" data-dismiss="modal" ng-click="editChore()">Edit</button>
-				</div>
+          <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="editChore()">Edit</button>
+        </div>
 
       </div>
     </div>
-	</div>
+  </div>
 
-	<!-- Chores table -->
-	<table class="table table-striped table-hover clearfix text-center">
+
+  <!-- add a filter to table later on -->
+  <div class="clearfix" id="chores-filter">
+    <div class="btn-group">
+      <button type="button" class="btn btn-default" ng-click="setTable('unresolved')" ng-class="{ 'active' : table === 'unresolved' }">Uncompleted</button>      
+      <button type="button" class="btn btn-default" ng-click="setTable('resolved')" ng-class="{ 'active' : table === 'resolved' }">Completed</button>
+    </div>
+  </div>
+
+  <!-- Chores table -->
+  <table class="table table-striped table-hover clearfix text-center">
     <tbody>
-    	<tr ng-show="!emptyChoreList()">
- 		   <th class="text-center">Name</th>
- 			 <th class="text-center">Responsible</th>
- 			 <th class="text-center">Frequency</th>
- 			 <th class="text-center">Due</th>
-			  <th class="text-center">Delete</th>
- 		 </tr>
+      <tr ng-show="!emptyChoreList()">
+       <th class="text-center">Name</th>
+       <th class="text-center">Responsible</th>
+       <th class="text-center">Frequency</th>
+       <th class="text-center">Due</th>
+       <th class="text-center">Done?</th>
+       <th class="text-center">Delete</th>
+     </tr>
       <tr data-ng-repeat="chore in chores" >
-    		<td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
- 			 	<span class="name">{{chore.name}}</span>
-				</td>
-				<td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
-					<ul class="list-unstyled" id="responsible-list">
-						<li ng-repeat="responsible in chore.users" ng-class="{highlight: isResponsible(chore, responsible)}" ng-model="currResponsible">{{responsible.first_name}}</li>
-					</ul>
-				</td>
- 			 <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
- 			 	<span class="recurring">{{convertfrequency(chore.interval)}}</span>
- 			 </td>
- 			 <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
- 				 <span class="due date">{{format(chore.duedate)}}</span>
- 			 </td>
- 			 <td width>
- 			   <i class="ion-close-circled delete-icon" ng-click="deleteChore(chore.id, $index)"></i>
-				</td>
-    	</tr>
-		</tbody>
-	</table>
+        <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
+        <span class="name">{{chore.name}}</span>
+        </td>
+        <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
+          <ul class="list-unstyled" id="responsible-list">
+            <li ng-repeat="responsible in chore.users" ng-class="{highlight: isResponsible(chore, responsible)}" ng-model="currResponsible">{{responsible.first_name}}</li>
+          </ul>
+        </td>
+       <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
+        <span class="recurring">{{convertfrequency(chore.interval)}}</span>
+       </td>
+       <td data-toggle="modal" data-target="#chores_edit_modal" ng-click="setChore($index)">
+         <span class="due date">{{format(chore.duedate)}}</span>
+       </td>
+       <td>
+        <input type="checkbox" ng-click="doChore(chore.id, $index)" ng-checked="isDone(chore.id, $index)">
+       </td>
+       <td width>
+         <i class="ion-close-circled delete-icon" ng-click="deleteChore(chore.id, $index)"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-	<div class="alert alert-warning" id="chores-empty-alert" ng-show="emptyChoreList()">No chores here, add some!</div>
+  <div class="alert alert-warning" id="chores-empty-alert" ng-show="emptyChoreList()">No chores here, add some!</div>
 
 </div>

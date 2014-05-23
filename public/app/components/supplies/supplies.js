@@ -48,7 +48,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
 	      success(function(data) {
 	        $scope.supplies.splice(0,0,data);
 	       	$scope.reset();
-          showSucc("Supply "+data.name+" successfully added!");
+          showSucc('Supply "' + data.name + '" successfully added!');
 	      }).
         error(function(data, status, headers, config){
           showErr(data.error);
@@ -64,6 +64,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
     $scope.updateSupply = function(index){
     	$http.put('/supplies/'+$scope.supplies[index].id, $scope.supplies[index]).
 	      success(function(data) {
+          showSucc('Supply "' + $scope.supplies[index].name + '" successfully edited!');
           $scope.supplies[index].edit = false;
 	      }).
         error(function(data, status, headers, config){
@@ -72,10 +73,10 @@ angular.module('main.supplies').controller('SuppliesCtrl',
     };
 
     // delete a supply
-    $scope.deleteSupply = function(id, index){
-    	$http.delete('/supplies/'+id).
+    $scope.deleteSupply = function(index){
+    	$http.delete('/supplies/' + $scope.supplies[index].id).
 	      success(function(data) {
-          showSucc("Supply "+ $scope.supplies[index].name+" successfully deleted!");
+          showSucc('Supply "' + $scope.supplies[index].name + '" successfully deleted!');
           $scope.supplies.splice(index, 1);
 	      }).
         error(function(data, status, headers, config){

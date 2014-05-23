@@ -34,7 +34,6 @@
         <div class="hidden-xs" id="user-info">
           <img src="{{profile_pic}}" class="user-image img-circle">
           <p id="user-welcome">Welcome, {{firstname}}!</p>
-          <a href="/logout" class="btn btn-danger btn-xs">Logout</a>
         </div>
 
 
@@ -78,6 +77,10 @@
               <a href='#/settings'>Settings</a>
             </li>
 
+            <li>
+              <a href="/logout">Log Out</a>
+            </li>
+
           </ul>
         </div>
       </div>
@@ -98,6 +101,9 @@
   <script src="vendor/angular-bootstrap/ui-bootstrap.min.js"></script>
   <script src="vendor/angular-local-storage/angular-local-storage.min.js"></script>
   <script src="vendor/momentjs/min/moment.min.js"></script>
+  <script src="vendor/jquery-ui/ui/jquery-ui.js"></script>
+  <script src="vendor/angular-ui-sortable/sortable.js"></script>
+  <script src="vendor/jqueryui-touch-punch/jquery.ui.touch-punch.min.js"></script>
   <script src="app.js"></script>
 
   <script src="components/bills/bills.js"></script>
@@ -110,6 +116,7 @@
   <script src="components/apartment/apartment.js"></script>
   <script src="components/history/history.js"></script>
   <script src="components/invitations/invitations.js"></script>
+
 
   <script>
     // JS function to collapse the side-bar when the page is less than 768px wide
