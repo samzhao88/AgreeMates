@@ -369,7 +369,7 @@ function editChore(req,res){
 	//Check that if its aa rotating chore 
 
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
-	.save({name: name.trim(), duedate: duedate, interval: interval},{patch: true})
+	.save({name: name.trim(), duedate: duedate, interval: interval, number_in_rotation: number_in_rotation},{patch: true})
 	.then(function(choreModel) {
 	// Go through users_chores assocaited with chore
 		new UserChoreModel().query('where', 'chore_id', '=', choreId)
