@@ -8,6 +8,7 @@ describe('supplies module', function() {
     suppliesModule = module('main.supplies');
   });
 
+
   it('should be registered', function() {
     expect(suppliesModule).not.to.equal(null);
   });
@@ -42,39 +43,37 @@ describe('supplies module', function() {
   };
   describe('supplies controller', function() {
        var httpMock, scope, ctrl;
-	  beforeEach(inject(function($controller, $rootScope, $httpBackend)  {
-		httpMock = $httpBackend;
+	    beforeEach(inject(function($controller, $rootScope, $httpBackend)  {
+			httpMock = $httpBackend;
 
-		  scope = $rootScope.$new();
+			  scope = $rootScope.$new();
 
-		  ctrl = $controller;
-		  ctrl('SuppliesCtrl', {
-			$scope: scope
+			  ctrl = $controller;
+			  ctrl('SuppliesCtrl', {
+				$scope: scope
 		  });
-
-		httpMock.whenGET('/supplies').respond(function(method, url, data, headers) {
-			return [200,supplies];
-		});
-		httpMock.whenPOST('/supplies', supply).respond(function(method, url, data, headers) {
-			return [200,supplyAddResponse];
-		});
-		httpMock.whenPUT('/supplies/1', supplies.supplies[0]).respond(function(method, url, data, headers) {
-			return [200,supplyEditResponse];
-		});
-		httpMock.whenDELETE('/supplies/1').respond(function(method, url, data, headers) {
-			return [200,supplyDeleteResponse];
-		});
+			httpMock.whenGET('/supplies').respond(function(method, url, data, headers) {
+				return [200,supplies];
+			});
+			httpMock.whenPOST('/supplies', supply).respond(function(method, url, data, headers) {
+				return [200,supplyAddResponse];
+			});
+			httpMock.whenPUT('/supplies/1', supplies.supplies[0]).respond(function(method, url, data, headers) {
+				return [200,supplyEditResponse];
+			});
+			httpMock.whenDELETE('/supplies/1').respond(function(method, url, data, headers) {
+				return [200,supplyDeleteResponse];
+			});
 		}));
-		   
-	  //check controller available
-	  it('controller should exist', function() {
-		expect(ctrl).not.to.equal(null);
-	  });
-
+	   
+		afterEach(function() {
+			httpMock.verifyNoOutstandingExpectation();
+			httpMock.verifyNoOutstandingRequest();
+       });	   
+	   
 	  it('should fetch all supplies',function() {
 		httpMock.expectGET('/supplies').respond(supplies);
 		httpMock.flush();
-
 		expect(scope.supplies.length).to.equal(2);
 	  });
       describe('add supply', function() {
@@ -84,9 +83,11 @@ describe('supplies module', function() {
 			scope.supplies = supplies;
 			scope.addSupply();
 			httpMock.flush();
+			
 		});
 		it('should display success',function() {
 			expect(scope.success).to.equal(true);
+			
 		});
 		
 		it('should display success message',function() {
@@ -116,6 +117,7 @@ describe('supplies module', function() {
 				scope.supplies = supplies.supplies;
 				scope.updateSupply(0);
 				httpMock.flush();
+				
 			});
 			it('should no longer be editing',function() {
 				expect(scope.supplies[0].edit).to.equal(false);
