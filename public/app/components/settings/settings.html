@@ -36,15 +36,11 @@
         </div>
         <form role="form" class="form-horizontal">
           <div class="modal-body">
-            <div class="form-group" data-ng-repeat="email in emails">
-              <label ng-show='$first' for="inputEmail" class="control-label col-sm-2">Email</label>
-              <label ng-hide='$first' class="control-label col-sm-2"></label>
-              <div class="col-sm-9 input-group">
-                <input type="email" class="form-control" id="inputEmail" ng-model="email.email" placeholder="first@last.com"/>
-                <span class="input-group-btn">
-                  <button type="button" class="btn btn-default" ng-show='$last' ng-click='addNewEmail()'>+</button>
-                </span>
-              </div>
+            <div class="input-group" data-ng-repeat="email in emails">
+              <input type="email" class="form-control" id="inputEmail" ng-model="email.email" placeholder="Roommate's Email Address" required>
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click='addNewEmail()'>+</button>
+              </span>
             </div>
           </div>
           <div class="modal-footer">
