@@ -203,14 +203,30 @@ function updatePayment(req, res) {
       Bookshelf.DB.knex('bills')
         .where('id', '=', billId)
         .where('apartment_id', '=', apartmentId)
-        .select('bills.name')
+        .select('bills.name', 'bills.paid')
         .then(function(model) {
-          var historyString = req.user.attributes.first_name + ' ' +
-            req.user.attributes.last_name + ' paid their portion of bill "' +
-            model[0].name.trim() + '"';
-	  new HistoryModel({apartment_id: apartmentId,
-            history_string: historyString, date: new Date()})
-            .save()
+          if(paid === true) {
+            var historyString = req.user.attributes.first_name + ' ' +
+              req.user.attributes.last_name + ' paid their portion of bill "' +
+              model[0].name.trim() + '"';
+	    new HistoryModel({apartment_id: apartmentId,
+              history_string: historyString, date: new Date()})
+              .save()
+          } else {
+            var historyString = req.user.attributes.first_name + ' ' +
+              req.user.attributes.last_name + ' unpaid their portion of bill "' +
+              model[0].name.trim() + '"';
+            new HistoryModel({apartment_id: apartmentId,
+              history_string: historyString, date: new Date()})
+              .save()
+            if(model[0].paid) {
+              historyString = 'All payments for the bill "' + model[0].name.trim() +
+              '" are no longer marked as paid, the bill is no longer resolved';
+              new HistoryModel({apartment_id: apartmentId,
+                history_string: historyString, date: new Date()})
+                .save()
+            }
+          }
         });
 
       // Check if all payments for bill have been paid
