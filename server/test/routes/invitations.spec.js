@@ -1,4 +1,5 @@
 // jshint camelcase: false
+// jshint maxlen: false
 'use strict';
 
 require('../../app');
@@ -84,7 +85,7 @@ describe('Invitations', function() {
     });
 
     it('creates and saves all invitations if apartment is found', function() {
-      var fetchApartmentStub = succeedingStub('fetchApartment', 
+      var fetchApartmentStub = succeedingStub('fetchApartment',
                                     {attributes: {name: 'test apartment'}});
       var saveInvitationsStub = emptyStub('saveInvitations');
 
@@ -108,7 +109,7 @@ describe('Invitations', function() {
     });
 
     it('returns 503 if failed to save all invitations', function() {
-      var fetchApartmentStub = succeedingStub('fetchApartment', 
+      var fetchApartmentStub = succeedingStub('fetchApartment',
                                   {attributes: {name: 'test apartment'}});
       var saveInvitationsStub = sinon.stub(invitations, 'saveInvitations',
         function(invitations, responseFunction) {
@@ -128,8 +129,8 @@ describe('Invitations', function() {
       saveInvitationsStub.restore();
     });
 
-    it('sends emails for each saved invitation when all save', function() {
-      var fetchApartmentStub = succeedingStub('fetchApartment', 
+    it('should log the invitation send to the history', function() {
+      var fetchApartmentStub = succeedingStub('fetchApartment',
                                   {attributes: {name: 'test apartment'}});
       var saveInvitationsStub = sinon.stub(invitations, 'saveInvitations',
         function(invitations, responseFunction) {
@@ -138,6 +139,31 @@ describe('Invitations', function() {
           responseFunction(resp);
         });
       var sendInvitationStub = emptyStub('sendInvitation');
+      var saveHistoryStub = emptyStub('saveHistory');
+      var req = {body: {emails: ['test1@example.com', 'test2@example.com']},
+                 user: {attributes: {first_name: 'test', last_name: 'user', apartment_id: 1}}};
+
+      invitations.addInvitations(req, res);
+
+      expect(saveHistoryStub).to.have.been.calledWith(1, 'test user sent invitation to "test1@example.com"');
+      expect(saveHistoryStub).to.have.been.calledWith(1, 'test user sent invitation to "test2@example.com"');
+      fetchApartmentStub.restore();
+      saveInvitationsStub.restore();
+      sendInvitationStub.restore();
+      saveHistoryStub.restore();
+    });
+
+    it('sends emails for each saved invitation when all save', function() {
+      var fetchApartmentStub = succeedingStub('fetchApartment',
+                                  {attributes: {name: 'test apartment'}});
+      var saveInvitationsStub = sinon.stub(invitations, 'saveInvitations',
+        function(invitations, responseFunction) {
+          var resp = [{id: 1, email: 'test1@example.com'},
+            {id: 2, email: 'test2@example.com'}];
+          responseFunction(resp);
+        });
+      var sendInvitationStub = emptyStub('sendInvitation');
+      var saveHistoryStub = emptyStub('saveHistory');
 
       var req = {body: {emails: ['test1@example.com', 'test2@example.com']},
                  user: {attributes: {apartment_id: 1}}};
@@ -156,6 +182,7 @@ describe('Invitations', function() {
       fetchApartmentStub.restore();
       saveInvitationsStub.restore();
       sendInvitationStub.restore();
+      saveHistoryStub.restore();
     });
 
     it('returns 404 if failed to fetch apartment', function() {
@@ -236,7 +263,7 @@ describe('Invitations', function() {
       fetchApartmentStub.restore();
     });
 
-    it('renders the invitation index view if found apartment and user', 
+    it('renders the invitation index view if found apartment and user',
        function() {
       var fetchInvitationStub = succeedingStub('fetchInvitation',
                                       {attributes: {id: 1, apartment_id: 5}});
@@ -254,7 +281,7 @@ describe('Invitations', function() {
       fetchApartmentStub.restore();
     });
 
-    it('renders the invitation login view if found apartment and no user', 
+    it('renders the invitation login view if found apartment and no user',
        function() {
       var fetchInvitationStub = succeedingStub('fetchInvitation',
                                       {attributes: {id: 1, apartment_id: 5}});
@@ -324,6 +351,29 @@ describe('Invitations', function() {
       addUserToApartmentStub.restore();
     });
 
+    it('logs to history that invitation was accepted', function() {
+      var fetchInvitationStub = succeedingStub('fetchInvitation',
+        {attributes: {apartment_id: 1}});
+      var addUserToApartmentStub = sinon.stub(invitations, 'addUserToApartment',
+        function(userId, apartmentId, thenFun) {
+          thenFun();
+        });
+      var destroyInvitationStub = emptyStub('destroyInvitation');
+      var saveHistoryStub = emptyStub('saveHistory');
+      var req = {params: {invite: hashids.encrypt(2)}, user:
+        {id: 4, attributes: {first_name: 'test', last_name: 'user'}}};
+
+      invitations.deleteInvitation(req, res);
+
+      expect(saveHistoryStub).to.have.been.calledOnce;
+      expect(saveHistoryStub).to.have.been.calledWith(1, 'test user accepted invitation');
+
+      fetchInvitationStub.restore();
+      addUserToApartmentStub.restore();
+      destroyInvitationStub.restore();
+      saveHistoryStub.restore();
+    });
+
     it('returns 503 if failed to add user to apartment', function() {
       var fetchInvitationStub = succeedingStub('fetchInvitation',
                                                {attributes: {apartment_id: 1}});
@@ -341,7 +391,7 @@ describe('Invitations', function() {
       fetchInvitationStub.restore();
       addUserToApartmentStub.restore();
     });
-    
+
     it('destroys invitation after adding user to apartment', function() {
       var fetchInvitationStub = succeedingStub('fetchInvitation',
                                                {attributes: {apartment_id: 1}});
@@ -350,7 +400,9 @@ describe('Invitations', function() {
           thenFun();
         });
       var destroyInvitationStub = emptyStub('destroyInvitation');
-      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4}};
+      var saveHistoryStub = emptyStub('saveHistory');
+      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4,
+        attributes: {first_name: 'test', last_name: 'user'}}};
 
       invitations.deleteInvitation(req, res);
 
@@ -360,6 +412,7 @@ describe('Invitations', function() {
       fetchInvitationStub.restore();
       addUserToApartmentStub.restore();
       destroyInvitationStub.restore();
+      saveHistoryStub.restore();
     });
 
     it('returns 503 if failed to destroy invitation', function() {
@@ -370,7 +423,9 @@ describe('Invitations', function() {
           thenFun();
         });
       var destroyInvitationStub = failingStub('destroyInvitation');
-      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4}};
+      var saveHistoryStub = emptyStub('saveHistory');
+      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4,
+        attributes: {first_name: 'test', last_name: 'user'}}};
 
       resMock.expects('json').once().
         withArgs(503, {error: 'failed to destroy invitation'});
@@ -380,6 +435,7 @@ describe('Invitations', function() {
       fetchInvitationStub.restore();
       addUserToApartmentStub.restore();
       destroyInvitationStub.restore();
+      saveHistoryStub.restore();
     });
 
     it('returns 200 if successfully destroyed invitation', function() {
@@ -390,7 +446,9 @@ describe('Invitations', function() {
           thenFun();
         });
       var destroyInvitationStub = succeedingStub('destroyInvitation');
-      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4}};
+      var saveHistoryStub = emptyStub('saveHistory');
+      var req = {params: {invite: hashids.encrypt(2)}, user: {id: 4,
+        attributes: {first_name: 'test', last_name: 'user'}}};
 
       resMock.expects('send').once().withArgs(200);
 
@@ -399,6 +457,7 @@ describe('Invitations', function() {
       fetchInvitationStub.restore();
       addUserToApartmentStub.restore();
       destroyInvitationStub.restore();
+      saveHistoryStub.restore();
     });
   });
 
