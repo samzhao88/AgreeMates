@@ -247,6 +247,8 @@ html, body {
 .testing {
     vertical-align: top;
   text-align: left;
+  border: 1px dashed grey;
+  border-radius: 3px;
 }
 
 #right-align {
