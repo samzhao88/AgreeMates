@@ -405,13 +405,12 @@ deleteBill: function(req, res) {
       // the bill.
       Bills.destroyPayments(billId,
         function then() {
-          new BillModel()
-            .query('where', 'id', '=',  billId, 'AND',
-                   'apartment_id', '=', apartmentId)
-            .destroy()
-            .then(function() {
+          Bills.destroyBill(billId, apartmentId,
+            function then() {
               res.send(200);
-            }).otherwise(function() {
+            },
+            function otherwise(error) {
+              console.log(error);
               res.json(503, {error: 'Database error.'})
             });
         },
@@ -460,6 +459,15 @@ createBill: function(req) {
 destroyPayments: function(billId, thenFun, otherFun) {
   new PaymentModel()
     .query('where', 'bill_id', '=', billId)
+    .destroy()
+    .then(thenFun)
+    .otherwise(otherFun);
+},
+
+destroyBill: function(billId, apartmentId, thenFun, otherFun) {
+  new BillModel()
+    .query('where', 'id', '=', billId, 'AND',
+           'apartment_id', '=', apartmentId)
     .destroy()
     .then(thenFun)
     .otherwise(otherFun);
