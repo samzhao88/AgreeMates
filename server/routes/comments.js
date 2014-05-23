@@ -40,7 +40,7 @@ var comments = function(app) {
           .then(function(message) {
             var historyString = req.user.attributes.first_name + ' ' +
               req.user.attributes.last_name + ' added a comment to message "' +
-              message.attributes.subject.trim() + '" on the message board';
+              message.attributes.subject.trim() + '"';
             new HistoryModel({apartment_id: apartmentId,
               history_string: historyString, date: new Date()})
               .save()

@@ -123,7 +123,7 @@ function addMessage(req, res) {
     .then(function (model) {
       var historyString = req.user.attributes.first_name + ' ' + 
         req.user.attributes.last_name + ' added a message "' + 
-        subject.trim() + '" to the message board';
+        subject.trim() + '"';
         new HistoryModel({apartment_id: apartmentId,
           history_string: historyString, date: new Date()})
           .save()

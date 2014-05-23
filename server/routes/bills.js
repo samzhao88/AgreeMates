@@ -205,7 +205,8 @@ function updatePayment(req, res) {
         .where('apartment_id', '=', apartmentId)
         .select('bills.name', 'bills.paid')
         .then(function(model) {
-          if(paid === true) {
+          console.log(paid);
+          if(paid === 'true') {
             var historyString = req.user.attributes.first_name + ' ' +
               req.user.attributes.last_name + ' paid their portion of bill "' +
               model[0].name.trim() + '"';
@@ -220,8 +221,8 @@ function updatePayment(req, res) {
               history_string: historyString, date: new Date()})
               .save()
             if(model[0].paid) {
-              historyString = 'All payments for the bill "' + model[0].name.trim() +
-              '" are no longer marked as paid, the bill is no longer resolved';
+              historyString = 'The bill "' + model[0].name.trim() +
+              '" is no longer resolved';
               new HistoryModel({apartment_id: apartmentId,
                 history_string: historyString, date: new Date()})
                 .save()
@@ -244,9 +245,8 @@ function updatePayment(req, res) {
                          'apartment_id', '=', apartmentId)
                   .fetch({withRelated: ['payment']})
                   .then(function(oldBill) {
-                    var historyString = 'All users have paid their portions of ' +
-                      'the bill "' + oldBill.attributes.name + '" the bill ' +
-                      'is now resolved';
+                    var historyString = 'The bill "' + 
+                      oldBill.attributes.name + '" is now resolved';
                     new HistoryModel({apartment_id: apartmentId,
                       history_string: historyString, date: new Date()})
                       .save()
