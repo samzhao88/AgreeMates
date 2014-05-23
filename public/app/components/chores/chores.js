@@ -420,8 +420,6 @@ function ($scope, $http, $timeout) {
         }
         else
         {   
-            console.log(user.order_index);
-            console.log(chore.number_in_rotation);
             return (user.order_index < chore.number_in_rotation);
         }
     }
