@@ -49,6 +49,49 @@ describe('Supplies', function() {
     });
 
     it('queries for all supplies in the apartment', function() {
+      var querySuppliesStub = emptyStub('querySupplies');
+      var req = {user: {attributes: {apartment_id: 11}}};
+
+      supplies.getSupplies(req, res);
+
+      expect(querySuppliesStub).to.have.been.calledOnce;
+      expect(querySuppliesStub).to.have.been.calledWith(11);
+
+      querySuppliesStub.restore();
+    });
+
+    it('returns 503 if the supply query failed', function() {
+      var querySuppliesStub = failingStub('querySupplies');
+      var req = {user: {attributes: {apartment_id: 11}}};
+
+      resMock.expects('json').once().
+        withArgs(503, {error: 'Database error.'});
+
+      supplies.getSupplies(req, res);
+
+      querySuppliesStub.restore();
+    });
+
+    it('returns all supplies in the database', function() {
+      var fakeSupplies = [
+        {attributes: {id: 5, name: 'test supply numero uno', status: 1}},
+        {attributes: {id: 2, name: 'test supply 2', status: 2}},
+        {attributes: {id: 4, name: 'test supply 3', status: 1}}];
+      var expectedJson = {supplies: [
+                          {id: 5, name: 'test supply numero uno', status: 1},
+                          {id: 2, name: 'test supply 2', status: 2},
+                          {id: 4, name: 'test supply 3', status: 1}]};
+
+      var querySuppliesStub = succeedingStub('querySupplies',
+        {length: 3, models: fakeSupplies});
+      var req = {user: {attributes: {apartment_id: 11}}};
+
+      resMock.expects('json').once().
+        withArgs(expectedJson);
+
+      supplies.getSupplies(req, res);
+
+      querySuppliesStub.restore();
     });
   });
 
@@ -62,11 +105,11 @@ describe('Supplies', function() {
     });
 
     it('should return 400 if a supply name is invalid', function() {
-      var req1 = {user: {attributes: 
+      var req1 = {user: {attributes:
         {apartment_id: 1}}, body: {name: undefined}};
-      var req2 = {user: {attributes: 
+      var req2 = {user: {attributes:
         {apartment_id: 1}}, body: {name: null}};
-      var req3 = {user: {attributes: 
+      var req3 = {user: {attributes:
         {apartment_id: 1}}, body: {name: ''}};
       resMock.expects('json').thrice().
         withArgs(400, {error: 'Invalid supply name.'});
