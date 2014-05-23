@@ -208,12 +208,15 @@ function getChores(req,res){
 	// var apartmentId = req.user.attributes.apartment_id;
 	// var user = req.user.attributes.id;
 	
-	//testing
+	
 	var choreId = req.body.id;
 	var apartmentId = req.body.apartment_id;
 	var user = req.body.user_id;
 
-	console.log(req.body);
+	if(!isValidId(choreId)){
+		res.json(400,{error: 'Invalid chore id'});
+		return;
+	}
 
 	// Check that the chore being marked as completed
 	
