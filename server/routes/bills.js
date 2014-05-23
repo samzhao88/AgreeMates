@@ -35,23 +35,13 @@ getBills: function(req, res) {
   }
 
   var apartmentId = req.user.attributes.apartment_id;
-
-  // Fetch all the apartments bills and their corresponding
-  // payments
-  Bookshelf.DB.knex('bills')
-    .join('payments', 'bills.id', '=', 'payments.bill_id')
-    .join('users as creator', 'bills.user_id', '=', 'creator.id')
-    .join('users', 'payments.user_id', '=', 'users.id')
-    .where('bills.apartment_id', '=', apartmentId)
-    .where('bills.paid', '=', (req.query.type === 'resolved'))
-    .select('bills.amount as total', 'payments.user_id',
-            'bills.paid as billPaid', 'payments.paid as userPaid',
-            'bills.createdate', 'bills.duedate', 'bills.name',
-            'bills.interval', 'users.first_name', 'users.id',
-            'payments.bill_id', 'payments.amount',
-            'bills.user_id as creatorId', 'creator.first_name as payTo')
-    .orderBy('payments.bill_id')
-    .then(function(rows) {
+  if (apartmentId === undefined) {
+    res.json(404, {error: 'No apartment id defined.'});
+    return;
+  }
+  
+  Bills.fetchBills(apartmentId, req.query.type, 
+    function then(rows) {
       var bills = [];
       var payments = [];
       if(rows.length === 0) {
@@ -116,10 +106,10 @@ getBills: function(req, res) {
             payments: payments
       });
       res.json({bills: bills});
-    })
-    .otherwise(function(error) {
+  },
+  function otherwise(error) {
       res.json(503, {error: 'Database error.'});
-    });
+  });
 },
 
 // Adds a bill to an apartment
@@ -128,45 +118,33 @@ addBill: function(req, res) {
     res.json(401, {error: 'Unauthorized user.'});
     return;
   }
-
-  // Copy over fields from request
-  var apartmentId = req.user.attributes.apartment_id;
-  var userId = req.user.attributes.id;
-  var name = req.body.name;
-  var total = req.body.total;
-  var interval = req.body.interval;
-  var duedate = req.body.date;
-  var createdate = new Date();
-  var roommates = req.body.roommates;
-
+ 
   // Check if the fields are acceptable
-  if (!isValidName(name)) {
+  if (!isValidName(req.body.name)) {
     res.json(400, {error: 'Invalid bill name.'});
     return;
-  } else if (total === undefined || total < 0) {
+  } else if (req.body.total === undefined || req.body.total < 0) {
     res.json(400, {error: 'Invalid bill total.'});
     return;
-  } else if (interval === undefined || interval < 0) {
+  } else if (req.body.interval === undefined || req.body.interval < 0) {
     res.json(400, {error: 'Invalid bill interval.'});
     return;
-  } else if (duedate === undefined) {
+  } else if (req.body.date === undefined) {
     res.json(400, {error: 'Invalid due date.'});
     return;
-  } else if (roommates === undefined) {
+  } else if (req.body.roommates === undefined) {
     res.json(400, {error: 'Invalid roommates.'});
     return;
   }
 
-  // Create a new bill model
-  new BillModel({apartment_id: apartmentId, name: name,
-    user_id: userId, amount: total, paid: false,
-    interval: interval, duedate: duedate, createdate: createdate})
-    .save()
+  var bill = Bills.createBill(req);
+  var roommates = req.body.roommates;
+  bill.save() 
     .then(function(model) {
       var historyString = req.user.attributes.first_name + ' ' +
         req.user.attributes.last_name + ' added bill "' +
-        name.trim() + '"';      
-      new HistoryModel( {apartment_id: apartmentId,
+        bill.attributes.name.trim() + '"';      
+      new HistoryModel( {apartment_id: bill.attributes.apartment_id,
         history_string: historyString, date: new Date()})
         .save();
 
@@ -176,12 +154,14 @@ addBill: function(req, res) {
           user_id: roommates[i].id, bill_id: model.id})
           .save()
           .otherwise(function(error) {
+            console.log(error);
             res.json(503, {error: 'Database error.'});
           });
       }
       res.json({id: model.attributes.id});
     }).otherwise(function(error) {
-      res.json(503, {error: 'Database error.'});
+      console.log(error);
+      res.json(503, {error: 'Database error'});
     });
 },
 
@@ -197,10 +177,10 @@ updatePayment: function(req, res) {
   var billId = req.params.bill;
   var paid = req.body.paid;
 
-  if (!isValidId(billId)) {
+  if (!isValidId(req.body.bill)) {
     res.json(400, {error: 'Invalid bill ID.'});
     return;
-  } else if (paid !== 'true' && paid !== 'false') {
+  } else if (req.body.paid !== 'true' && req.body.paid !== 'false') {
     res.json(400, {error: 'Invalid paid parameter.'});
     return;
   }
@@ -366,10 +346,8 @@ editBill: function(req, res) {
   // Destroy all the payments which are references to the billId
   // This must be done since the roommates paying on a bill could be
   // different.
-  new PaymentModel()
-    .query('where', 'bill_id', '=', billId)
-    .destroy()
-    .then(function() {
+  Bills.destroyPayments(billId, 
+    function then() {
       // Edit the bill
       new BillModel({id: billId, apartment_id: apartmentId})
         .save({name: name, amount: total, duedate: date, interval: interval})
@@ -382,19 +360,19 @@ editBill: function(req, res) {
  
           // Add new payments for all the users who need to pay
           for(var i = 0; i < roommates.length; i++) {
-            new PaymentModel({paid: false,
-                             amount: roommates[i].amount,
-                             user_id: roommates[i].id, bill_id: billId})
+            new PaymentModel({paid: false, amount: roommates[i].amount,
+              user_id: roommates[i].id, bill_id: billId})
               .save()
               .otherwise(function() {
                 res.json(503, {error: 'Database error'});
-              });
+              }); 
           }
           res.json({result: 'success'});
         }).otherwise(function(error) {
           res.json(503, {error: 'Database error.'});
         });
-    }).otherwise(function() {
+    },
+    function otherwise(error) {
       res.json(503, {error: 'Database error.'});
     });
 },
@@ -425,10 +403,8 @@ deleteBill: function(req, res) {
         .save()
       // Destroy all the payments for a bill and then destroy
       // the bill.
-      new PaymentModel()
-        .query('where', 'bill_id', '=', billId)
-        .destroy()
-        .then(function() {
+      Bills.destroyPayments(billId,
+        function then() {
           new BillModel()
             .query('where', 'id', '=',  billId, 'AND',
                    'apartment_id', '=', apartmentId)
@@ -438,14 +414,66 @@ deleteBill: function(req, res) {
             }).otherwise(function() {
               res.json(503, {error: 'Database error.'})
             });
-        }).otherwise(function(error) {
+        },
+        function otherwise(error) {
           res.json(503, {error: 'Database error.'});
         });
-      }).otherwise(function() {
-        res.json(503, {error: 'Database error.'});
-      });
+    }).otherwise(function() {
+      res.json(503, {error: 'Database error.'});
+    });
+},
+
+fetchBills: function(apartmentId, resolved, thenFun, otherwiseFun) {
+  // Fetch all the apartments bills and their corresponding
+  // payments
+  Bookshelf.DB.knex('bills')
+    .join('payments', 'bills.id', '=', 'payments.bill_id')
+    .join('users as creator', 'bills.user_id', '=', 'creator.id')
+    .join('users', 'payments.user_id', '=', 'users.id')
+    .where('bills.apartment_id', '=', apartmentId)
+    .where('bills.paid', '=', (resolved === 'resolved'))
+    .select('bills.amount as total', 'payments.user_id',
+            'bills.paid as billPaid', 'payments.paid as userPaid',
+            'bills.createdate', 'bills.duedate', 'bills.name',
+            'bills.interval', 'users.first_name', 'users.id',
+            'payments.bill_id', 'payments.amount',
+            'bills.user_id as creatorId', 'creator.first_name as payTo')
+    .orderBy('payments.bill_id')
+    .then(thenFun)
+    .otherwise(otherwiseFun);
+},
+
+createBill: function(req) {
+  var name = req.body.name;
+  var amount = req.body.total;
+  var apartment_id = req.user.attributes.apartment_id;
+  var user_id = req.user.attributes.id;
+  var interval = req.body.interval;
+  var duedate = req.body.date; 
+
+  // Build up the bill model
+  return new BillModel({apartment_id: apartment_id, user_id: user_id,
+    name: name, amount: amount, interval: interval, duedate: duedate,
+    createdate: new Date(), paid: false});
+},
+ 
+destroyPayments: function(billId, thenFun, otherFun) {
+  new PaymentModel()
+    .query('where', 'bill_id', '=', billId)
+    .destroy()
+    .then(thenFun)
+    .otherwise(otherFun);
+},
+
+createSavePayments: function(roommates, thenFun, otherFun) {
+
+},
+
+savePayments: function(payments, thenFun) {
+
 }
 };
+
 // Checks if a bill ID is valid
 function isValidId(id) {
   return isInt(id) && id > 0;
