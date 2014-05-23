@@ -188,7 +188,7 @@ function ($scope, $http, $timeout) {
             chore.users = [];
             chore.users = data.users;
 
-            $scope.chores.push(chore);
+            $scope.chores_uncompleted.push(chore);
 
             showSucc("Chore "+chore.name+" successfully added!");
             }).error(function() {});
@@ -448,7 +448,18 @@ function ($scope, $http, $timeout) {
     var temp = $scope.chores[index];
     temp.apartment_id = $scope.apartment.id;
     temp.user_id = $scope.userId;
-    $http.post('/chores/complete/:chore', temp).success(function(data) { 
+    var chore = {};
+    $http.post('/chores/complete/:chore', temp).success(function(data) {
+        console.log(data);
+        chore = data.chore;
+        chore.users = data.users;
+        if(chore.interval == 0)
+        {
+            
+        }
+        $scope.chores[index] = chore;
+        $scope.chores_completed.push(temp);
+
     }).error(function(data, status, headers, config){
          console.log(data);
     });
@@ -484,7 +495,14 @@ function ($scope, $http, $timeout) {
     };
 
     $scope.emptyChoreList = function(){
-      return $scope.chores_uncompleted.length == 0 ? true : false;
+      if($scope.chores_uncompleted.length == 0 && $scope.chores_completed.length == 0)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     };
 
 
