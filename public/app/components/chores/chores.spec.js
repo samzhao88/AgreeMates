@@ -82,7 +82,8 @@ describe('chores module', function() {
       order_index: 0,
       user_id: 3
   }] };
-  
+
+  var deleteChoreResponse = {};
 
   describe('ChoresCtrl', function() {
     var ctrl, scope, httpMock;
