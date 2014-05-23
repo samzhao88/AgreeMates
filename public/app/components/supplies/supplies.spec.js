@@ -90,7 +90,7 @@ describe('supplies module', function() {
 		});
 		
 		it('should display success message',function() {
-			expect(scope.successmsg).to.equal('Supply new chore successfully added!');
+			expect(scope.successmsg).to.equal('Supply "new chore" successfully added!');
 		});
 		
 		it('should hava scope which include all chores',function() {
@@ -122,7 +122,7 @@ describe('supplies module', function() {
 			});
 			
 			it('should display success message',function() {
-				expect(scope.successmsg).to.equal('Supply toilet paper successfully edited!');
+				expect(scope.successmsg).to.equal('Supply "toilet paper" successfully edited!');
 			});
 			
 			it('should hava scope which include all chores',function() {
@@ -146,12 +146,12 @@ describe('supplies module', function() {
 			beforeEach(function() {
 				httpMock.expectDELETE('/supplies/1').respond(supplyDeleteResponse);
 				scope.supplies = supplies.supplies;
-				scope.deleteSupply(1, 0);
+				scope.deleteSupply(0);
 				httpMock.flush();
 			});
 			
 			it('should display success message',function() {
-				expect(scope.successmsg).to.equal('Supply toilet paper successfully deleted!');
+				expect(scope.successmsg).to.equal('Supply "toilet paper" successfully deleted!');
 			});
 			
 			it('should hava scope which include all chores',function() {
