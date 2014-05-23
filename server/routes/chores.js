@@ -108,7 +108,7 @@ function getChores(req,res){
 		var name = req.body.name;
 		var apartmentId = req.user.attributes.apartment_id;
 		var userId = req.user.attributes.id;
-		var duedate = req.body.duedate;
+		var duedate = parseDate(req.body.duedate);
 		var createdate = new Date();
 
 		var interval = req.body.interval;
@@ -129,6 +129,7 @@ function getChores(req,res){
 		
 		// Check duedate is valid valid
 		if(!isValidDate(duedate)){
+			console.log(duedate);
 			res.json(400, {error: 'Invalid due date'});
 			return;
 		}
@@ -224,7 +225,6 @@ function getChores(req,res){
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
 	.fetch()
 	.then(function(chore){
-		console.log(chore);
 		// If the chore is not reocurring mark as completed and send 200
 		if(!chore.get('completed')){
 			new ChoreModel({id: choreId})
@@ -312,12 +312,18 @@ function getChores(req,res){
   
   }
   
+  function parseDate(input) {
+  var parts = input.split('-');
+  // new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
+  return new Date(parts[0], parts[1]-1, parts[2]); // Note: months are 0-based
+}
+  
   // Update the chore
 function editChore(req,res){
 	var apartmentId = req.user.attributes.apartment_id;
 	var choreId = req.params.chore;
 	var name = req.body.name;
-	var duedate = req.body.duedate;
+	var duedate = parseDate(req.body.duedate);
 	var roommates = req.body.roommates;
 	var interval = req.body.interval;
 	var rotating = req.body.rotating;
@@ -559,6 +565,7 @@ var choreUpdateor = new CronJob('0 59 23 * * *', function(){
 	  }
 	  
 	  //Checks that date is on or after current date.
+	  // Note this only works for yyyy-mm-dd format of date
 	  function isValidDate(date){
 		var currentDate = new Date();
 		currentDate.setHours(0);
