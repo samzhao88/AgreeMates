@@ -79,7 +79,7 @@
                 <div class="form-group" ng-class="{'hide': users_at_least_two()}">
                 <label class="col-sm-3 control-label" for="xfive">Rotating Responsibility?</label>
                 <div class="col-sm-5">
-                    <input type="radio" id="xfive" name="rotating" ng-model="chore.rotating" ng-value="true"> Yes
+                    <input type="radio" id="xfive" name="rotating" ng-model="chore.rotating" ng-value="true" ng-click="setDefaultRotation()"> Yes
                     <input type="radio" id="xfive" name="rotating" ng-model="chore.rotating" ng-value="false"> No
 
                 </div>
@@ -265,7 +265,7 @@
 
 
   <!-- add a filter to table later on -->
-  <div class="clearfix" id="chores-filter" ng-show="!emptyChoreList()">
+  <div class="clearfix" id="chores-filter" ng-hide="emptyChoreList()">
     <div class="btn-group">
       <button type="button" class="btn btn-default" ng-click="setTable('unresolved')" ng-class="{ 'active' : table === 'unresolved' }">Uncompleted</button>
       <button type="button" class="btn btn-default" ng-click="setTable('resolved')" ng-class="{ 'active' : table === 'resolved' }">Completed</button>
