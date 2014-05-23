@@ -10,6 +10,10 @@ a:hover {
   transition: color .2 ease-out;
 }
 
+button:focus {
+  outline: none;
+}
+
 #side-menu li.active {
   background-color: #263645;
 }
