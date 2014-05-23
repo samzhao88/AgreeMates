@@ -8,24 +8,20 @@
 </head>
 <body ng-controller="InviteIndexCtrl">
 
-  <div class="container">
-    <div class="jumbotron">
 
-      <div class="row">
-        <h1>AgreeMates</h1>
+  <div id="accept-invite-wrap">
+    <div id="accept-invite-content">
+      <div class="container">
+        <h1 id="accept-invite-title">AgreeMates</h1>
+        <h3 id="accept-invite-description">Join an apartment.</h3>
+        <h3 id="accept-invite-text">You've been invited to the apartment "{{aptName}}" at the address "{{aptAddress}}".</h3>
+        <button type="button" id="accept-invite-button" class="btn btn-lg btn-primary" ng-click="accept({{invId}})">Accept Invitation</button>
       </div>
-
-      <div class="row">
-        <p>You have been invited to the apartment {{aptName}} at
-        address {{aptAddress}}.</p>
-      </div>
-
-      <div class="row">
-        <a class="btn btn-primary btn-lg" ng-click="accept('{{invId}}')" ng-href="#accept">Accept Invitation</a>
-      </div>
-
     </div>
+  </div>
 
+  <div id="accept-invite-footer" class="container">
+    <a href="https://github.com/AgreeMates/AgreeMates/wiki/Product-Home-Page">User Documentation</a>
   </div>
 
   <script src="../vendor/jquery/dist/jquery.min.js"></script>
@@ -46,7 +42,6 @@
   <script src="../components/supplies/supplies.js"></script>
   <script src="../components/navbar/navbar.js"></script>
   <script src="../components/settings/settings.js"></script>
-  <script src="../components/profile/profile.js"></script>
   <script src="../components/apartment/apartment.js"></script>
   <script src="../components/history/history.js"></script>
   <script src="../components/invitations/invitations.js"></script>
