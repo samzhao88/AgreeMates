@@ -95,7 +95,7 @@ angular.module('main.bills').controller('BillsCtrl',
             }
           }
         };
-      };      
+      };
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -228,8 +228,8 @@ angular.module('main.bills').controller('BillsCtrl',
 	      success(function(data) {
           showSucc("Bill "+ $scope.bills[$scope.deleteIdx].name+" successfully deleted!");
 	        $scope.bills.splice($scope.deleteIdx, 1);
-          $scope.updateBalanceModel();    
-          $scope.updateIdx = -1;   
+          $scope.updateBalanceModel();
+          $scope.updateIdx = -1;
 	      }).
         error(function(data, status, headers, config){
           console.log(data);
@@ -385,8 +385,8 @@ angular.module('main.bills').controller('BillsCtrl',
       if (billId === undefined) {
         if ($scope.updateIdx === undefined || $scope.updateIdx == -1) {
           return false;
-        } 
-        billId = $scope.bills[$scope.updateIdx].id;               
+        }
+        billId = $scope.bills[$scope.updateIdx].id;
       }
 
       for (var i = 0; i < $scope.bills.length; i++) {
@@ -400,7 +400,7 @@ angular.module('main.bills').controller('BillsCtrl',
     //split the bill amount evenly among all selected roommates
     $scope.splitBill = function() {
       var numRoommates = $scope.selectedRoommates.length;
-      var amount = $scope.bill.total / numRoommates;
+      var amount = Math.round(($scope.bill.total / numRoommates) * 100) / 100;
 
       for (var i = 0; i < $scope.responsible.length; i++) {
         var responsible = false;
@@ -413,7 +413,7 @@ angular.module('main.bills').controller('BillsCtrl',
         if (!responsible) {
           $scope.responsible[i].amount = '';
         }
-      };      
+      };
     }
 
     // $scope.showBalancedetail = function(arr) {

@@ -54,12 +54,12 @@ function getUsers(req, res) {
 	}
 
 	var apartmentId = req.user.attributes.apartment_id;
-	
+
 	if(!isValidId(apartmentId)) {
 		res.json(401, {error: 'Unauthorized Apartment.'});
 		return;
 	}
-	
+
 	Bookshelf.DB.knex('users')
 		.select('id', 'first_name', 'last_name', 'email', 'phone', 'facebook_id', 'google_id')
 		.where('apartment_id', '=', apartmentId)
@@ -92,12 +92,12 @@ function getApartment(req, res) {
 	}
 
 	var apartmentId = req.user.attributes.apartment_id;
-	
+
 	if(!isValidId(apartmentId)) {
 		res.json(401, {error: 'Unauthorized Apartment.'});
 		return;
 	}
-	
+
 	Bookshelf.DB.knex('apartments')
 		.where('apartments.id', '=', apartmentId)
 		.then(function(rows) {
@@ -118,17 +118,17 @@ function updateApartment(req, res) {
 	var apartmentId = req.user.attributes.apartment_id;
 	var apartmentName = req.body.name;
 	var apartmentAddress = req.body.address;
-	
+
 	if (!isValidName(apartmentName)) {
 		res.json(400, {error: 'Invalid apartment name.'});
 		return;
 	}
-	
+
 	if (!isValidName(apartmentAddress)) {
 		res.json(400, {error: 'Invalid apartment address.'});
 		return;
 	}
-	
+
 	if(!isValidId(apartmentId)) {
 		res.json(401, {error: 'Unauthorized Apartment.'});
 		return;
@@ -162,16 +162,16 @@ function deleteApartment(req, res)  {
 	}
 	var apartment_id = req.user.attributes.apartment_id;
 	var user_id = req.user.id;
-	
+
 	if(!isValidId(apartmentId)) {
 		res.json(401, {error: 'Unauthorized Apartment.'});
 		return;
-	}		
+	}
 	//delete associated users' tie to the apartment
 	 new Users()
 	.query('where', 'apartment_id', '=', apartment_id)
 	.fetch()
-	.then(function(collection) {	
+	.then(function(collection) {
 		collection.mapThen(function(user) {
 			//delete  bills
 			user.attributes.apartment_id = null;
@@ -223,6 +223,25 @@ function deleteApartment(req, res)  {
 		});
 }
 
+// Removes a user from their apartment
+function leaveApartment(req, res) {
+	if (req.user === undefined) {
+		res.json(401, {error: 'Unauthorized user.'});
+		return;
+	}
+
+	var userId = req.user.attributes.id;
+
+	new UserModel({id: userId})
+		.save({apartment_id: null}, {patch: true})
+		.then(function() {
+			res.send(200);
+		})
+		.otherwise(function() {
+			res.json(504, {error: 'Database error.'});
+		});
+}
+
 // Checks if a name is valid
 function isValidName(name) {
 	return name !== undefined && name !== null && name.trim() !== '';
@@ -230,7 +249,7 @@ function isValidName(name) {
 
 // Checks if an ID is valid
 function isValidId(id) {
-	
+
 	return isInt(id) && id > 0;
 }
 
@@ -247,12 +266,13 @@ function setup(app) {
   app.post('/apartment', addApartment);
   app.put('/apartment', updateApartment);
   app.delete('/apartment', deleteApartment);
+	app.post('/apartment/leave', leaveApartment);
 }
-
 
 module.exports.getApartment = getApartment;
 module.exports.addApartment = addApartment;
 module.exports.updateApartment = updateApartment;
 module.exports.deleteApartment = deleteApartment;
+module.exports.leaveApartment = leaveApartment;
 module.exports.getUsers = getUsers;
 module.exports.setup = setup;
