@@ -27,8 +27,8 @@
 	 						<input type="text" class="form-control" autofocus ng-model="supply.name" placeholder="Supply name" required>
 	 					</div>
 	 					<div class="supply-form-buttons">
-						   <button ng-click="addSupply()" ng-disabled="disabled()" type="button" class="btn btn-success">Add</button>
-							 <button ng-click="reset()" type="button" class="btn btn-default">Cancel</button>
+						   	<button ng-click="addSupply()" ng-disabled="disabled()" type="button" class="btn btn-success">Add</button>
+							<button ng-click="reset()" type="button" class="btn btn-default">Cancel</button>
 	 					</div>
 	 				</form>
  				</td>
@@ -45,7 +45,7 @@
  					</div>
  					<div ng-show="supply.edit" class="edit">
  						<form ng-submit="updateSupply($index)">
- 							<input type="text" style="width: 200px;" class="form-control" ng-model="supply.name" required>
+ 							<input type="text" style="width: 200px;" class="form-control center-block" ng-model="supply.name" required>
  						</form>
  					</div>
  				</td>
