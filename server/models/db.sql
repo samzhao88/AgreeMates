@@ -187,7 +187,7 @@ CREATE TABLE chores (
     name character varying(255),
     createdate timestamp,
     duedate date,
-    "interval" integer,
+    interval integer,
     completed boolean,
     reocurring_id integer NOT NULL,
     user_id integer,
