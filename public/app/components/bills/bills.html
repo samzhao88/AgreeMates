@@ -132,7 +132,7 @@
 	</div>
 
 	<!-- Edit bill modal -->
-	<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" my-modal id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 
@@ -147,29 +147,33 @@
 		      <div class="form-group">
 		        <label class="col-sm-2 control-label">Name</label>
 		        <div class="col-sm-6">
-		          <input type="text" class="form-control" ng-model="oldBill.name">
+		        	<div ng-class="{'has-error': editBillForm.name.$invalid}">
+              	<input type="text" class="form-control" name="name" ng-model="oldBill.name" required>
+              </div>
 		        </div>
 		      </div>
 		      <div class="form-group">
 		        <label class="col-sm-2 control-label">Amount</label>
 		        <div class="col-sm-6">
-            <div class="input-group">
-              <span class="input-group-addon">$</span>
-              <input type="text" class="form-control" ng-model="oldBill.amount">
-            </div>
+		        	<div class="input-group" ng-class="{'has-error': editBillForm.amount.$invalid}">
+                <span class="input-group-addon">$</span>
+		            <input type="text" name="amount" class="form-control" ng-model="oldBill.amount" required>
+              </div>
 		        </div>
 		      </div>
 		      <div class="form-group">
 		        <label class="col-sm-2 control-label">Date</label>
 		        <div class="col-sm-6">
-		          <input type="date" class="form-control" ng-model="oldBill.dueDate">
+              <div ng-class="{'has-error': editBillForm.date.$invalid}">
+		            <input type="date" name="date" class="form-control" ng-model="oldBill.dueDate" min="{{today()}}" required>
+              </div>
 		        </div>
 		      </div>
 		      <div class="form-group">
 		        <label class="col-sm-2 control-label">Frequency</label>
 		        <div class="col-sm-6">
 					<label class="radio-inline">
-				      <input type="radio" name="frequency" value="0" ng-model="oldBill.frequency">One-Time
+				      <input type="radio" name="frequency" value="0" ng-model="oldBill.frequency" required>One-Time
 				    </label>
 				    <label class="radio-inline">
 				      <input type="radio" name="frequency" value="3" ng-model="oldBill.frequency">Monthly
@@ -197,7 +201,7 @@
 	      <div class="modal-footer">
 					<button type="button" class="btn btn-danger pull-left" data-dismiss="modal" data-toggle="modal" data-target="#deleteModal" ng-show="isOwner()">Delete</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-	        <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="updateBill()" ng-show="isOwner()">Edit</button>
+	        <button type="submit" class="btn btn-success" ng-click="updateBill()" ng-show="isOwner()" ng-disabled="!isValidResponsible('edit')">Edit</button>
 	      </div>
 
 	    </div>
