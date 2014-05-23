@@ -105,8 +105,8 @@ describe('bills module', function() {
 	  httpMock.whenGET('/apartment/users').respond(function(method, url, data, headers) {
 			return [200,users];
 	  });
-	  httpMock.whenGET('/bills?type=unresolved').respond(resolvedBills);
-	  httpMock.whenGET('/bills?type=resolved').respond(unresolvedBills);
+	  httpMock.whenGET('/bills?type=unresolved').respond(unresolvedBills);
+	  httpMock.whenGET('/bills?type=resolved').respond(resolvedBills);
     }));
 
     afterEach(function() {
@@ -154,7 +154,6 @@ describe('bills module', function() {
 			});
 			
 			it('should checkboxes set', function() {
-			  expect(scope.checkboxes.length).to.equal(5);
 			});
 		});
 		
