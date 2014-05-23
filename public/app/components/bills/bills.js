@@ -402,12 +402,20 @@ angular.module('main.bills').controller('BillsCtrl',
       var numRoommates = $scope.selectedRoommates.length;
       var amount = Math.round(($scope.bill.total / numRoommates) * 100) / 100;
 
+      var evenly = true;
+      if (amount * numRoommates != $scope.bill.total) {
+        evenly = false;
+      }
+
       for (var i = 0; i < $scope.responsible.length; i++) {
         var responsible = false;
         for (var j = 0; j < $scope.selectedRoommates.length; j++) {
           if ($scope.selectedRoommates[j] == $scope.responsible[i].id) {
             responsible = true;
             $scope.responsible[i].amount = amount;
+            if (i == 0 && !evenly) {
+              $scope.responsible[i].amount += 0.01;
+            }
           }
         };
         if (!responsible) {
