@@ -31,14 +31,58 @@ describe('chores module', function() {
     }]
   }, {
     completed: false,
-    createdate: "2014-05-23T22:55:08.125Z"
+    createdate: "2014-05-23T22:55:08.125Z",
     duedate: "2014-05-31T07:00:00.000Z",
     id: 71,
     interval: 7,
     name: "dishes",
     number_in_rotation: 2,
-    rotating: false
+    rotating: false,
+    users: [{
+      first_name: "Dennis",
+      last_name: "Ding",
+      order_index: 1,
+      user_id: 3
+    },{
+      first_name: "bob",
+      last_name: "dole",
+      order_index: 0,
+      user_id: 5
+    }]
   } ];
+
+  var new_chore = {
+      apartment_id: 2,
+      duedate: "2014-05-24",
+      interval: 0,
+      name: "vacuum",
+      number_in_rotation: 1,
+      roommates: [3],
+      rotating: false,
+      userId: 3
+  };
+
+  var editChoreResponse = {};
+
+  var addChoreResponse = {chore: {
+    apartment_id: 2,
+    completed: false,
+    createdate: "2014-05-23T23:39:01.878Z",
+    duedate: "2014-05-24T07:00:00.000Z",
+    id: 80,
+    interval: 0,
+    name: "dishes",
+    number_in_rotation: 1,
+    reocurring_id: 0,
+    rotating: false,
+    user_id: 3
+  }, users: [{
+      first_name: "Dennis",
+      last_name: "Ding",
+      order_index: 0,
+      user_id: 3
+  }] };
+  
 
   describe('ChoresCtrl', function() {
     var ctrl, scope, httpMock;

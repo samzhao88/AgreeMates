@@ -195,13 +195,13 @@ function ($scope, $http, $timeout) {
             any.id = $scope.responsibleList[i].id;
             chore.roommates.push(any.id);
             }
-            console.log(chore);
+            //console.log(chore);
             $http.post('/chores', chore)
             .success(function(data) {
             chore = data.chore;
             chore.users = [];
             chore.users = data.users;
-
+            console.log(data);
             $scope.chores_uncompleted.push(chore);
 
             showSucc("Chore "+chore.name+" successfully added!");
