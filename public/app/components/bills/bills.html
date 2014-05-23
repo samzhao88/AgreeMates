@@ -11,7 +11,7 @@
 	<button class="btn btn-success pull-right" data-toggle="modal" data-target="#addModal">Add Bill</button>
 
 	<!-- Add bill modal -->
-	<div class="modal fade" my-modal id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" add-modal id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 
@@ -132,7 +132,7 @@
 	</div>
 
 	<!-- Edit bill modal -->
-	<div class="modal fade" my-modal id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" edit-modal id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 
@@ -193,6 +193,7 @@
                 </div>
               	</li>
 				      </ul>
+				      <button type="button" class="btn btn-info" ng-click="splitBillEdit()">Split Evenly</button>
 		        </div>
 		      </div>
 		    </form>

@@ -46,7 +46,7 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.userLastNanme = data.last_name;
     }).
     error(function(data, status, headers, config){
-        console.log(data);
+        showErr(data.error);
     });
 
     //get all roommates in the apartment
@@ -56,7 +56,7 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.responsible = angular.copy($scope.roommates);
     }).
     error(function(data, status, headers, config){
-        console.log(data);
+        showErr(data.error);
     });
 
   	//get all unresolved bills and set them to default
@@ -79,7 +79,7 @@ angular.module('main.bills').controller('BillsCtrl',
       };
     }).
     error(function(data, status, headers, config){
-        console.log(data);
+        showErr(data.error);
     });
 
     //get all resolved bills
@@ -98,7 +98,7 @@ angular.module('main.bills').controller('BillsCtrl',
       };
     }).
     error(function(data, status, headers, config){
-        console.log(data);
+        showErr(data.error);
     });
 
     //generate the balances model
@@ -194,7 +194,7 @@ angular.module('main.bills').controller('BillsCtrl',
 	       	$scope.reset();
 	      }).
         error(function(data, status, headers, config){
-          console.log(data);
+          showErr(data.error);
         });
     };
 
@@ -232,7 +232,7 @@ angular.module('main.bills').controller('BillsCtrl',
           $scope.updateIdx = -1;
 	      }).
         error(function(data, status, headers, config){
-          console.log(data);
+          showErr(data.error);
         });
     };
 
@@ -262,7 +262,7 @@ angular.module('main.bills').controller('BillsCtrl',
 	        $scope.reset();
 	      }).
         error(function(data, status, headers, config){
-          console.log(data);
+          showErr(data.error);
         });
     };
 
@@ -293,7 +293,7 @@ angular.module('main.bills').controller('BillsCtrl',
           $scope.updateBalanceModel();
         }).
         error(function(data, status, headers, config){
-          console.log(data);
+          showErr(data.error);
         });
     };
 
@@ -425,6 +425,35 @@ angular.module('main.bills').controller('BillsCtrl',
       };
     }
 
+    //split bill evenly when updating a bill
+    //this function is similar to splitBill(), should refactor later.
+    $scope.splitBillEdit = function() {
+      var numRoommates = $scope.selectedRoommates.length;
+      var amount = Math.round(($scope.oldBill.amount / numRoommates) * 100) / 100;
+
+      var evenly = true;
+      if (amount * numRoommates != $scope.oldBill.amount) {
+        evenly = false;
+      }
+
+      for (var i = 0; i < $scope.updatedAmount.length; i++) {
+        var responsible = false;
+        for (var j = 0; j < $scope.selectedRoommates.length; j++) {
+          if ($scope.selectedRoommates[j] == $scope.updatedAmount[i].userId) {
+            responsible = true;
+            $scope.updatedAmount[i].amount = amount;
+            if (i == 0 && !evenly) {
+              $scope.updatedAmount[i].amount += 0.01;
+              $scope.updatedAmount[i].amount = Math.round($scope.updatedAmount[i].amount * 100) / 100;
+            }
+          }
+        };
+        if (!responsible) {
+          $scope.updatedAmount[i].amount = '';
+        }
+      };      
+    }
+
     //put the dollar sign in front of the balance
     $scope.showBalance = function(num) {
       if (num < 0) {
@@ -476,7 +505,8 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //clear the bill
     $scope.reset = function() {
-      $scope.dismiss();
+      $scope.dismissAdd();
+      $scope.dismissEdit();
       $scope.bill = {};
       $scope.selectedRoommates = [];
       $scope.oldBill = {};
@@ -519,11 +549,20 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.success = true;
       $timeout(function(){$scope.success=false;},alertLength);
     }
-}).directive('myModal', function() {
+}).directive('addModal', function() {
    return {
      restrict: 'A',
      link: function(scope, element, attr) {
-       scope.dismiss = function() {
+       scope.dismissAdd = function() {
+           element.modal('hide');
+       };
+     }
+   } 
+}).directive('editModal', function() {
+   return {
+     restrict: 'A',
+     link: function(scope, element, attr) {
+       scope.dismissEdit = function() {
            element.modal('hide');
        };
      }
