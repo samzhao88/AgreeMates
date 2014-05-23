@@ -321,6 +321,7 @@ html, body {
 
 }
 
+<<<<<<< HEAD
 
 .positiveBalance {
   color: green;
@@ -334,15 +335,6 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: #2c3e50;
-}
-
-a {
-  color: #fff;
-}
-
-a:hover {
-  color: #ddd;
-  text-decoration: none;
 }
 
 #accept-invite-content {
@@ -371,7 +363,7 @@ a:hover {
   max-width: 600px;
   text-align: center;
   margin: 0 auto;
-  margin-top: 80px;
+  margin-top: 30px;
 }
 
 @media (max-width: 768px) {
@@ -392,6 +384,73 @@ a:hover {
 }
 
 #accept-invite-footer {
+  height: 30px;
+  text-align: center;
+}
+
+#accept-invite-footer a,
+#login-invite-footer a {
+  color: #fff;
+}
+
+#accept-invite-footer a:hover,
+#login-invite-footer a:hover {
+  color: #ddd;
+  text-decoration: none;
+}
+
+#accept-invite-content {
+  text-align: center;
+}
+
+#login-invite-title {
+  font-weight: 700;
+  font-size: 52px;
+  font-family: 'Open Sans', Arial, sans-serif;
+  text-align: center;
+  color: #fff;
+  margin-top: 0;
+  padding-top: 50px;
+}
+
+#login-invite-description {
+  color: #bbb;
+  text-align: center;
+  font-family: 'Open Sans', Arial, sans-serif;
+  margin-bottom: 20px;
+}
+
+#login-invite-text {
+  color: #fff;
+  max-width: 600px;
+  text-align: center;
+  margin: 0 auto;
+  margin-top: 80px;
+}
+
+@media (max-width: 768px) {
+  #login-invite-description {
+    margin-bottom: 60px;
+  }
+}
+
+#login-invite-button {
+  margin-top: 20px;
+}
+
+#login-invite-middle {
+  margin-top: 40px;
+  text-align: center;
+}
+
+#login-invite-wrap {
+  height: auto;
+  margin: 0 auto -30px;
+  min-height: 100%;
+  padding: 0 0 30px;
+}
+
+#login-invite-footer {
   height: 30px;
   text-align: center;
 }

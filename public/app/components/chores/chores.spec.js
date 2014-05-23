@@ -31,7 +31,7 @@ describe('chores module', function() {
     }]
   }, {
     completed: false,
-    createdate: "2014-05-23T22:55:08.125Z"
+    createdate: "2014-05-23T22:55:08.125Z",
     duedate: "2014-05-31T07:00:00.000Z",
     id: 71,
     interval: 7,
