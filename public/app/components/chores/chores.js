@@ -108,6 +108,8 @@ function ($scope, $http, $timeout) {
 
     $http.get('/chores')
     .success(function(data) {
+
+      console.log(data);
         
         for (var x = 0; x < $scope.chores.length; x++) {
             for (var i = 0; i < $scope.chores[x].users[i].length; i++) {
@@ -128,9 +130,10 @@ function ($scope, $http, $timeout) {
         $scope.table = 'unresolved';
         console.log($scope.chores);
     })
-    .error(function() {
+    .error(function(error) {
         $scope.chores = $scope.chores_uncompleted;
         $scope.table = 'unresolved';
+        console.log(error);
     });
 
     $http.get('/apartment/users')
@@ -299,6 +302,7 @@ function ($scope, $http, $timeout) {
   $scope.setChore = function(index){
     $scope.gindex = index;
     var chore = angular.copy($scope.chores[index]);
+    chore.ind = index;
 
     $scope.setList();
     $scope.reset_responsibleList();
@@ -448,8 +452,11 @@ function ($scope, $http, $timeout) {
     var temp = $scope.chores[index];
     temp.apartment_id = $scope.apartment.id;
     temp.user_id = $scope.userId;
-    $http.post('/chores/complete/:chore', temp).success(function(data) { 
-    }).error(function(data, status, headers, config){
+    $http.post('/chores/complete/:chore', temp).
+    success(function(data) { 
+      console.log(data);
+    }).
+    error(function(data, status, headers, config){
          console.log(data);
     });
 
@@ -466,10 +473,11 @@ function ($scope, $http, $timeout) {
     }
   };
 
-      //set up delete chore id and index
+    //set up delete chore id and index
     $scope.prepareDelete = function(id, index) {
       $scope.deleteId = id;
       $scope.deleteIdx = index;
+      console.log(index);
     };
 
     //reset delete chore id and index
