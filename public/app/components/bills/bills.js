@@ -415,6 +415,7 @@ angular.module('main.bills').controller('BillsCtrl',
             $scope.responsible[i].amount = amount;
             if (i == 0 && !evenly) {
               $scope.responsible[i].amount += 0.01;
+              $scope.responsible[i].amount = Math.round($scope.responsible[i].amount * 100) / 100;
             }
           }
         };
@@ -423,23 +424,6 @@ angular.module('main.bills').controller('BillsCtrl',
         }
       };
     }
-
-    // $scope.showBalancedetail = function(arr) {
-    //   if (arr.length == 0) {
-    //     return "$0";
-    //   }
-
-    //   var total = 0;
-    //   var result = "";
-
-    //   result += "$" + arr[0].amount + "(" + arr[0].bill + ")";
-    //   total += arr[0].amount;
-    //   for (var i = 1; i < arr.length; i++) {
-    //     result += " + $" + arr[i].amount + "(" + arr[i].bill + ")";
-    //     total += arr[i].amount;
-    //   };
-    //   return result + " = $" + total;
-    // }
 
     //put the dollar sign in front of the balance
     $scope.showBalance = function(num) {
@@ -470,6 +454,9 @@ angular.module('main.bills').controller('BillsCtrl',
 
       for (var i = 0; i < amounts.length; i++) {
         if ($scope.selectedRoommates.indexOf(amounts[i].id) > -1) {
+          if (amounts[i].amount < 0) {
+            return false;
+          }
           total -= amounts[i].amount;
         };
       };
@@ -479,16 +466,20 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //clear the bill
     $scope.reset = function() {
+      $scope.dismiss();
       $scope.bill = {};
       $scope.selectedRoommates = [];
       $scope.oldBill = {};
       $scope.updateIdx = -1;
       $scope.updatedAmount = [];
       $scope.responsible = angular.copy($scope.roommates);
+      $scope.addBillForm.name.$dirty = false;
+      $scope.addBillForm.amount.$dirty = false;
+      $scope.addBillForm.date.$dirty = false;
     };
 
     //return whether there are any unresolved bills
-    $scope.emptyBillList = function(){
+    $scope.emptyBillList = function() {
       return $scope.unresolvedBills.length == 0 ? true : false;
     };
 
@@ -518,4 +509,13 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.success = true;
       $timeout(function(){$scope.success=false;},alertLength);
     }
+}).directive('myModal', function() {
+   return {
+     restrict: 'A',
+     link: function(scope, element, attr) {
+       scope.dismiss = function() {
+           element.modal('hide');
+       };
+     }
+   } 
 });

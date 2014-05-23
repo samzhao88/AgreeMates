@@ -320,3 +320,11 @@ html, body {
 #chores_add_modal {
 
 }
+
+.positiveBalance {
+  color: green;
+}
+
+.negativeBalance {
+  color: red;
+}

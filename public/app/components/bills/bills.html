@@ -11,7 +11,7 @@
 	<button class="btn btn-success pull-right" data-toggle="modal" data-target="#addModal">Add Bill</button>
 
 	<!-- Add bill modal -->
-	<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" my-modal id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 
@@ -76,8 +76,8 @@
           </div>
 
   	      <div class="modal-footer">
-  	        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-  	        <button type="submit" class="btn btn-success" data-dismiss="modal" ng-click="addBill()" ng-disabled="!isValidResponsible('add')">Add</button>
+  	        <button type="button" class="btn btn-default" ng-click="reset()">Cancel</button>
+  	        <button type="submit" class="btn btn-success" ng-click="addBill()" ng-disabled="!isValidResponsible('add')">Add</button>
   	      </div>
         </form>
 
@@ -88,7 +88,7 @@
 	<!-- Bill table -->
 	<!-- add a filter to table later on -->
 	<div class="clearfix">
-		<div class="btn-group" ng-hide="emptyBillList()">
+		<div class="btn-group">
 		  <button type="button" class="btn btn-default" ng-click="setTable('unresolved')" ng-class="{ 'active' : table === 'unresolved' }">Unresolved</button>
 		  <button type="button" class="btn btn-default" ng-click="setTable('resolved')" ng-class="{ 'active' : table === 'resolved' }">Resolved</button>
 		</div>
@@ -143,7 +143,7 @@
 	      </div>
 
 	      <div class="modal-body">
-		    <form class="form-horizontal" role="form">
+		    <form class="form-horizontal" role="form" name="editBillForm">
 		      <div class="form-group">
 		        <label class="col-sm-2 control-label">Name</label>
 		        <div class="col-sm-6">
@@ -168,10 +168,15 @@
 		      <div class="form-group">
 		        <label class="col-sm-2 control-label">Frequency</label>
 		        <div class="col-sm-6">
+					<label class="radio-inline">
 				      <input type="radio" name="frequency" value="0" ng-model="oldBill.frequency">One-Time
+				    </label>
+				    <label class="radio-inline">
 				      <input type="radio" name="frequency" value="3" ng-model="oldBill.frequency">Monthly
+				    </label>  
 		        </div>
 		      </div>
+
 		      <div class="form-group">
 		        <label class="col-sm-2 control-label">Responsible</label>
 		        <div class="col-sm-6">
@@ -200,22 +205,26 @@
 	</div>
 
 	<!-- Roommates balance table -->
-	<h3 ng-hide="emptyBillList()">Balance</h3>
-	<table ng-hide="emptyBillList()" class="table table-hover table-striped text-center">
+	<h3 ng-hide="table=='resolved' || emptyBillList()">Balance</h3>
+	<table ng-hide="table=='resolved' || emptyBillList()" class="table table-hover table-striped text-center">
 		<tr>
 			<th class="text-center">Roommate</th>
+			<th class="text-center">They Owe</th>	
+			<th>&ndash;</th>		
 			<th class="text-center">You Owe</th>
-			<th class="text-center">They Owe</th>
+			<th>=</th>
 			<th class="text-center">Balance</th>
 		</tr>
 		<tr ng-repeat="balance in balances">
 			<td>{{balance.first_name}} {{balance.last_name}}</td>
+			<td>${{balance.owedToUser}}</td>	
+			<td></td>		
 			<td>${{balance.userOwed}}</td>
-			<td>${{balance.owedToUser}}</td>
-			<td>{{showBalance(balance.netBalance)}}</td>
+			<td></td>
+			<td ng-class="{positiveBalance: balance.netBalance>0}" ng-class="{negativeBalance: balance.netBalance<0}"><strong>{{showBalance(balance.netBalance)}}</strong></td>
 		</tr>
 	</table>
 
-	<div class="alert alert-warning" id="empty-bills-alert" ng-show="emptyBillList()">No bills here, add some!</div>
+	<div class="alert alert-warning" id="empty-bills-alert" ng-show="emptyBillList() && table=='unresolved'">No bills here, add some!</div>
 
 </div>
