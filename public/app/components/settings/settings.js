@@ -66,6 +66,16 @@ angular.module('main.settings').controller('SettingsCtrl',
         });
     };
 
+    $scope.leaveApartment = function() {
+      $http.post('/apartment/leave')
+        .success(function() {
+          window.location.href = '/';
+        })
+        .error(function() {
+          showErr('Could not leave apartment!');
+        });
+    };
+
     $scope.populateInfo = function() {
       $scope.name = $scope.apartment.name;
       $scope.address = $scope.apartment.address;
