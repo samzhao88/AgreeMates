@@ -72,6 +72,7 @@ function ($scope, $http, $timeout) {
 
     //initial values for global variables
     $scope.chore = {name: '', rotating: false};
+
     $scope.chores = [];
     $scope.chores_uncompleted =[];
     $scope.chores_completed = [];
@@ -85,13 +86,13 @@ function ($scope, $http, $timeout) {
     $scope.rotation_number = [];
 
 
-  function setModal(interval) {
+    function setModal(interval) {
     if (interval == 0) {
       $scope.modal_msg = $scope.modal_message.due;
     } else {
       $scope.modal_msg = $scope.modal_message.starts;
     }
-  }
+    }
 
     //get current user ID and name
     $http.get('/user').
@@ -105,7 +106,7 @@ function ($scope, $http, $timeout) {
         console.log(data);
     });
 
-  $http.get('/chores')
+    $http.get('/chores')
     .success(function(data) {
         
         for (var x = 0; x < $scope.chores.length; x++) {
@@ -125,10 +126,14 @@ function ($scope, $http, $timeout) {
         }
         $scope.chores = $scope.chores_uncompleted;
         $scope.table = 'unresolved';
+        console.log($scope.chores);
     })
-    .error(function() {});
+    .error(function() {
+        $scope.chores = $scope.chores_uncompleted;
+        $scope.table = 'unresolved';
+    });
 
-  $http.get('/apartment/users')
+    $http.get('/apartment/users')
     .success(function(data) {
       $scope.users = data.users;
     }).error(function() {});
@@ -324,6 +329,7 @@ function ($scope, $http, $timeout) {
     }
 
     chore.duedate = $scope.convertdate(chore.duedate);
+    chore.rotation_number = chore.number_in_rotation;
     // // set everything to false
     // for (var i = 0; i < $scope.users.length; i++) {
     //   $scope.users[i].isChecked = false;
@@ -461,6 +467,19 @@ function ($scope, $http, $timeout) {
     $scope.resetDelete = function() {
       $scope.deleteId = -1;
       $scope.deleteIdx = -1;
-  };
+    };
+
+    $scope.setDefaultRotation = function()
+    {
+        $scope.chore.rotation_number = 1;
+    };
+
+    $scope.emptyChoreList = function(){
+      return $scope.chores_uncompleted.length == 0 ? true : false;
+    };
+
 
 });
+
+
+
