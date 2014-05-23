@@ -10,8 +10,19 @@ var PaymentCollection = require('../models/payment').collection;
 var HistoryModel = require('../models/history').model;
 var Bookshelf = require('bookshelf');
 
+var Bills = {
+
+// Sets up all routes
+setup: function(app) {
+  app.get('/bills', Bills.getBills);
+  app.post('/bills', Bills.addBill);
+  app.put('/bills/:bill/payment', Bills.updatePayment);
+  app.put('/bills/:bill', Bills.editBill);
+  app.delete('/bills/:bill', Bills.deleteBill);
+},
+
 // Gets all bills for an apartment
-function getBills(req, res) {
+getBills: function(req, res) {
   if (req.user === undefined) {
     res.json(401, {error: 'Unauthorized user.'});
     return;
@@ -109,10 +120,10 @@ function getBills(req, res) {
     .otherwise(function(error) {
       res.json(503, {error: 'Database error.'});
     });
-}
+},
 
 // Adds a bill to an apartment
-function addBill(req, res) {
+addBill: function(req, res) {
   if (req.user === undefined) {
     res.json(401, {error: 'Unauthorized user.'});
     return;
@@ -172,10 +183,10 @@ function addBill(req, res) {
     }).otherwise(function(error) {
       res.json(503, {error: 'Database error.'});
     });
-}
+},
 
 // Update a bill's payment
-function updatePayment(req, res) {
+updatePayment: function(req, res) {
   if (req.user === undefined) {
     res.json(401, {error: 'Unauthorized user.'});
     return;
@@ -325,10 +336,10 @@ function updatePayment(req, res) {
     .otherwise(function() {
       res.json(503, {error: 'Database error.'});
     });
-}
+},
 
 // Edit a bill
-function editBill(req, res) {
+editBill: function(req, res) {
   if (req.user === undefined) {
     res.json(401, {error: 'Unauthorized user.'});
     return;
@@ -386,10 +397,10 @@ function editBill(req, res) {
     }).otherwise(function() {
       res.json(503, {error: 'Database error.'});
     });
-}
+},
 
 // Delete a bill
-function deleteBill(req, res) {
+deleteBill: function(req, res) {
   if (req.user === undefined) {
     res.json(401, {error: 'Unauthorized user.'});
     return;
@@ -434,7 +445,7 @@ function deleteBill(req, res) {
         res.json(503, {error: 'Database error.'});
       });
 }
-
+};
 // Checks if a bill ID is valid
 function isValidId(id) {
   return isInt(id) && id > 0;
@@ -489,15 +500,6 @@ function allPaymentsPaid(payments) {
   return true;
 }
 
-// Sets up all routes
-function setup(app) {
-  app.get('/bills', getBills);
-  app.post('/bills', addBill);
-  app.put('/bills/:bill/payment', updatePayment);
-  app.put('/bills/:bill', editBill);
-  app.delete('/bills/:bill', deleteBill);
-}
-
 // Takes a collection of bills with the same reocurring id
 // and a new date for a recurring bill. Goes through and if the
 // new date is past all of the bills in the collections duedates
@@ -516,9 +518,4 @@ function needInstance(billCollection, newDate) {
   return true;
 }
 
-module.exports.getBills = getBills;
-module.exports.addBill = addBill;
-module.exports.updatePayment = updatePayment;
-module.exports.editBill = editBill;
-module.exports.deleteBill = deleteBill;
-module.exports.setup = setup;
+module.exports = Bills;
