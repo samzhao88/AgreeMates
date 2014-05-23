@@ -86,7 +86,7 @@ app.config(function($routeProvider) {
     controller: 'InviteCtrl'
   }).
     otherwise({
-    redirectTo: '/bills'
+    redirectTo: '/board'
   });
 
 });
