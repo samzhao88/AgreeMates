@@ -27,8 +27,8 @@ module.exports = function(config) {
     exclude: [
       'app/vendor/bootstrap/**/*.js',
       'app/vendor/jquery/src/**/*.js',
-      'app/vendor/jqueryui-touch-punch/**/*.js',
-      'app/vendor/momentjs/**/*.js'
+      'app/vendor/momentjs/**/*.js',
+	  'app/vendor/jqueryui-touch-punch/**/*.js'
     ],
 
 
