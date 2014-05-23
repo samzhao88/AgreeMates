@@ -8,7 +8,6 @@ angular.module('main.chores').controller('ChoresCtrl',
 
 function ($scope, $http, $timeout) {
 
-
     //all functions to manage the dynamic menu in add and edit chores UI modals
     $scope.menuEmpty = function(){
         return $scope.menuList.length == 0;
@@ -84,6 +83,7 @@ function ($scope, $http, $timeout) {
     $scope.apartment = {};
     $scope.currUser ={};
     $scope.rotation_number = [];
+
 
   function setModal(interval) {
     if (interval == 0) {
@@ -273,10 +273,10 @@ function ($scope, $http, $timeout) {
     $scope.cancel;
   };
 
-  $scope.deleteChore = function(id, index) {
-    	$http.delete('/chores/' + id)
+  $scope.deleteChore = function() {
+    	$http.delete('/chores/' + $scope.deleteId)
   	    .success(function(data) {
-  	       $scope.chores.splice(index, 1);
+  	       $scope.chores.splice($scope.deleteIdx, 1);
   	     })
          .error(function() {});
   };
@@ -449,6 +449,18 @@ function ($scope, $http, $timeout) {
     {
         return true;
     }
+  };
+
+      //set up delete chore id and index
+    $scope.prepareDelete = function(id, index) {
+      $scope.deleteId = id;
+      $scope.deleteIdx = index;
+    };
+
+    //reset delete chore id and index
+    $scope.resetDelete = function() {
+      $scope.deleteId = -1;
+      $scope.deleteIdx = -1;
   };
 
 });
