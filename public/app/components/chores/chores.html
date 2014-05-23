@@ -173,17 +173,19 @@
                 <div class="form-group" ng-class="{'hide': users_at_least_two()}">
                 <label class="col-sm-3 control-label" for="xfive">Rotating Responsibility?</label>
                 <div class="col-sm-5">
-                    <input type="radio" id="xfive" name="rotating" ng-model="chore.rotating" ng-value="true"> Yes
+                    <input type="radio" id="xfive" name="rotating" ng-model="chore.rotating" ng-value="true" ng-click="setDefaultRotation()"> Yes
                     <input type="radio" id="xfive" name="rotating" ng-model="chore.rotating" ng-value="false"> No
 
                 </div>
                 </div>
 
                 <div class ="form-group" ng-class ="{'hide': users_and_rotating()}">
-                    <label ng-class="{'hide': populate_rotation()}"> Pick a number in rotation </label>
+                    <div ng-class="{'hide': populate_rotation() || check_interval()}">
+                    <label> Pick a number in rotation </label>
                     <span ng-repeat="option in rotation_number">
                           <input type="radio" name="numbers" ng-model="chore.rotation_number" value="{{option}}"> {{option}}
                     </span>
+                    </div>
                 </div>
                 <!--<div>list1: {{menuList }}</div>-->
                 <!--<div>list2: {{responsibleList }}</div>-->

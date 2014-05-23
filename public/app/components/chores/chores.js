@@ -50,6 +50,17 @@ function ($scope, $http, $timeout) {
         }
     };
 
+    $scope.check_interval = function(){
+        if(parseInt($scope.chore.interval) == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    };
+
     //variables to control the connected list menu
     $scope.menuList = {};
     $scope.responsibleList = [];
@@ -191,7 +202,7 @@ function ($scope, $http, $timeout) {
             chore.users = [];
             chore.users = data.users;
 
-            $scope.chores.push(chore);
+            $scope.chores_uncompleted.push(chore);
 
             showSucc("Chore "+chore.name+" successfully added!");
             }).error(function() {});
@@ -256,7 +267,7 @@ function ($scope, $http, $timeout) {
 
       // $scope.chore.users = temp;
       $scope.chore.interval = parseInt($scope.chore.interval);
-
+      $scope.chore.number_in_rotation = $scope.chore.rotation_number;
       $http.put('/chores/' + $scope.chore.id, $scope.chore)
         .success(function(data) {
           showSucc("Chore " + $scope.chore.name + " successfully edited!");
@@ -403,18 +414,21 @@ function ($scope, $http, $timeout) {
   $scope.isResponsible = function(chore, user) {
     if (chore.interval == 0) {
       return "highlight";
+      console.log(chore.interval);
+
     } else {
         if (chore.rotating == false)
         {
+            console.log(chore.rotating);
             return "highlight";
         }
         else
-        {
+        {   
             return (user.order_index < chore.number_in_rotation);
         }
     }
   };
-
+ 
   $scope.emptyChoreList = function() {
     return $scope.chores.length == 0 ? true : false;
   };
@@ -452,11 +466,25 @@ function ($scope, $http, $timeout) {
     var temp = $scope.chores[index];
     temp.apartment_id = $scope.apartment.id;
     temp.user_id = $scope.userId;
-    $http.post('/chores/complete/:chore', temp).
-    success(function(data) { 
-      console.log(data);
-    }).
-    error(function(data, status, headers, config){
+    var chore = {};
+    $http.post('/chores/complete/:chore', temp).success(function(data) {
+        if($scope.chores[index].interval == 0)
+        {
+            $scope.chores.splice(index, 1);
+            temp.completed = true;
+            $scope.chores_completed.push(temp);
+        }
+        else
+        {
+        console.log(data);
+        chore = data.chore;
+        chore.users = data.users;
+        $scope.chores[index] = chore;
+        temp.completed = true;
+        $scope.chores_completed.push(temp);
+        }        
+    }).error(function(data, status, headers, config){
+
          console.log(data);
     });
 
@@ -492,7 +520,14 @@ function ($scope, $http, $timeout) {
     };
 
     $scope.emptyChoreList = function(){
-      return $scope.chores_uncompleted.length == 0 ? true : false;
+      if($scope.chores_uncompleted.length == 0 && $scope.chores_completed.length == 0)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     };
 
 
