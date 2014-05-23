@@ -468,17 +468,21 @@ function ($scope, $http, $timeout) {
     temp.user_id = $scope.userId;
     var chore = {};
     $http.post('/chores/complete/:chore', temp).success(function(data) {
+        if($scope.chores[index].interval == 0)
+        {
+            $scope.chores.splice(index, 1);
+            temp.completed = true;
+            $scope.chores_completed.push(temp);
+        }
+        else
+        {
         console.log(data);
         chore = data.chore;
         chore.users = data.users;
-        if(chore.interval == 0)
-        {
-
-        }
         $scope.chores[index] = chore;
         temp.completed = true;
         $scope.chores_completed.push(temp);
-
+        }        
     }).error(function(data, status, headers, config){
 
          console.log(data);
