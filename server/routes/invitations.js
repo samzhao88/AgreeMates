@@ -86,8 +86,6 @@ var Invitations = {
   },
   deleteInvitation: function(req, res) {
     var inviteNumber = hashids.decrypt(req.params.invite)[0];
-    console.log(req.params.invite);
-    console.log(inviteNumber);
     Invitations.fetchInvitation(inviteNumber,
       function(model) {
         Invitations.addUserToApartment(req.user.id,
