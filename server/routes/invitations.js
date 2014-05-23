@@ -64,13 +64,13 @@ var Invitations = {
             var user = req.user;
             if (user != null) {
               res.render('components/invitations/index.html', {
-                invId: model.attributes.id,
+                invId: req.params.invite,
                 aptName: model2.attributes.name,
                 aptAddress: model2.attributes.address
               });
             } else {
               res.render('components/invitations/login.html', {
-                invId: model.attributes.id
+                invId: req.params.invite
               });
             }
           },
@@ -86,11 +86,13 @@ var Invitations = {
   },
   deleteInvitation: function(req, res) {
     var inviteNumber = hashids.decrypt(req.params.invite)[0];
+    console.log(req.params.invite);
+    console.log(inviteNumber);
     Invitations.fetchInvitation(inviteNumber,
-      function then(model) {
+      function(model) {
         Invitations.addUserToApartment(req.user.id,
                                        model.attributes.apartment_id,
-          function then() {
+          function() {
             Invitations.destroyInvitation(inviteNumber,
               function then() { res.send(200); },
               function otherwise(error) {
