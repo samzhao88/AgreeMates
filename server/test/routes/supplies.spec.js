@@ -1,9 +1,30 @@
 // Supplies back end unit tests
+// jshint camelcase: false
 
 'use strict';
 
 var supplies = require('../../routes/supplies');
+var chai = require('chai');
 var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
+var expect = chai.expect;
+chai.use(sinonChai);
+
+var succeedingStub = function(functionName, parameters) {
+  return sinon.stub(supplies, functionName, function(id, thenFun) {
+    thenFun(parameters);
+  });
+};
+
+var failingStub = function(functionName, parameters) {
+  return sinon.stub(supplies, functionName, function(id, thenFun, otherFun) {
+    otherFun(parameters);
+  });
+};
+
+var emptyStub = function(functionName) {
+  return sinon.stub(supplies, functionName);
+};
 
 describe('Supplies', function() {
 
@@ -22,25 +43,33 @@ describe('Supplies', function() {
 
     it('should return 401 if user is not defined', function() {
       var req = {};
-      resMock.expects('json').once().withArgs(401, {error: 'Unauthorized user.'});
+      resMock.expects('json').once().
+        withArgs(401, {error: 'Unauthorized user.'});
       supplies.getSupplies(req, res);
     });
 
+    it('queries for all supplies in the apartment', function() {
+    });
   });
 
   describe('addSupply', function() {
 
     it('should return 401 if user is not defined', function() {
       var req = {};
-      resMock.expects('json').once().withArgs(401, {error: 'Unauthorized user.'});
+      resMock.expects('json').once().
+        withArgs(401, {error: 'Unauthorized user.'});
       supplies.addSupply(req, res);
     });
 
     it('should return 400 if a supply name is invalid', function() {
-      var req1 = {user: {attributes: {apartment_id: 1}}, body: {name: undefined}};
-      var req2 = {user: {attributes: {apartment_id: 1}}, body: {name: null}};
-      var req3 = {user: {attributes: {apartment_id: 1}}, body: {name: ''}};
-      resMock.expects('json').thrice().withArgs(400, {error: 'Invalid supply name.'});
+      var req1 = {user: {attributes: 
+        {apartment_id: 1}}, body: {name: undefined}};
+      var req2 = {user: {attributes: 
+        {apartment_id: 1}}, body: {name: null}};
+      var req3 = {user: {attributes: 
+        {apartment_id: 1}}, body: {name: ''}};
+      resMock.expects('json').thrice().
+        withArgs(400, {error: 'Invalid supply name.'});
       supplies.addSupply(req1, res);
       supplies.addSupply(req2, res);
       supplies.addSupply(req3, res);
