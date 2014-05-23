@@ -208,12 +208,15 @@ function getChores(req,res){
 	// var apartmentId = req.user.attributes.apartment_id;
 	// var user = req.user.attributes.id;
 	
-	//testing
+	
 	var choreId = req.body.id;
 	var apartmentId = req.body.apartment_id;
 	var user = req.body.user_id;
 
-	console.log(req.body);
+	if(!isValidId(choreId)){
+		res.json(400,{error: 'Invalid chore id'});
+		return;
+	}
 
 	// Check that the chore being marked as completed
 	
@@ -366,7 +369,7 @@ function editChore(req,res){
 	//Check that if its aa rotating chore 
 
 	new ChoreModel({apartment_id: apartmentId, id: choreId})
-	.save({name: name.trim(), duedate: duedate, interval: interval},{patch: true})
+	.save({name: name.trim(), duedate: duedate, interval: interval, number_in_rotation: number_in_rotation},{patch: true})
 	.then(function(choreModel) {
 	// Go through users_chores assocaited with chore
 		new UserChoreModel().query('where', 'chore_id', '=', choreId)

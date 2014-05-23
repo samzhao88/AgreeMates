@@ -113,23 +113,23 @@ describe('Chores', function(){
 		it('should return 400 if the roommates are invalid', function(){
 			var req1 = {user: {attributes: {}}, body: {name: 'test', interval: 0, duedate: "December 31, 2020 11:13:00"},params: {chore: 1}};
 			resMock.expects('json').once().withArgs(400, {error: 'Invalid users assigned to chore'});
-			chores.addChore(req1,res);
+			chores.editChore(req1,res);
 		});
 
 		it('should return 400 if number_in_rotation is not an int', function(){
 			var req1 = {user: {attributes: {}}, body: {name: 'test', interval: 0, duedate: "December 31, 2020 11:13:00", roommates: [1], number_in_rotation: .5},params: {chore: 1}};
 			var req2 = {user: {attributes: {}}, body: {name: 'test', interval: 0, duedate: "December 31, 2020 11:13:00", roommates: [1], number_in_rotation: undefined},params: {chore: 1}};
 			resMock.expects('json').twice().withArgs(400, {error: 'Invalid number in chore rotation'});
-			chores.addChore(req1, res);
-			chores.addChore(req2, res);
+			chores.editChore(req1, res);
+			chores.editChore(req2, res);
 		});
 
 		it('should return 400 if rotating chore and number_in_rotation less than zero', function(){
 			var req1 = {user: {attributes: {}}, body: {name: 'test', interval: 0, duedate: "December 31, 2020 11:13:00", roommates: [1],number_in_rotation: 0, rotating: true},params: {chore: 1}};
 			var req2 = {user: {attributes: {}}, body: {name: 'test', interval: 0, duedate: "December 31, 2020 11:13:00", roommates: [1],number_in_rotation: -1, rotating: true},params: {chore: 1}};
 			resMock.expects('json').twice().withArgs(400, {error: 'Invalid number assigned per week'});
-			chores.addChore(req1,res);
-			chores.addChore(req2, res);
+			chores.editChore(req1,res);
+			chores.editChore(req2, res);
 		});
 
 	});
