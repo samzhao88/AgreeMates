@@ -2,8 +2,30 @@
 
 'use strict';
 
+var chai = require('chai');
+var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
+var expect = chai.expect;
+chai.use(sinonChai);
+
 var messages = require('../../routes/messages');
 var sinon = require('sinon');
+
+var succeedingStub = function(functionName, parameters) {
+  return sinon.stub(messages, functionName, function(id, thenFun) {
+    thenFun(parameters);
+  });
+};
+
+var failingStub = function(functionName, parameters) {
+  return sinon.stub(messages, functionName, function(id, thenFun, otherFun) {
+    otherFun(parameters);
+  });
+};
+
+var emptyStub = function(functionName) {
+  return sinon.stub(messages, functionName);
+};
 
 describe('Messages', function() {
 
@@ -24,6 +46,14 @@ describe('Messages', function() {
       var req = {};
       resMock.expects('json').once().withArgs(401, {error: 'Unauthorized user.'});
       messages.getMessages(req, res);
+    });
+
+    it('should query for all messages in apartment', function() {
+      var queryMessagesStub = emptyStub('queryMessages');
+      var req = {user: {attributes: {apartment_id: 1}}};
+      messages.getMessages(req, res);
+      expect(queryMessagesStub).to.have.been.calledOnce;
+      queryMessagesStub.restore();
     });
 
   });
