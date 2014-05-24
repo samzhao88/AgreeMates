@@ -339,28 +339,38 @@ editBill: function(req, res) {
   Bills.destroyPayments(billId, 
     function then() {
       // Edit the bill
-      new BillModel({id: billId, apartment_id: apartmentId})
-        .save({name: name, amount: total, duedate: date, interval: interval})
-        .then(function(model) {
-          var historyString = req.user.attributes.first_name + ' ' + 
-            req.user.attributes.last_name + ' edited bill "' + name + '"';
-          Bills.saveHistory(historyString, apartmentId); 
+      Bills.fetchBill(billId, apartmentId,
+        function then(model) {
+          model.attributes.name = name;
+          model.attributes.amount = total;
+          model.attributes.duedate = date;
+          model.attributes.interval = interval;
+          model.save({name: name, amount: total, duedate: date, 
+            interval: interval})
+            .then(function(model) {
+              var historyString = req.user.attributes.first_name + ' ' + 
+                req.user.attributes.last_name + ' edited bill "' + name + '"';
+              Bills.saveHistory(historyString, apartmentId); 
  
-          // Add new payments for all the users who need to pay
-          for(var i = 0; i < roommates.length; i++) {
-            new PaymentModel({paid: false, amount: roommates[i].amount,
-              user_id: roommates[i].id, bill_id: billId})
-              .save()
-              .otherwise(function() {
-                res.json(503, {error: 'Database error'});
-              }); 
-          }
-          res.json({result: 'success'});
-        }).otherwise(function(error) {
+              // Add new payments for all the users who need to pay
+              for(var i = 0; i < roommates.length; i++) {
+                new PaymentModel({paid: false, amount: roommates[i].amount,
+                  user_id: roommates[i].id, bill_id: billId})
+                  .save()
+                  .otherwise(function() {
+                    res.json(503, {error: 'Database error'});
+                  }); 
+              }
+            res.json({result: 'success'});
+            });
+        },
+        function otherwise(error) {
+          console.log(error);
           res.json(503, {error: 'Database error.'});
         });
     },
     function otherwise(error) {
+      console.log(error);
       res.json(503, {error: 'Database error.'});
     });
 },
