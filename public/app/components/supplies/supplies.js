@@ -7,6 +7,9 @@ angular.module('main.supplies', ['ui.bootstrap']);
 angular.module('main.supplies').controller('SuppliesCtrl',
   function ($scope, $http, $timeout) {
 
+    //get request didn't return yet
+    $scope.loaded = false;
+
     // alert msg show length in ms
     var alertLength = 4000;
 
@@ -23,6 +26,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
     $http.get('/supplies').
       success(function(data) {
         $scope.supplies = data.supplies;
+        $scope.loaded = true;
       }).
       error(function(data, status, headers, config) {
         showErr(data.error);
@@ -91,7 +95,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
     };
 
     $scope.emptySupplyList = function(){
-      return $scope.supplies.length == 0 && $scope.hideAddBox ? true : false;
+      return $scope.loaded && $scope.supplies.length == 0 && $scope.hideAddBox ? true : false;
     };
 
     // show and hide an error msg

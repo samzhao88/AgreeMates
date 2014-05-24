@@ -98,7 +98,7 @@ describe('board module', function() {
       });
 
       httpMock.when('GET', '/messages').respond(function(method, url, data, headers) {
-        return [200,user];
+        return [200,messages];
       });
 
     }));
