@@ -17,7 +17,6 @@ var passport = require('passport');
 var router = require('./routes');
 var config = require('./config');
 var session = require('express-session');
-
 var app = express();
 
 Bookshelf.DB = Bookshelf.initialize({
@@ -49,7 +48,7 @@ app.use(passport.session());
 router(app, passport);
 
 app.use(express.static(path.join(__dirname + './../public/app')));
-
+var cronJob = require('./cronJob');
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
 });
