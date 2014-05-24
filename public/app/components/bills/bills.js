@@ -30,7 +30,7 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.updatedAmount = [];
     //index of bill being updated
     $scope.updateIdx;
-    //balance between model
+    //balance between model, [{userID, first_name, last_name, owedToUser, userOwed, netBalance}]
     $scope.balances = [];
     //delete bill id
     $scope.deleteId = -1;

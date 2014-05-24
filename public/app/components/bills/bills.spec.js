@@ -171,6 +171,7 @@ describe('bills module', function() {
 			});
 			
 			it('should checkboxes set', function() {
+        //not implemented
 			});
 		});
 		
@@ -190,7 +191,7 @@ describe('bills module', function() {
 	
 		describe('update balances', function() {
 			it('should update balance model', function() {
-			  //expect(scope.)
+			  expect(scope.balances.length).to.equal(2);
 			});
 		});
 	
