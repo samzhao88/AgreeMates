@@ -18,6 +18,10 @@ button:focus {
   background-color: #263645;
 }
 
+#help-icon {
+  margin-right: 15px;
+}
+
 #bill-table {
   margin-top: 20px;
 }
