@@ -72,9 +72,14 @@ describe('board module', function() {
       'msg_id': 1
     };
 
+    /*
     var editMessage = {
-      'subject': ''
+      'subject': 'Subject1',
+      'body': 'edited body',
+      'id': 1,
+
     }
+    */
 
 
     ]};
@@ -103,15 +108,13 @@ describe('board module', function() {
       httpMock.verifyNoOutstandingRequest();
     }); 
 
-    describe('onload', function() {
-      beforeEach(function() {
-        
+    describe('get', function() {
+      it('should fetch all messages and comments',function() {
+        httpMock.expectGET('/messages').respond(messages);
+        httpMock.flush();
+        expect(scope.messages.length).to.equal(2);
       });
-
-      
-
     });
-
 
   });
 });

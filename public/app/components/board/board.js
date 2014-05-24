@@ -54,6 +54,8 @@ angular.module('main.board').controller('BoardCtrl',
     //update a message
     $scope.updateMessage = function(id, index){
 
+      console.log($scope.messages[index]);
+
     	$http.put('/messages/'+id, $scope.messages[index]).
 	      	success(function(data) {
 	        	$scope.messages[index].edit = false;
