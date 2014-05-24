@@ -12,29 +12,106 @@ describe('board module', function() {
     expect(boardModule).not.to.equal(null);
   });
 
-  describe('BoardCtrl', function() {
+  var messages = {messages: [
+    {
+      'id': 1,
+      'subject': 'Subject1',
+      'body': 'Body1',
+      'date': '2014-05-24T00:20:42.949Z',
+      'user_id': 1,
+      'author': 'Lukas',
+      'comments': [
+        {
+          'id': 1,
+          'body': 'CommentBody1',
+          'date': '2014-05-24T00:20:46.580Z',
+          'user_id': 1,
+          'author': 'Lukas'
+        },
+        {
+          'id': 2,
+          'body': 'CommentBody2',
+          'date': '2014-05-24T00:20:48.580Z',
+          'user_id': 1,
+          'author': 'Lukas'
+        },
+        ]
+    },
+    {
+      'id': 2,
+      'subject': 'Subject2',
+      'body': 'Body2',
+      'date': '2014-05-23T00:20:42.949Z',
+      'user_id': 1,
+      'author': 'Lukas',
+      'comments': [
+        {
+          'id': 1,
+          'body': 'CommentBody1',
+          'date': '2014-05-24T00:20:46.580Z',
+          'user_id': 1,
+          'author': 'Lukas'
+        },
+        {
+          'id': 2,
+          'body': 'CommentBody2',
+          'date': '2014-05-24T00:20:48.580Z',
+          'user_id': 1,
+          'author': 'Lukas'
+        },
+      ]
+    };
+
+    var message = {
+      'subject': 'New subject',
+      'body': 'new body'
+    };
+
+    var comment = {
+      'subject': 'body',
+      'msg_id': 1
+    };
+
+    var editMessage = {
+      'subject': ''
+    }
+
+
+    ]};
+
+  describe('method', function() {
     var ctrl, scope, httpMock;
 
     beforeEach(inject(function ($controller, $rootScope, $httpBackend) {
       httpMock = $httpBackend;
 
       scope = $rootScope.$new();
-      httpMock.when('GET', '/messages').respond({title: 'board title'});
 
       ctrl = $controller;
       ctrl('BoardCtrl', {
         $scope: scope
       });
+
+      httpMock.when('GET', '/messages').respond(function(method, url, data, headers) {
+        return [200,user];
+      });
+
     }));
 
-    it('should exist', function() {
-      expect(ctrl).not.to.equal(null);
+    afterEach(function() {
+      httpMock.verifyNoOutstandingExpectation();
+      httpMock.verifyNoOutstandingRequest();
+    }); 
+
+    describe('onload', function() {
+      beforeEach(function() {
+        
+      });
+
+      
+
     });
 
-    it('gets the title from the api and assigns it to scope', function() {
-      //httpMock.expectGET('/messages');
-      //httpMock.flush();
-      //expect(scope.title).to.equal('board title');
-    });
+
   });
 });

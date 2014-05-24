@@ -27,13 +27,13 @@ describe('supplies module:', function() {
   ]};
 
   var supply = {
-    'name': 'new chore',
+    'name': 'new supply',
     'status': 0
   };
   var supplyEditResponse = {}
   var supplyAddResponse = {
     'id': 3,
-    'name': 'new chore',
+    'name': 'new supply',
     'status': 0
   };
   var supplyDeleteResponse = {
