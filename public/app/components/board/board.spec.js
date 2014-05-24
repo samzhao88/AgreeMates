@@ -83,9 +83,6 @@ describe('board module', function() {
     }
     */
 
-
-    ]};
-
   describe('method', function() {
     var ctrl, scope, httpMock;
 
