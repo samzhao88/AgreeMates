@@ -66,11 +66,16 @@ gulp.task('test', ['test:server', 'test:client'], function() {});
 
 // Run server tests and output reports
 gulp.task('test:server', function () {
-	return gulp.src('./server/**/*.spec.js')
-		.pipe(mocha({ reporter: 'list' }))
-		.on('error', handleError)
-    .once('end', function () {
-      process.exit();
+  gulp.src(['./server/**/*.js', '!./server/test/**/*.js'])
+    .pipe(istanbul())
+    .on('end', function() {
+      gulp.src(['./server/test/**/*.spec.js'])
+      .pipe(mocha({ reporter: 'list' }))
+      .pipe(istanbul.writeReports())
+      .on('error', handleError)
+      .once('end', function () {
+        process.exit();
+      });
     });
 });
 
