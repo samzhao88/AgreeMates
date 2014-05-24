@@ -58,16 +58,7 @@ describe('Comments', function() {
     });
 
 
-    it('should return 400 if the comment content is null', function() {
-      var req1 = {user: {attributes: {apartment_id: 1}}, params: {message: 1}, body: {}};
-      var req2 = {user: {attributes: {apartment_id: 1}}, params: {message: 1}, body: {}};
-      var req3 = {user: {attributes: {apartment_id: 1}}, params: {message: 1}, body: {}};
-      resMock.expects('json').thrice().withArgs(400, {error: 'Invalid message ID.'});
-
-      comments.addComment(req1, res);
-      comments.addComment(req2, res);
-      comments.addComment(req3, res);
-    });
+    it('should return 400 if the comment content is null');
 
     it('should call createComment if the request is valid');
 
