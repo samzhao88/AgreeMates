@@ -58,8 +58,10 @@ describe('board module', function() {
           'date': '2014-05-24T00:20:48.580Z',
           'user_id': 1,
           'author': 'Lukas'
-        },
-      ]
+        }
+        ]
+    }
+    ]
     };
 
     var message = {
