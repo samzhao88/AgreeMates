@@ -3,8 +3,28 @@
 'use strict';
 
 var app = require('../../app');
+var chai = require('chai');
 var bills = require('../../routes/bills');
 var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
+var expect = chai.expect;
+chai.use(sinonChai);
+
+var succeedingStub = function(functionName, params) {
+  return sinon.stub(bills, functionName, function(id, thenFun) {
+    thenFun(params);
+  });
+};
+
+var failingStub = function(functionName, parameters) {
+  return sinon.stub(bills, functionName, function(id, thenFun, otherFun) {
+    otherFun(parameters);
+  });
+};
+
+var emptyStub = function(functionName) {
+  return sinon.stub(bills, functionName);
+};
 
 describe('Bills', function() {
 
@@ -20,6 +40,27 @@ describe('Bills', function() {
   });
 
   describe('getBills', function() {
+
+    it('returns a list of bills and their payments', function() {
+    var fetchBillsStub =  sinon.stub(bills, 'fetchBills', 
+      function(apartmentId, resolved, thenFun, otherwiseFun) {
+        thenFun([ {total: '5', user_id: 3, billPaid: false, userPaid: false,
+               name: 'Test Bill', interval: 0, first_name: 'Jordan', 
+               id: 3, bill_id: 43, amount: '5', creatorId: 3, payTo: 'Jordan',
+               createdate: '5/20/2014', duedate: '5/29/2014'} ]);
+      });
+
+      var req = {query: {type: 'resolved'}, user: {attributes: {apartment_id: 1}}};
+      resMock.expects('json').once().withArgs(
+        {bills: [{id: 43, name: 'Test Bill',  amount: '5', 
+          createDate: '5/20/2014', dueDate: '5/29/2014', frequency: 0,
+          resolved: false, creatorId: 3, payTo: 'Jordan', 
+          payments: [{userId: 3, name: 'Jordan', amount: '5', paid: false}]}]});
+
+      bills.getBills(req, res);
+
+      fetchBillsStub.restore();
+    });
 
     it('should return 401 if user is undefined', function() {
       var req = {};
@@ -147,12 +188,21 @@ describe('Bills', function() {
 
   describe('deleteBill', function() {
 
+    beforeEach(function() {
+      res = { json: function() {}, send: function() {} };
+      resMock = sinon.mock(res);
+    });
+
+    afterEach(function() {
+      resMock.verify();
+    });
+
     it('should return 401 if user is undefined', function() {
       var req = {};
       resMock.expects('json').once().withArgs(401, {error: 'Unauthorized user.'});
       bills.deleteBill(req, res);
     });
-
+        
     it('should return 400 if the bill ID is invalid', function() {
       var req1 = {user: {attributes: {}}, body: {}, params: {bill: 0.5}};
       var req2 = {user: {attributes: {}}, body: {}, params: {bill: 'hello'}};

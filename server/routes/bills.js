@@ -42,13 +42,14 @@ getBills: function(req, res) {
   
   Bills.fetchBills(apartmentId, req.query.type, 
     function then(rows) {
+      console.log(rows);
       var bills = [];
       var payments = [];
       if(rows.length === 0) {
         res.json({bills: bills});
         return;
       }
-
+ 
       // set lastBillId to invalid Id so algorithm will work
       var lastBillId = -1;
       var name, amount, createDate, dueDate;
@@ -143,10 +144,8 @@ addBill: function(req, res) {
     .then(function(model) {
       var historyString = req.user.attributes.first_name + ' ' +
         req.user.attributes.last_name + ' added bill "' +
-        bill.attributes.name.trim() + '"';      
-      new HistoryModel( {apartment_id: bill.attributes.apartment_id,
-        history_string: historyString, date: new Date()})
-        .save();
+        bill.attributes.name.trim() + '"'; 
+      Bills.saveHistory(historyString, bill.attributes.apartment_id);     
 
       for(var i = 0; i < roommates.length; i++) {
         // add payment models for each of the payments for the bill
@@ -177,7 +176,7 @@ updatePayment: function(req, res) {
   var billId = req.params.bill;
   var paid = req.body.paid;
 
-  if (!isValidId(req.body.bill)) {
+  if (!isValidId(req.params.bill)) {
     res.json(400, {error: 'Invalid bill ID.'});
     return;
   } else if (req.body.paid !== 'true' && req.body.paid !== 'false') {
@@ -201,22 +200,16 @@ updatePayment: function(req, res) {
             var historyString = req.user.attributes.first_name + ' ' +
               req.user.attributes.last_name + ' paid their portion of bill "' +
               model[0].name.trim() + '"';
-	    new HistoryModel({apartment_id: apartmentId,
-              history_string: historyString, date: new Date()})
-              .save()
+            Bills.saveHistory(historyString, apartmentId);
           } else {
             var historyString = req.user.attributes.first_name + ' ' +
               req.user.attributes.last_name + ' unpaid their portion of bill "' +
               model[0].name.trim() + '"';
-            new HistoryModel({apartment_id: apartmentId,
-              history_string: historyString, date: new Date()})
-              .save()
+            Bills.saveHistory(historyString, apartmentId);
             if(model[0].paid) {
               historyString = 'The bill "' + model[0].name.trim() +
               '" is no longer resolved';
-              new HistoryModel({apartment_id: apartmentId,
-                history_string: historyString, date: new Date()})
-                .save()
+              Bills.saveHistory(historyString, aparmtentId);
             }
           }
         });
@@ -238,9 +231,7 @@ updatePayment: function(req, res) {
                   .then(function(oldBill) {
                     var historyString = 'The bill "' + 
                       oldBill.attributes.name + '" is now resolved';
-                    new HistoryModel({apartment_id: apartmentId,
-                      history_string: historyString, date: new Date()})
-                      .save()
+                    Bills.saveHistory(historyString, apartmentId);
                      
                     // If the bill is reocurring we need to make a new
                     // instance of it and it's payments
@@ -354,9 +345,7 @@ editBill: function(req, res) {
         .then(function(model) {
           var historyString = req.user.attributes.first_name + ' ' + 
             req.user.attributes.last_name + ' edited bill "' + name + '"';
-	  new HistoryModel({apartment_id: apartmentId,
-            history_string: historyString, date: new Date()})
-            .save()      
+          Bills.saveHistory(historyString, apartmentId); 
  
           // Add new payments for all the users who need to pay
           for(var i = 0; i < roommates.length; i++) {
@@ -398,9 +387,8 @@ deleteBill: function(req, res) {
       var historyString = req.user.attributes.first_name + ' ' +
         req.user.attributes.last_name + ' deleted the bill "' +
         model.attributes.name.trim() + '"';
-      new HistoryModel({apartment_id: apartmentId,
-        history_string: historyString, date: new Date()})
-        .save()
+      Bills.saveHistory(historyString, apartmentId);
+
       // Destroy all the payments for a bill and then destroy
       // the bill.
       Bills.destroyPayments(billId,
@@ -473,12 +461,10 @@ destroyBill: function(billId, apartmentId, thenFun, otherFun) {
     .otherwise(otherFun);
 },
 
-createSavePayments: function(roommates, thenFun, otherFun) {
-
-},
-
-savePayments: function(payments, thenFun) {
-
+saveHistory: function(historyString, apartmentId) {
+  new HistoryModel({apartment_id: apartmentId,
+    history_string: historyString, date: new Date()})
+    .save()
 }
 };
 
