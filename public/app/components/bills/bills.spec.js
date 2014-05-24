@@ -23,27 +23,44 @@ describe('bills module', function() {
   var unresolvedBills = {bills: [
 	{
 		'id': 0,
+    'name': 'water',
+    'amount': 100,
+    'creatorId': 69,
+    'payTo': 'Sue',
 		'payments': [
 					{
-						'id': 69,
+						'userId': 69,
+            'amount': 40,
 						'paid' : true
 					},
 					{
 						'id': 88,
+            'amount': 60,
 						'paid' : false
 					}]
 	},
 	{
 		'id': 1,
+    'name': 'rent',
+    'amount': 300,
+    'creatorId': 88,
+    'payTo': 'Michael',
 		'payments': [
 					{
 						'id': 1,
+            'amount': 100,
 						'paid' : false
 					},
 					{
 						'id': 88,
+            'amount': 50,
 						'paid' : false
-					}]
+					},
+          {
+            'id': 69,
+            'amount': 150,
+            'paid' : false
+          }]
 	}]};
 	
 	 var resolvedBills = {bills: [
@@ -154,6 +171,7 @@ describe('bills module', function() {
 			});
 			
 			it('should checkboxes set', function() {
+        //not implemented
 			});
 		});
 		
@@ -172,8 +190,15 @@ describe('bills module', function() {
 		});
 	
 		describe('update balances', function() {
-			it('should get all the bills', function() {
-			  
+			it('should update balance model', function() {
+			  expect(scope.balances.length).to.equal(2);
+        expect(scope.balances[0].userId).to.equal(88);
+        // expect(scope.balances[0].first_name).to.equal('Michael');
+        // expect(scope.balances[0].last_name).to.equal('Irvin');
+        // expect(scope.balances[0].owedToUser).to.equal(60);
+        // console.log(scope.balances[0].owedToUser);
+        //expect(scope.balances[0].userOwed).to.equal(50);
+        //expect(scope.balances[0].netBalance).to.equal(10);
 			});
 		});
 	
