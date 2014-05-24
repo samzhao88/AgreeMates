@@ -46,7 +46,7 @@ angular.module('main.bills').controller('BillsCtrl',
     success(function(data) {
       $scope.userId = data.id;
       $scope.userFirstName = data.first_name;
-      $scope.userLastNanme = data.last_name;
+      $scope.userLastName = data.last_name;
     }).
     error(function(data, status, headers, config){
         console.log(data);

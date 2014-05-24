@@ -6,6 +6,7 @@
 var ApartmentModel = require('../models/apartment').model;
 var InvitationModel = require('../models/invitation').model;
 var InvitationCollection = require('../models/invitation').collection;
+var HistoryModel = require('../models/history').model;
 var UserModel = require('../models/user').model;
 var nodemailer = require('nodemailer');
 var Hashids = require('hashids');
@@ -42,6 +43,10 @@ var Invitations = {
             res.json(503, {error: 'Error creating invitations'});
           } else {
             resp.forEach(function(invitation) {
+              var historyString = req.user.attributes.first_name + ' ' +
+                req.user.attributes.last_name + ' sent invitation to "' + 
+                invitation.email + '"';
+              Invitations.saveHistory(apartmentId, historyString);
               var hashedId = hashids.encrypt(invitation.id);
               Invitations.sendInvitation(hashedId, invitation.email,
                                          apartmentName);
@@ -91,6 +96,9 @@ var Invitations = {
         Invitations.addUserToApartment(req.user.id,
                                        model.attributes.apartment_id,
           function() {
+            var historyString = req.user.attributes.first_name + ' ' +
+              req.user.attributes.last_name + ' accepted invitation';
+            Invitations.saveHistory(model.attributes.apartment_id, historyString);
             Invitations.destroyInvitation(inviteNumber,
               function then() { res.send(200); },
               function otherwise(error) {
@@ -150,6 +158,13 @@ var Invitations = {
       .save({apartment_id: apartmentId}, {patch: true})
       .then(thenFun)
       .otherwise(otherwiseFun);
+  },
+  saveHistory: function(apartmentId, historyString) {
+    new HistoryModel({apartment_id: apartmentId,
+                     history_string: historyString, date: new Date()})
+      .save()
+      .then(function() {})
+      .otherwise(function() {});
   },
   sendInvitation: function(id, email, aptName) {
     var smtpTransport = nodemailer.createTransport('SMTP', {

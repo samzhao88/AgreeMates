@@ -18,6 +18,10 @@ button:focus {
   background-color: #263645;
 }
 
+#help-icon {
+  margin-right: 15px;
+}
+
 #bill-table {
   margin-top: 20px;
 }
@@ -321,6 +325,7 @@ html, body {
 
 }
 
+
 /* 
   Allow angular.js to be loaded in body, hiding cloaked elements until 
   templates compile.  The !important is important given that there may be 
@@ -328,4 +333,122 @@ html, body {
  */
 [ng\:cloak], [ng-cloak], .ng-cloak ng-cloak {
   display: none !important;
+}
+
+#accept-invite-content {
+  text-align: center;
+}
+
+#accept-invite-title {
+  font-weight: 700;
+  font-size: 52px;
+  font-family: 'Open Sans', Arial, sans-serif;
+  text-align: center;
+  color: #fff;
+  margin-top: 0;
+  padding-top: 50px;
+}
+
+#accept-invite-description {
+  color: #bbb;
+  text-align: center;
+  font-family: 'Open Sans', Arial, sans-serif;
+  margin-bottom: 20px;
+}
+
+#accept-invite-text {
+  color: #fff;
+  max-width: 600px;
+  text-align: center;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+  #accept-invite-description {
+    margin-bottom: 60px;
+  }
+}
+
+#accept-invite-button {
+  margin-top: 20px;
+}
+
+#accept-invite-wrap {
+  height: auto;
+  margin: 0 auto -30px;
+  min-height: 100%;
+  padding: 0 0 30px;
+}
+
+#accept-invite-footer {
+  height: 30px;
+  text-align: center;
+}
+
+#accept-invite-footer a,
+#login-invite-footer a {
+  color: #fff;
+}
+
+#accept-invite-footer a:hover,
+#login-invite-footer a:hover {
+  color: #ddd;
+  text-decoration: none;
+}
+
+#accept-invite-content {
+  text-align: center;
+}
+
+#login-invite-title {
+  font-weight: 700;
+  font-size: 52px;
+  font-family: 'Open Sans', Arial, sans-serif;
+  text-align: center;
+  color: #fff;
+  margin-top: 0;
+  padding-top: 50px;
+}
+
+#login-invite-description {
+  color: #bbb;
+  text-align: center;
+  font-family: 'Open Sans', Arial, sans-serif;
+  margin-bottom: 20px;
+}
+
+#login-invite-text {
+  color: #fff;
+  max-width: 600px;
+  text-align: center;
+  margin: 0 auto;
+  margin-top: 80px;
+}
+
+@media (max-width: 768px) {
+  #login-invite-description {
+    margin-bottom: 60px;
+  }
+}
+
+#login-invite-button {
+  margin-top: 20px;
+}
+
+#login-invite-middle {
+  margin-top: 40px;
+  text-align: center;
+}
+
+#login-invite-wrap {
+  height: auto;
+  margin: 0 auto -30px;
+  min-height: 100%;
+  padding: 0 0 30px;
+}
+
+#login-invite-footer {
+  height: 30px;
+  text-align: center;
 }
