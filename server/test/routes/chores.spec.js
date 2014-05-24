@@ -11,19 +11,19 @@ var chores = require('../../routes/chores');
 chai.use(sinonChai);
 
 var succeedingStub = function(functionName, parameters) {
-  return sinon.stub(invitations, functionName, function(id, thenFun) {
+  return sinon.stub(chores, functionName, function(id, thenFun) {
     thenFun(parameters);
   });
 };
 
 var failingStub = function(functionName, parameters) {
-  return sinon.stub(invitations, functionName, function(id, thenFun, otherFun) {
+  return sinon.stub(chores, functionName, function(id, thenFun, otherFun) {
     otherFun(parameters);
   });
 };
 
 var emptyStub = function(functionName) {
-  return sinon.stub(invitations, functionName);
+  return sinon.stub(chores, functionName);
 };
 
 describe('Chores', function(){
@@ -47,6 +47,43 @@ describe('Chores', function(){
 		});
 	});
 
+	describe('getChore', function(){
+		var res, resMock;
+		beforeEach(function(){
+			res = {json: function(){}};
+			resMock = sinon.mock(res);
+		});
+
+		afterEach(function(){
+			resMock.verify();
+		});
+	
+		it('fetches the chores', function(){
+			var fetchChoresStub = emptyStub('fetchChores');
+			var req1 = {user: {attributes:{apartment_id: 1}}};
+			chores.getChores(req1, res);
+			expect(fetchChoresStub).to.have.been.calledWith(1);
+			fetchChoresStub.restore();
+		});
+		
+		it('should fail with 503 Database error', function(){
+			var fetchChoresStub = failingStub('fetchChores', null);
+			var req1 = {user: {attributes:{apartment_id: 1}}};
+			resMock.expects('json').once().withArgs(503, {error: 'Database error.'});
+			chores.getChores(req1, res);
+			expect(fetchChoresStub).to.have.been.calledWith(1);
+			fetchChoresStub.restore();
+		});
+		
+		it('should return empty json if rows in empty', function(){
+			var fetchChoresStub = succeedingStub('fetchChores', []);
+			var req1 = {user: {attributes:{apartment_id: 1}}};
+			resMock.expects('json').once().withArgs({chores: []});
+			chores.getChores(req1, res);
+			expect(fetchChoresStub).to.have.been.calledWith(1);
+			fetchChoresStub.restore();
+		});
+	});
 	describe('addChore', function() {
 	
 	var res, resMock;
