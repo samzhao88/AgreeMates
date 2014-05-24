@@ -192,6 +192,13 @@ describe('bills module', function() {
 		describe('update balances', function() {
 			it('should update balance model', function() {
 			  expect(scope.balances.length).to.equal(2);
+        expect(scope.balances[0].userId).to.equal(88);
+        // expect(scope.balances[0].first_name).to.equal('Michael');
+        // expect(scope.balances[0].last_name).to.equal('Irvin');
+        // expect(scope.balances[0].owedToUser).to.equal(60);
+        // console.log(scope.balances[0].owedToUser);
+        //expect(scope.balances[0].userOwed).to.equal(50);
+        //expect(scope.balances[0].netBalance).to.equal(10);
 			});
 		});
 	
