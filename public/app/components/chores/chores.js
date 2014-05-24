@@ -8,6 +8,9 @@ angular.module('main.chores').controller('ChoresCtrl',
 
 function ($scope, $http, $timeout) {
 
+   //get request didn't return yet
+    $scope.loaded = false;
+
     //all functions to manage the dynamic menu in add and edit chores UI modals
     $scope.menuEmpty = function(){
         return $scope.menuList.length == 0;
@@ -142,6 +145,7 @@ function ($scope, $http, $timeout) {
         $scope.chores = $scope.chores_uncompleted;
         $scope.table = 'unresolved';
         console.log($scope.chores);
+        $scope.loaded = true;
     })
     .error(function(error) {
         $scope.chores = $scope.chores_uncompleted;
@@ -384,10 +388,6 @@ function ($scope, $http, $timeout) {
         }
     }
   };
- 
-  $scope.emptyChoreList = function() {
-    return $scope.chores.length == 0 ? true : false;
-  };
 
   $scope.format = function(date) {
     return moment(date).format('MMMM Do, YYYY');
@@ -476,7 +476,7 @@ function ($scope, $http, $timeout) {
     };
 
     $scope.emptyChoreList = function(){
-      if($scope.chores_uncompleted.length == 0 && $scope.chores_completed.length == 0)
+      if($scope.loaded && $scope.chores_uncompleted.length == 0 && $scope.chores_completed.length == 0)
       {
         return true;
       }

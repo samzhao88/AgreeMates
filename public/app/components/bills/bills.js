@@ -37,6 +37,9 @@ angular.module('main.bills').controller('BillsCtrl',
     //delete bill index
     $scope.deleteIdx = -1;
 
+    //get request didn't return yet
+    $scope.loaded = false;
+
 
     //get current user ID and name
     $http.get('/user').
@@ -77,6 +80,7 @@ angular.module('main.bills').controller('BillsCtrl',
           }
         };
       };
+      $scope.loaded = true;
     }).
     error(function(data, status, headers, config){
         console.log(data);
@@ -481,7 +485,7 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //return whether there are any unresolved bills
     $scope.emptyBillList = function(){
-      return $scope.unresolvedBills.length == 0 ? true : false;
+      return $scope.unresolvedBills.length == 0 && $scope.loaded ? true : false;
     };
 
     $scope.convertDate = function(date) {
