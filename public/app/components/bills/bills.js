@@ -30,7 +30,7 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.updatedAmount = [];
     //index of bill being updated
     $scope.updateIdx;
-    //balance between model
+    //balance between model, [{userID, first_name, last_name, owedToUser, userOwed, netBalance}]
     $scope.balances = [];
     //delete bill id
     $scope.deleteId = -1;
@@ -49,7 +49,7 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.userLastName = data.last_name;
     }).
     error(function(data, status, headers, config){
-        console.log(data);
+        showErr(data.error);
     });
 
     //get all roommates in the apartment
@@ -59,7 +59,7 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.responsible = angular.copy($scope.roommates);
     }).
     error(function(data, status, headers, config){
-        console.log(data);
+        showErr(data.error);
     });
 
   	//get all unresolved bills and set them to default
@@ -83,7 +83,7 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.loaded = true;
     }).
     error(function(data, status, headers, config){
-        console.log(data);
+        showErr(data.error);
     });
 
     //get all resolved bills
@@ -102,7 +102,7 @@ angular.module('main.bills').controller('BillsCtrl',
       };
     }).
     error(function(data, status, headers, config){
-        console.log(data);
+        showErr(data.error);
     });
 
     //generate the balances model
@@ -198,7 +198,7 @@ angular.module('main.bills').controller('BillsCtrl',
 	       	$scope.reset();
 	      }).
         error(function(data, status, headers, config){
-          console.log(data);
+          showErr(data.error);
         });
     };
 
@@ -236,7 +236,7 @@ angular.module('main.bills').controller('BillsCtrl',
           $scope.updateIdx = -1;
 	      }).
         error(function(data, status, headers, config){
-          console.log(data);
+          showErr(data.error);
         });
     };
 
@@ -266,7 +266,7 @@ angular.module('main.bills').controller('BillsCtrl',
 	        $scope.reset();
 	      }).
         error(function(data, status, headers, config){
-          console.log(data);
+          showErr(data.error);
         });
     };
 
@@ -297,7 +297,7 @@ angular.module('main.bills').controller('BillsCtrl',
           $scope.updateBalanceModel();
         }).
         error(function(data, status, headers, config){
-          console.log(data);
+          showErr(data.error);
         });
     };
 
@@ -406,12 +406,21 @@ angular.module('main.bills').controller('BillsCtrl',
       var numRoommates = $scope.selectedRoommates.length;
       var amount = Math.round(($scope.bill.total / numRoommates) * 100) / 100;
 
+      var evenly = true;
+      if (amount * numRoommates != $scope.bill.total) {
+        evenly = false;
+      }
+
       for (var i = 0; i < $scope.responsible.length; i++) {
         var responsible = false;
         for (var j = 0; j < $scope.selectedRoommates.length; j++) {
           if ($scope.selectedRoommates[j] == $scope.responsible[i].id) {
             responsible = true;
             $scope.responsible[i].amount = amount;
+            if (i == 0 && !evenly) {
+              $scope.responsible[i].amount += 0.01;
+              $scope.responsible[i].amount = Math.round($scope.responsible[i].amount * 100) / 100;
+            }
           }
         };
         if (!responsible) {
@@ -420,22 +429,34 @@ angular.module('main.bills').controller('BillsCtrl',
       };
     }
 
-    // $scope.showBalancedetail = function(arr) {
-    //   if (arr.length == 0) {
-    //     return "$0";
-    //   }
+    //split bill evenly when updating a bill
+    //this function is similar to splitBill(), should refactor later.
+    $scope.splitBillEdit = function() {
+      var numRoommates = $scope.selectedRoommates.length;
+      var amount = Math.round(($scope.oldBill.amount / numRoommates) * 100) / 100;
 
-    //   var total = 0;
-    //   var result = "";
+      var evenly = true;
+      if (amount * numRoommates != $scope.oldBill.amount) {
+        evenly = false;
+      }
 
-    //   result += "$" + arr[0].amount + "(" + arr[0].bill + ")";
-    //   total += arr[0].amount;
-    //   for (var i = 1; i < arr.length; i++) {
-    //     result += " + $" + arr[i].amount + "(" + arr[i].bill + ")";
-    //     total += arr[i].amount;
-    //   };
-    //   return result + " = $" + total;
-    // }
+      for (var i = 0; i < $scope.updatedAmount.length; i++) {
+        var responsible = false;
+        for (var j = 0; j < $scope.selectedRoommates.length; j++) {
+          if ($scope.selectedRoommates[j] == $scope.updatedAmount[i].userId) {
+            responsible = true;
+            $scope.updatedAmount[i].amount = amount;
+            if (i == 0 && !evenly) {
+              $scope.updatedAmount[i].amount += 0.01;
+              $scope.updatedAmount[i].amount = Math.round($scope.updatedAmount[i].amount * 100) / 100;
+            }
+          }
+        };
+        if (!responsible) {
+          $scope.updatedAmount[i].amount = '';
+        }
+      };      
+    }
 
     //put the dollar sign in front of the balance
     $scope.showBalance = function(num) {
@@ -450,37 +471,58 @@ angular.module('main.bills').controller('BillsCtrl',
     //check if each roommate's amount add up to total amount
     $scope.isValidResponsible = function(model) {
       var amounts;
-      var total = $scope.bill.total;
+      var total;
 
+      //for adding bill, get total amount from $scope.bill.total and roommates' amount from $scope.responsible
       if (model == "add") {
         if ($scope.responsible == undefined) {
           return false;
-        }
+        }      
+        total = Math.round($scope.bill.total * 100) / 100;
         amounts = $scope.responsible;
-      } else {
+        for (var i = 0; i < amounts.length; i++) {
+          if ($scope.selectedRoommates.indexOf(amounts[i].id) > -1) {
+            if (amounts[i].amount < 0) {
+              return false;
+            }
+            total -= amounts[i].amount;
+            total = Math.round(total * 100) / 100;
+          };
+        };        
+      } else { //for updateing bill, get total amount from $scope.oldBill.amount and roommates' amount from $scope.updatedAmount
         if ($scope.updatedAmount == undefined) {
           return false;
         }
+        total = Math.round($scope.oldBill.amount * 100) / 100;
         amounts = $scope.updatedAmount;
+        for (var i = 0; i < amounts.length; i++) {
+          if ($scope.selectedRoommates.indexOf(amounts[i].userId) > -1) {
+            if (amounts[i].amount < 0) {
+              return false;
+            }
+            total -= amounts[i].amount;
+            total = Math.round(total * 100) / 100;
+          };
+        };         
       }
 
-      for (var i = 0; i < amounts.length; i++) {
-        if ($scope.selectedRoommates.indexOf(amounts[i].id) > -1) {
-          total -= amounts[i].amount;
-        };
-      };
-
+      console.log('final: '+ total);
       return total == 0;
     }
 
     //clear the bill
     $scope.reset = function() {
+      $scope.dismissAdd();
+      $scope.dismissEdit();
       $scope.bill = {};
       $scope.selectedRoommates = [];
       $scope.oldBill = {};
       $scope.updateIdx = -1;
       $scope.updatedAmount = [];
       $scope.responsible = angular.copy($scope.roommates);
+      $scope.addBillForm.name.$dirty = false;
+      $scope.addBillForm.amount.$dirty = false;
+      $scope.addBillForm.date.$dirty = false;
     };
 
     //return whether there are any unresolved bills
@@ -514,4 +556,22 @@ angular.module('main.bills').controller('BillsCtrl',
       $scope.success = true;
       $timeout(function(){$scope.success=false;},alertLength);
     }
+}).directive('addModal', function() {
+   return {
+     restrict: 'A',
+     link: function(scope, element, attr) {
+       scope.dismissAdd = function() {
+           element.modal('hide');
+       };
+     }
+   } 
+}).directive('editModal', function() {
+   return {
+     restrict: 'A',
+     link: function(scope, element, attr) {
+       scope.dismissEdit = function() {
+           element.modal('hide');
+       };
+     }
+   } 
 });
