@@ -28,22 +28,18 @@ module.exports = function(config) {
       'app/vendor/bootstrap/**/*.js',
       'app/vendor/jquery/src/**/*.js',
       'app/vendor/momentjs/**/*.js',
-	  'app/vendor/jqueryui-touch-punch/**/*.js'
+      'app/vendor/jqueryui-touch-punch/**/*.js'
     ],
-
-
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-      'app/components/**/!(*spec).js': 'coverage'
-    },
-
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress', 'coverage'],
+    reporters: ['progress'],
 
+    // preprocess matching files before serving them to the browser
+    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+    preprocessors: {
+    },
 
     // web server port
     port: 9876,

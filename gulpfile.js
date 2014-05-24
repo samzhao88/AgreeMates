@@ -38,14 +38,6 @@ gulp.task('watch', function() {
              ['lint', 'scripts']);
 });
 
-// Set up the file coverage
-gulp.task('cover', function (cb) {
-	gulp.src(['server/**/*.js', '!server/test/**'])
-		.pipe(istanbul())
-		.on('end', cb);
-});
-
-
 // Testing
 
 function handleError(err) {
@@ -59,7 +51,12 @@ function karmaTest(action) {
 			configFile: 'karma.conf.js',
 			action: action
 		}))
-		.on('error', handleError);
+		.on('error', handleError)
+    .once('end', function() {
+      if (action === 'run') {
+        process.exit();
+      }
+    });
 }
 
 gulp.task('test', ['test:server', 'test:client'], function() {});
@@ -74,7 +71,7 @@ gulp.task('test:server', function () {
       .pipe(istanbul.writeReports())
       .on('error', handleError)
       .once('end', function () {
-        process.exit();
+        //process.exit();
       });
     });
 });
