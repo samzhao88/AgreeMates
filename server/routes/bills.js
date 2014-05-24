@@ -42,7 +42,6 @@ getBills: function(req, res) {
   
   Bills.fetchBills(apartmentId, req.query.type, 
     function then(rows) {
-      console.log(rows);
       var bills = [];
       var payments = [];
       if(rows.length === 0) {
@@ -381,9 +380,8 @@ deleteBill: function(req, res) {
     return;
   }
 
-  new BillModel({id: billId})
-    .fetch()
-    .then(function (model) {
+  Bills.fetchBill(billId, apartmentId,
+    function then(model) {
       var historyString = req.user.attributes.first_name + ' ' +
         req.user.attributes.last_name + ' deleted the bill "' +
         model.attributes.name.trim() + '"';
@@ -405,7 +403,8 @@ deleteBill: function(req, res) {
         function otherwise(error) {
           res.json(503, {error: 'Database error.'});
         });
-    }).otherwise(function() {
+    },
+    function otherwise() {
       res.json(503, {error: 'Database error.'});
     });
 },
@@ -465,6 +464,13 @@ saveHistory: function(historyString, apartmentId) {
   new HistoryModel({apartment_id: apartmentId,
     history_string: historyString, date: new Date()})
     .save()
+},
+
+fetchBill: function(billId, apartmentId, thenFun, otherFun) {
+  new BillModel({id: billId, apartment_id: apartmentId})
+    .fetch()
+    .then(thenFun)
+    .otherwise(otherFun);
 }
 };
 
