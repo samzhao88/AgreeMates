@@ -42,7 +42,7 @@ describe('supplies module:', function() {
     'status': 0
   };
   describe('method', function() {
-       var httpMock, scope, ctrl;
+      var httpMock, scope, ctrl;
 	    beforeEach(inject(function($controller, $rootScope, $httpBackend)  {
 			httpMock = $httpBackend;
 

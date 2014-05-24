@@ -325,6 +325,14 @@ html, body {
 
 }
 
+.positiveBalance {
+  color: green;
+}
+
+.negativeBalance {
+  color: red;
+}
+
 /* 
   Allow angular.js to be loaded in body, hiding cloaked elements until 
   templates compile.  The !important is important given that there may be 
