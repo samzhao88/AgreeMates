@@ -85,6 +85,11 @@ app.config(function($routeProvider) {
     module: 'main.invitations',
     controller: 'InviteCtrl'
   }).
+    when('/calendar', {
+    templateUrl: 'components/calendar/calendar.html',
+    module: 'main.calendar',
+    controller: 'CalendarCtrl'
+  }).
     otherwise({
     redirectTo: '/board'
   });

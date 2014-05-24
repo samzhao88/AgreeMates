@@ -14,6 +14,7 @@ var router = function(app, passport) {
   require('./user.js').setup(app);
   require('./history.js').setup(app);
   require('./invitations.js').setup(app);
+  require('./calendar.js').setup(app);
   require('./passport.js')(app, passport);
 
 };
