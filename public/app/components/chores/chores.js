@@ -8,6 +8,9 @@ angular.module('main.chores').controller('ChoresCtrl',
 
 function ($scope, $http, $timeout) {
 
+   //get request didn't return yet
+    $scope.loaded = false;
+
     //all functions to manage the dynamic menu in add and edit chores UI modals
     $scope.menuEmpty = function(){
         return $scope.menuList.length == 0;
@@ -60,6 +63,8 @@ function ($scope, $http, $timeout) {
             return false;
         }
     };
+    //end all functions to control dynamic UI
+    
 
     //variables to control the connected list menu
     $scope.menuList = {};
@@ -140,6 +145,7 @@ function ($scope, $http, $timeout) {
         $scope.chores = $scope.chores_uncompleted;
         $scope.table = 'unresolved';
         console.log($scope.chores);
+        $scope.loaded = true;
     })
     .error(function(error) {
         $scope.chores = $scope.chores_uncompleted;
@@ -195,13 +201,13 @@ function ($scope, $http, $timeout) {
             any.id = $scope.responsibleList[i].id;
             chore.roommates.push(any.id);
             }
-            console.log(chore);
+            //console.log(chore);
             $http.post('/chores', chore)
             .success(function(data) {
             chore = data.chore;
             chore.users = [];
             chore.users = data.users;
-
+            console.log(data);
             $scope.chores_uncompleted.push(chore);
 
             showSucc("Chore "+chore.name+" successfully added!");
@@ -216,12 +222,7 @@ function ($scope, $http, $timeout) {
     //$scope.chore.roommates = [];
     var any = {name: '', id: 0};
     var temp = [];
-    // for (var x = 0; x < $scope.users.length; x++) {
-    //   if ($scope.users[x].isChecked) {
-    //     at_least_one_user = at_least_one_user + 1;
-    //   }
-    // }
-
+    
     if ($scope.chore.name == '' || !$scope.chore.name)
     {
             showErr("Please input a valid name.");
@@ -246,39 +247,13 @@ function ($scope, $http, $timeout) {
         $scope.chore.roommates.push(any.id);
         }
             
-        // console.log(chore);
-
-
-        // for (var i = 0; i < $scope.users.length; i++) {
-        //   if ($scope.users[i].isChecked) {
-        //     $scope.chore.roommates.unshift($scope.users[i].id);
-        //   } else {
-        //     $scope.chore.users = $scope.chore.users.filter(function(user) {
-        //       return !($scope.users[i].id == user.user_id);
-        //     });
-        //     }
-        // }
-
-      // for (var i = 0; i < $scope.users.length; i++) {
-      //   if ($scope.users[i].isChecked) {
-      //     temp.push($scope.users[i]);
-      //   }
-      // }
-
-      // $scope.chore.users = temp;
-      $scope.chore.interval = parseInt($scope.chore.interval);
-      $scope.chore.number_in_rotation = $scope.chore.rotation_number;
-      $http.put('/chores/' + $scope.chore.id, $scope.chore)
+        // $scope.chore.users = temp;
+        $scope.chore.interval = parseInt($scope.chore.interval);
+        $scope.chore.number_in_rotation = $scope.chore.rotation_number;
+        $http.put('/chores/' + $scope.chore.id, $scope.chore)
         .success(function(data) {
           showSucc("Chore " + $scope.chore.name + " successfully edited!");
-          // var useless = {};
-          // for (var i = 0; i < $scope.chore.users.length; i++) {
-          //   $scope.chore.users[i].user_id = $scope.chore.users[i].id;
-          //   useless = $scope.chore.users.filter(function(user) {
-          //     return user.id == data[i].user_id;
-          //   });
-          //   useless[0].order_index = data[i].order_index;
-          // }
+          
             for(var i = 0; i < $scope.chore.users.length; i++)
             {
                 $scope.chore.users[i].user_id = $scope.chore.users[i].id
@@ -347,21 +322,6 @@ function ($scope, $http, $timeout) {
 
     chore.duedate = $scope.convertdate(chore.duedate);
     chore.rotation_number = chore.number_in_rotation;
-    // // set everything to false
-    // for (var i = 0; i < $scope.users.length; i++) {
-    //   $scope.users[i].isChecked = false;
-    // }
-    // var temp2 = {};
-
-    // // finds all users that are in the chore.users field and checkes them in $scope.users
-    // for (var i = 0; i < chore.users.length; i++) {
-    //   temp2 = $scope.users.filter(function(user) {
-    //     return user.id == chore.users[i].user_id;
-    //   });
-    //   temp2.map(function(user) {
-    //     user.isChecked = true;
-    //   });
-    // }
 
     $scope.chore = chore;
   };
@@ -427,10 +387,6 @@ function ($scope, $http, $timeout) {
             return (user.order_index < chore.number_in_rotation);
         }
     }
-  };
- 
-  $scope.emptyChoreList = function() {
-    return $scope.chores.length == 0 ? true : false;
   };
 
   $scope.format = function(date) {
@@ -520,7 +476,7 @@ function ($scope, $http, $timeout) {
     };
 
     $scope.emptyChoreList = function(){
-      if($scope.chores_uncompleted.length == 0 && $scope.chores_completed.length == 0)
+      if($scope.loaded && $scope.chores_uncompleted.length == 0 && $scope.chores_completed.length == 0)
       {
         return true;
       }
