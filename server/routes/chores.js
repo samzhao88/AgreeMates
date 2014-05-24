@@ -108,7 +108,6 @@ var Chores = {
 		
 		// Check duedate is valid valid
 		if(!isValidDate(duedate)){
-			console.log(duedate);
 			res.json(400, {error: 'Invalid due date'});
 			return;
 		}
@@ -158,9 +157,8 @@ var Chores = {
 						if(userResp.length !== roommates.length){
 							res.json(503,{error: 'DataBase error'});
 						}else{
-							
 								var historyString = req.user.attributes.first_name + ' ' +
-															req.user.attributes.last_name+ ' edited chore ' + choreModel.get('name');
+															req.user.attributes.last_name+ ' added chore ' + choreModel.get('name');
 																
 								Chores.addHistory(choreModel,historyString, 
 													function then(){
@@ -249,7 +247,7 @@ var Chores = {
 													res.json(503,{error: 'DataBase error'});
 												}else{
 													var historyString = req.user.attributes.first_name + ' ' +
-															req.user.attributes.last_name+ ' edited chore ' + choreModel.get('name');
+															req.user.attributes.last_name+ ' completed chore ' + choreModel.get('name');
 																
 															Chores.addHistory(choreModel,historyString, 
 																function then(){
@@ -262,7 +260,7 @@ var Chores = {
 												}
 											},
 													function otherwise(){
-													console.error('Chore Cron Job: Error creating chore');
+													console.error('Error creating chore new reoccuring chore');
 											});
 								});
 							}
@@ -277,27 +275,7 @@ var Chores = {
 	);
   
   },
-  
-	fetchAssignedUsers: function(chore,success,error){
-		Bookshelf.DB.knex('users_chores')
-								.where('chore_id', '=', chore.get('id'))
-								.then(success)
-								.otherwise(error);
-	},
-	markChoreComplete: function(choreId, success, error){
-		new ChoreModel({id: choreId})
-					.save({completed: true}, {patch: true})
-					.then(success)
-					.otherwise(error);
-	},
-	
-	fetchChore: function(apartmentId, choreId, success, error){
-		new ChoreModel({apartment_id: apartmentId, id: choreId})
-		.fetch()
-		.then(success)
-		.otherwise(error);
-	}
-  ,
+
   // Update the chore
 editChore: function(req,res){
 	var apartmentId = req.user.attributes.apartment_id;
@@ -384,7 +362,7 @@ editChore: function(req,res){
 							}else{
 								var historyString = req.user.attributes.first_name + ' ' +
 									req.user.attributes.last_name+ ' edited chore ' + choreModel.get('name');
-								Chores.addHistory(choreModel,historyString, 
+									Chores.addHistory(choreModel,historyString, 
 														function then(){
 															res.send(200);
 														},
@@ -419,36 +397,36 @@ deleteChore: function(req,res){
       res.json(400, {error: 'Invalid supply ID.'});
       return;
     }
-	new ChoreModel({id: choreId, apartment_id: apartmentId})
-		.fetch()
-		.then(function(model){
-			new UserChoreModel().query('where', 'chore_id', '=', choreId)
-				.destroy()
-				.then(function(choremodel){
-					new ChoreModel({id: choreId, apartment_id: apartmentId})
-					.destroy()
-					.then(function(){
-						var historyString = req.user.attributes.first_name + ' ' +
-							req.user.attributes.last_name + ' deleted chore ' + model.get('name');
-								
-							new HistoryModel({apartment_id: model.get('apartment_id'),
-												history_string: historyString,
-												date: new Date()})
-												.save()
-												.then(function(){})
-												.otherwise(function(error){console.log(error)});
-						res.send(200);
-					}).otherwise(function() {
-						res.json(503, {error: 'Database error'});
-					});
-				}).otherwise(function() {
-					res.json(503, {error: 'Database error'})
+	Chores.fetchChore(apartmentId,choreId, 
+		function then(choreModel){
+			Chores.unassignUsers(choreId, 
+				function then(){
+						Chores.removeChore(apartmentId, choreId,
+						function then(){
+							var historyString = req.user.attributes.first_name + ' ' +
+									req.user.attributes.last_name+ ' deleted chore ' + choreModel.get('name');
+									
+									Chores.addHistory(choreModel,historyString, 
+														function then(){
+															res.send(200);
+														},
+														function otherwise(){
+															res.json(503, {error: 'Database error'});
+														});
+						}, 
+						function otherwise(){
+							res.json(503, {error: 'Database error'});
+						});
+				}, 
+				function otherwise(){
+					res.json(503, {error: 'Database error'});
 				});
+		},
+		function otherwise(){
+			res.json(503, {error: 'Database error'});
 		});
   },
   
-  	
- 
 	fetchChores: function(apartmentId, success, error){
 		Bookshelf.DB.knex('chores')
 			.join('users_chores', 'chores.id', '=', 'users_chores.chore_id')
@@ -499,6 +477,13 @@ deleteChore: function(req,res){
 	.then(success)
 	.otherwise(error);
   },
+  
+	removeChore: function(apartmentId, choreId, success, error){
+		new ChoreModel({apartment_id: apartmentId, id: choreId})
+		.destroy()
+		.then(success)
+		.otherwise(error);
+	},
 
   assignUsers: function(userChore, success, error){
 	new UserChoreCollection(userChore)
@@ -507,6 +492,25 @@ deleteChore: function(req,res){
 						.then(function(){
 						});					
 		})
+		.then(success)
+		.otherwise(error);
+	},  
+	fetchAssignedUsers: function(chore,success,error){
+		Bookshelf.DB.knex('users_chores')
+								.where('chore_id', '=', chore.get('id'))
+								.then(success)
+								.otherwise(error);
+	},
+	markChoreComplete: function(choreId, success, error){
+		new ChoreModel({id: choreId})
+					.save({completed: true}, {patch: true})
+					.then(success)
+					.otherwise(error);
+	},
+	
+	fetchChore: function(apartmentId, choreId, success, error){
+		new ChoreModel({apartment_id: apartmentId, id: choreId})
+		.fetch()
 		.then(success)
 		.otherwise(error);
 	},
@@ -623,4 +627,5 @@ deleteChore: function(req,res){
 	  // new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
 	  return new Date(parts[0], parts[1]-1, parts[2]); // Note: months are 0-based
 	}
+	
 module.exports = Chores;
