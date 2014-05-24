@@ -10,9 +10,12 @@ angular.module('main.calendar').controller('CalendarCtrl',
   	$http.get('/calendar').
     success(function(data) {
       $scope.title = data.title;
+      console.log($scope.title);
     }).
     error(function(data, status, headers, config){
         showErr(data.error);
     });
 
-  });
+  }
+
+  );

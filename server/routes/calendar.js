@@ -17,7 +17,6 @@ var Calendar = {
 		return;
 	}
 
-}
-
+};
 
 module.exports = Calendar;

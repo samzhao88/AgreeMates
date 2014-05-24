@@ -43,6 +43,7 @@ var app = angular.module('main',
     'main.apartment',
     'main.history',
     'main.invitations',
+    'main.calendar',
     'LocalStorageModule',
     'ngRoute'
   ]
