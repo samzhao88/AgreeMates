@@ -98,7 +98,28 @@ describe('chores module', function() {
       ctrl('ChoresCtrl', {
         $scope: scope
       });
+
+      httpMock.whenGET('/chores').respond(function(method, url, data, headers) {
+        return [200, chores];
+      });
+      httpMock.whenPOST('/chores', new_chore).respond(function(method, url, data, headers) {
+        return [200, addChoreResponse];
+      });
+
+      httpMock.whenPUT('/chores/:chore', chores[0]).respond(function(method, url, data, headers) {
+        return [200, editChoreResponse];
+      });
+      httpMock.whenDELETE('/chores/:chore', 0).respond(function(method, url, data, headers) {
+        return [200, deleteChoreResponse];
+      });
+
     }));
+
+    afterEach(function() {
+      httpMock.verifyNoOutstandingExpectation();
+      httpMock.verifyNoOutstandingRequest();
+        });
+
 
     it('should exist', function() {
       expect(ctrl).not.to.equal(null);
