@@ -50,6 +50,17 @@ function ($scope, $http, $timeout) {
         }
     };
 
+    $scope.check_interval = function(){
+        if(parseInt($scope.chore.interval) == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    };
+
     //variables to control the connected list menu
     $scope.menuList = {};
     $scope.responsibleList = [];
@@ -108,6 +119,8 @@ function ($scope, $http, $timeout) {
 
     $http.get('/chores')
     .success(function(data) {
+
+      console.log(data);
         
         for (var x = 0; x < $scope.chores.length; x++) {
             for (var i = 0; i < $scope.chores[x].users[i].length; i++) {
@@ -128,9 +141,10 @@ function ($scope, $http, $timeout) {
         $scope.table = 'unresolved';
         console.log($scope.chores);
     })
-    .error(function() {
+    .error(function(error) {
         $scope.chores = $scope.chores_uncompleted;
         $scope.table = 'unresolved';
+        console.log(error);
     });
 
     $http.get('/apartment/users')
@@ -188,7 +202,7 @@ function ($scope, $http, $timeout) {
             chore.users = [];
             chore.users = data.users;
 
-            $scope.chores.push(chore);
+            $scope.chores_uncompleted.push(chore);
 
             showSucc("Chore "+chore.name+" successfully added!");
             }).error(function() {});
@@ -253,7 +267,7 @@ function ($scope, $http, $timeout) {
 
       // $scope.chore.users = temp;
       $scope.chore.interval = parseInt($scope.chore.interval);
-
+      $scope.chore.number_in_rotation = $scope.chore.rotation_number;
       $http.put('/chores/' + $scope.chore.id, $scope.chore)
         .success(function(data) {
           showSucc("Chore " + $scope.chore.name + " successfully edited!");
@@ -299,6 +313,7 @@ function ($scope, $http, $timeout) {
   $scope.setChore = function(index){
     $scope.gindex = index;
     var chore = angular.copy($scope.chores[index]);
+    chore.ind = index;
 
     $scope.setList();
     $scope.reset_responsibleList();
@@ -399,18 +414,21 @@ function ($scope, $http, $timeout) {
   $scope.isResponsible = function(chore, user) {
     if (chore.interval == 0) {
       return "highlight";
+      console.log(chore.interval);
+
     } else {
         if (chore.rotating == false)
         {
+            console.log(chore.rotating);
             return "highlight";
         }
         else
-        {
+        {   
             return (user.order_index < chore.number_in_rotation);
         }
     }
   };
-
+ 
   $scope.emptyChoreList = function() {
     return $scope.chores.length == 0 ? true : false;
   };
@@ -448,8 +466,25 @@ function ($scope, $http, $timeout) {
     var temp = $scope.chores[index];
     temp.apartment_id = $scope.apartment.id;
     temp.user_id = $scope.userId;
-    $http.post('/chores/complete/:chore', temp).success(function(data) { 
+    var chore = {};
+    $http.post('/chores/complete/:chore', temp).success(function(data) {
+        if($scope.chores[index].interval == 0)
+        {
+            $scope.chores.splice(index, 1);
+            temp.completed = true;
+            $scope.chores_completed.push(temp);
+        }
+        else
+        {
+        console.log(data);
+        chore = data.chore;
+        chore.users = data.users;
+        $scope.chores[index] = chore;
+        temp.completed = true;
+        $scope.chores_completed.push(temp);
+        }        
     }).error(function(data, status, headers, config){
+
          console.log(data);
     });
 
@@ -466,10 +501,11 @@ function ($scope, $http, $timeout) {
     }
   };
 
-      //set up delete chore id and index
+    //set up delete chore id and index
     $scope.prepareDelete = function(id, index) {
       $scope.deleteId = id;
       $scope.deleteIdx = index;
+      console.log(index);
     };
 
     //reset delete chore id and index
@@ -484,7 +520,14 @@ function ($scope, $http, $timeout) {
     };
 
     $scope.emptyChoreList = function(){
-      return $scope.chores_uncompleted.length == 0 ? true : false;
+      if($scope.chores_uncompleted.length == 0 && $scope.chores_completed.length == 0)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     };
 
 

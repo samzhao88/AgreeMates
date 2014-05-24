@@ -1,55 +1,57 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="main">
+<html ng-app="main" lang="en">
 <head>
-<meta charset="utf-8">
-<title>AgreeMates</title>
-<link rel="stylesheet" href="../vendor/bootstrap/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="../app.css">
+  <meta charset="utf-8">
+  <title>AgreeMates</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="stylehseet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600,700">
+  <link rel="stylesheet" href="../vendor/ionicons/css/ionicons.min.css">
+  <link rel="stylesheet" href="../vendor/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../app.css">
 </head>
-<body>
+<body ng-controller="InviteIndexCtrl">
 
-<div ng-controller="InviteIndexCtrl" class="container">
-  <div class="jumbotron">
 
-    <div class="row">
-      <h1>AgreeMates</h1>
+  <div id="login-invite-wrap">
+    <div id="login-invite-content">
+      <div class="container">
+        <h1 id="login-invite-title">AgreeMates</h1>
+        <h3 id="login-invite-description">Sign in with Facebook or Google.</h3>
+
+        <div id="login-invite-middle">
+          <a class="btn btn-primary btn-lg" href="../auth/facebook/invite/{{invId}}" role="button"><i class="ion-social-facebook"></i> | Sign in with Facebook</a><br><br>
+          <a class="btn btn-danger btn-lg" href="../auth/google/invite/{{invId}}" role="button"><i class="ion-social-googleplus"></i> | Sign in with Google</a>
+        </div>
+
+      </div>
     </div>
-
-    <div class="row">
-      <p>Make living with roommates easier.</p>
-    </div>
-
-    <div class="row">
-      <a class="btn btn-primary btn-lg" href="../auth/facebook/invite/{{invId}}" role="button">Login with Facebook</a>
-      <a class="btn btn-primary btn-lg" href="../auth/google/invite/{{invId}}" role="button">Login with Google</a>
-    </div>
-
   </div>
 
-</div>
+  <div id="login-invite-footer" class="container">
+    <a href="https://github.com/AgreeMates/AgreeMates/wiki/Product-Home-Page">User Documentation</a>
+  </div>
 
-<script src="../vendor/jquery/dist/jquery.min.js"></script>
-<script src="../vendor/angular/angular.min.js"></script>
-<script src="../vendor/angular-route/angular-route.min.js"></script>
-<script src="../vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="../vendor/angular-bootstrap/ui-bootstrap.min.js"></script>
-<script src="../vendor/angular-local-storage/angular-local-storage.min.js"></script>
-<script src="../vendor/momentjs/min/moment.min.js"></script>
-<script src="../vendor/jquery-ui/ui/jquery-ui.js"></script>
-<script src="../vendor/angular-ui-sortable/sortable.js"></script>
-<script src="../vendor/jqueryui-touch-punch/jquery.ui.touch-punch.min.js"></script>
-<script src="../app.js"></script>
+  <script src="../vendor/jquery/dist/jquery.min.js"></script>
+  <script src="../vendor/angular/angular.min.js"></script>
+  <script src="../vendor/angular-route/angular-route.min.js"></script>
+  <script src="../vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="../vendor/angular-bootstrap/ui-bootstrap.min.js"></script>
+  <script src="../vendor/angular-local-storage/angular-local-storage.min.js"></script>
+  <script src="../vendor/momentjs/min/moment.min.js"></script>
+  <script src="../vendor/jquery-ui/ui/jquery-ui.js"></script>
+  <script src="../vendor/angular-ui-sortable/sortable.js"></script>
+  <script src="../vendor/jqueryui-touch-punch/jquery.ui.touch-punch.min.js"></script>
+  <script src="../app.js"></script>
 
-<script src="../components/bills/bills.js"></script>
-<script src="../components/board/board.js"></script>
-<script src="../components/chores/chores.js"></script>
-<script src="../components/supplies/supplies.js"></script>
-<script src="../components/navbar/navbar.js"></script>
-<script src="../components/settings/settings.js"></script>
-<script src="../components/profile/profile.js"></script>
-<script src="../components/apartment/apartment.js"></script>
-<script src="../components/history/history.js"></script>
-<script src="../components/invitations/invitations.js"></script>
+  <script src="../components/bills/bills.js"></script>
+  <script src="../components/board/board.js"></script>
+  <script src="../components/chores/chores.js"></script>
+  <script src="../components/supplies/supplies.js"></script>
+  <script src="../components/navbar/navbar.js"></script>
+  <script src="../components/settings/settings.js"></script>
+  <script src="../components/apartment/apartment.js"></script>
+  <script src="../components/history/history.js"></script>
+  <script src="../components/invitations/invitations.js"></script>
 
 </body>
 </html>
