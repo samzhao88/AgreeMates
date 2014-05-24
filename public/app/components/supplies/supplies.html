@@ -15,10 +15,10 @@
 
    <table class="table table-striped table-hover text-center">
  	  <tbody>
- 		  <tr ng-hide="emptySupplyList()">
- 			  <th class="text-center">Name</th>
+ 		  	<tr ng-show="!emptySupplyList()" class="hide" ng-class="{'hide': emptySupplyList()}">
+ 			  	<th class="text-center">Name</th> 
  				<th class="text-center">Status</th>
-         <th class="text-center">Delete</th>
+         		<th class="text-center">Delete</th>
  			</tr>
  			<tr ng-class="{'hide': hideAddBox}">
  				<td>
