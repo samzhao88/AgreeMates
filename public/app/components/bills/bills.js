@@ -473,8 +473,8 @@ angular.module('main.bills').controller('BillsCtrl',
       if (model == "add") {
         if ($scope.responsible == undefined) {
           return false;
-        }
-        total = $scope.bill.total;
+        }      
+        total = Math.round($scope.bill.total * 100) / 100;
         amounts = $scope.responsible;
         for (var i = 0; i < amounts.length; i++) {
           if ($scope.selectedRoommates.indexOf(amounts[i].id) > -1) {
@@ -482,13 +482,14 @@ angular.module('main.bills').controller('BillsCtrl',
               return false;
             }
             total -= amounts[i].amount;
+            total = Math.round(total * 100) / 100;
           };
         };        
-      } else { //for adding bill, get total amount from $scope.oldBill.amount and roommates' amount from $scope.updatedAmount
+      } else { //for updateing bill, get total amount from $scope.oldBill.amount and roommates' amount from $scope.updatedAmount
         if ($scope.updatedAmount == undefined) {
           return false;
         }
-        total = $scope.oldBill.amount;
+        total = Math.round($scope.oldBill.amount * 100) / 100;
         amounts = $scope.updatedAmount;
         for (var i = 0; i < amounts.length; i++) {
           if ($scope.selectedRoommates.indexOf(amounts[i].userId) > -1) {
@@ -496,10 +497,12 @@ angular.module('main.bills').controller('BillsCtrl',
               return false;
             }
             total -= amounts[i].amount;
+            total = Math.round(total * 100) / 100;
           };
         };         
       }
 
+      console.log('final: '+ total);
       return total == 0;
     }
 
