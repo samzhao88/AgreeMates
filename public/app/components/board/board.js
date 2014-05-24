@@ -8,10 +8,14 @@ angular.module('main.board').controller('BoardCtrl',
 
     $scope.newMessage = {subject: '', body: ''};
 
+    //get request didn't return yet
+    $scope.loaded = false;
+
     //get all messages to put into the message board
     $http.get('/messages').
     	success(function(data) {
       	$scope.messages = data.messages;
+        $scope.loaded = true;
     	});
 
     //get the user to know which messages/comments can be edited
