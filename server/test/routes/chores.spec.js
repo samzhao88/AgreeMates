@@ -26,11 +26,23 @@ var emptyStub = function(functionName) {
   return sinon.stub(chores, functionName);
 };
 
+var succeedDoubleStub = function(functionName, parameters){
+	return sinon.stub(chores, functionName, function(param1,param2, thenFun, otherFun){
+		thenFun(parameters);
+	});
+};
+
+var failDoubleStub = function(functionName, parameters){
+	return sinon.stub(chores, functionName, function(param1,param2, thenFun, otherFun){
+		otherFun(parameters);
+	});
+};
+
 describe('Chores', function(){
 	describe('checkLogin', function(){
 	
 	var res, resMock;
-
+	
 	beforeEach(function(){
 		res = {json: function(){}};
 		resMock = sinon.mock(res);
@@ -79,6 +91,156 @@ describe('Chores', function(){
 			var fetchChoresStub = succeedingStub('fetchChores', []);
 			var req1 = {user: {attributes:{apartment_id: 1}}};
 			resMock.expects('json').once().withArgs({chores: []});
+			chores.getChores(req1, res);
+			expect(fetchChoresStub).to.have.been.calledWith(1);
+			fetchChoresStub.restore();
+		});
+		
+		it('should return a chore with a users field', function(){
+			var fetchChoresStub = succeedingStub('fetchChores', [{chore_id: 1,
+																name: 'test',
+																createdate: '2016-05-08',
+																duedate: '2016-09-09',
+																interval: 3,
+																completed: false,
+																rotating: false,
+																number_in_rotation: 1,
+																user_id: 4,
+																first_name: 'Dave',
+																last_name: 'Drisel',
+																order_index: 0
+																}]);
+			var req1 = {user: {attributes:{apartment_id: 1}}};
+			resMock.expects('json').once().withArgs({chores: [{id: 1,
+																name: 'test',
+																createdate: '2016-05-08',
+																duedate: '2016-09-09',
+																interval: 3,
+																completed: false,
+																rotating: false,
+																number_in_rotation: 1,
+																users: [{
+																	user_id: 4,
+																	first_name: 'Dave',
+																	last_name: 'Drisel',
+																	order_index: 0
+																	}]}]});
+			chores.getChores(req1, res);
+			expect(fetchChoresStub).to.have.been.calledWith(1);
+			fetchChoresStub.restore();
+		});
+		
+		it('should merge users assigned to a chore together and return a chore with users field', function(){
+			var fetchChoresStub = succeedingStub('fetchChores', [{chore_id: 1,
+																name: 'test',
+																createdate: '2016-05-08',
+																duedate: '2016-09-09',
+																interval: 3,
+																completed: false,
+																rotating: false,
+																number_in_rotation: 1,
+																user_id: 4,
+																first_name: 'Dave',
+																last_name: 'Drisel',
+																order_index: 0
+																},
+																{chore_id: 1,
+																name: 'test',
+																createdate: '2016-05-08',
+																duedate: '2016-09-09',
+																interval: 3,
+																completed: false,
+																rotating: false,
+																number_in_rotation: 1,
+																user_id: 6,
+																first_name: 'Sam',
+																last_name: 'Biscut',
+																order_index: 1
+																}]);
+			var req1 = {user: {attributes:{apartment_id: 1}}};
+			resMock.expects('json').once().withArgs({chores: [{id: 1,
+																name: 'test',
+																createdate: '2016-05-08',
+																duedate: '2016-09-09',
+																interval: 3,
+																completed: false,
+																rotating: false,
+																number_in_rotation: 1,
+																users: [{
+																	user_id: 4,
+																	first_name: 'Dave',
+																	last_name: 'Drisel',
+																	order_index: 0
+																	},
+																	{
+																	user_id: 6,
+																	first_name: 'Sam',
+																	last_name: 'Biscut',
+																	order_index: 1
+																	}]}]});
+			chores.getChores(req1, res);
+			expect(fetchChoresStub).to.have.been.calledWith(1);
+			fetchChoresStub.restore();
+		});
+		
+		it('should not merge chores with different ids together', function(){
+			var fetchChoresStub = succeedingStub('fetchChores', [{chore_id: 1,
+																name: 'test',
+																createdate: '2016-05-08',
+																duedate: '2016-09-09',
+																interval: 3,
+																completed: false,
+																rotating: false,
+																number_in_rotation: 1,
+																user_id: 4,
+																first_name: 'Dave',
+																last_name: 'Drisel',
+																order_index: 0
+																},
+																{chore_id: 2,
+																name: 'Mocktest',
+																createdate: '2016-05-08',
+																duedate: '2016-09-09',
+																interval: 3,
+																completed: false,
+																rotating: false,
+																number_in_rotation: 1,
+																user_id: 6,
+																first_name: 'Sam',
+																last_name: 'Biscut',
+																order_index: 1
+																}]);
+			var req1 = {user: {attributes:{apartment_id: 1}}};
+			resMock.expects('json').once().withArgs({chores: [{id: 1,
+																name: 'test',
+																createdate: '2016-05-08',
+																duedate: '2016-09-09',
+																interval: 3,
+																completed: false,
+																rotating: false,
+																number_in_rotation: 1,
+																users: [{
+																	user_id: 4,
+																	first_name: 'Dave',
+																	last_name: 'Drisel',
+																	order_index: 0
+																	}]},
+																{
+																id: 2,
+																name: 'Mocktest',
+																createdate: '2016-05-08',
+																duedate: '2016-09-09',
+																interval: 3,
+																completed: false,
+																rotating: false,
+																number_in_rotation: 1,
+																users:[{
+																	user_id: 6,
+																	first_name: 'Sam',
+																	last_name: 'Biscut',
+																	order_index: 1
+																}]
+																}]});
 			chores.getChores(req1, res);
 			expect(fetchChoresStub).to.have.been.calledWith(1);
 			fetchChoresStub.restore();
@@ -146,6 +308,7 @@ describe('Chores', function(){
 			chores.addChore(req1,res);
 			chores.addChore(req2, res);
 		});
+		
 	});
 
 	describe('editChore',function(){
@@ -212,5 +375,111 @@ describe('Chores', function(){
 			chores.editChore(req2, res);
 		});
 
+	});
+	
+	//Might need to verify apartment
+	describe('deleteChore', function(){
+		var res, resMock;
+
+		beforeEach(function(){
+			res = {json: function(){}, send: function() {} };
+			resMock = sinon.mock(res);
+		});
+
+		afterEach(function(){
+			resMock.verify();
+		});
+	
+		it('should return 400 if chore id is invalid', function(){
+			var req1 = {user: {attributes: {apartment_id: 1}}, params:{chore: -1}};
+			var req2 = {user: {attributes: {apartment_id: 1}}, params:{chore: undefined}};
+			resMock.expects('json').twice().withArgs(400, {error: 'Invalid chore ID.'});
+			chores.deleteChore(req1,res);
+			chores.deleteChore(req2,res);
+		});
+		
+		it('should return 503 if database error in fetching chore', function(){
+			var req1 = {user: {attributes: {apartment_id: 1}}, params:{chore: 4}};
+			fetchChoreStub = failDoubleStub('fetchChore', null);
+			resMock.expects('json').once().withArgs(503, {error: 'Database error'});
+			chores.deleteChore(req1,res);
+			expect(fetchChoreStub).to.have.been.calledWith(1);
+			fetchChoreStub.restore();
+		});
+		
+		
+		
+		it('should return 503 if database error when unassigning ', function(){
+			var req1 = {user: {attributes: {apartment_id: 1}}, params:{chore: 4}};
+			fetchChoreStub = succeedDoubleStub('fetchChore', 4);
+			unassignUsersStub = failingStub('unassignUsers', null);
+			resMock.expects('json').once().withArgs(503, {error: 'Database error'});
+			chores.deleteChore(req1,res);
+			expect(fetchChoreStub).to.have.been.calledWith(1);
+			expect(unassignUsersStub).to.have.been.calledWith(4);
+			fetchChoreStub.restore();
+			unassignUsersStub.restore();
+		});
+		
+		it('should return 503 if database error when removing the chore model itself', function(){
+			var req1 = {user: {attributes: {apartment_id: 1}}, params:{chore: 4}};
+			fetchChoreStub = succeedDoubleStub('fetchChore', null);
+			unassignUsersStub = succeedingStub('unassignUsers', null);
+			removeChoreStub = failDoubleStub('removeChore', null);
+			resMock.expects('json').once().withArgs(503, {error: 'Database error'});
+			chores.deleteChore(req1,res);
+			expect(fetchChoreStub).to.have.been.calledWith(1);
+			expect(unassignUsersStub).to.have.been.calledWith(4);
+			expect(removeChoreStub).to.have.been.calledWith(1,4);
+			fetchChoreStub.restore();
+			unassignUsersStub.restore();
+			removeChoreStub.restore();
+		});
+		
+		it('should return 200 if chore is removed and history recorded properly', function(){
+			var req1 = {user: {attributes: {first_name: 'Greg', last_name: 'Knickels',apartment_id: 1}}, params:{chore: 4}};
+			var choreModel = {get: function(name){
+												return 'dishes';
+										}};
+			fetchChoreStub = succeedDoubleStub('fetchChore', choreModel);
+			unassignUsersStub = succeedingStub('unassignUsers', null);
+			removeChoreStub = succeedDoubleStub('removeChore', null);
+			addHistoryStub = failDoubleStub('addHistory',null);
+			console.log('test');
+			resMock.expects('json').once().withArgs(503, {error: 'Database error'});
+			console.log('test');
+			chores.deleteChore(req1,res);
+			expect(fetchChoreStub).to.have.been.calledWith(1);
+			expect(unassignUsersStub).to.have.been.calledWith(4);
+			expect(removeChoreStub).to.have.been.calledWith(1,4);
+			expect(addHistoryStub).to.have.been.calledWith(choreModel,'Greg Knickels deleted chore dishes');
+			fetchChoreStub.restore();
+			unassignUsersStub.restore();
+			removeChoreStub.restore();
+			addHistoryStub.restore();
+		});
+		
+		it('should return 200 if chore is removed and history recorded properly', function(){
+			var req1 = {user: {attributes: {first_name: 'Greg', last_name: 'Knickels',apartment_id: 1}}, params:{chore: 4}};
+			var choreModel = {get: function(name){
+												return 'dishes';
+										}};
+			fetchChoreStub = succeedDoubleStub('fetchChore', choreModel);
+			unassignUsersStub = succeedingStub('unassignUsers', null);
+			removeChoreStub = succeedDoubleStub('removeChore', null);
+			addHistoryStub = succeedDoubleStub('addHistory',null);
+			console.log('test');
+			resMock.expects('send').once().withArgs(200);
+			console.log('test');
+			chores.deleteChore(req1,res);
+			expect(fetchChoreStub).to.have.been.calledWith(1);
+			expect(unassignUsersStub).to.have.been.calledWith(4);
+			expect(removeChoreStub).to.have.been.calledWith(1,4);
+			expect(addHistoryStub).to.have.been.calledWith(choreModel,'Greg Knickels deleted chore dishes');
+			fetchChoreStub.restore();
+			unassignUsersStub.restore();
+			removeChoreStub.restore();
+			addHistoryStub.restore();
+		});
 	});
 });

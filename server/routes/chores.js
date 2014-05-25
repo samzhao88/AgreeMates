@@ -394,18 +394,20 @@ deleteChore: function(req,res){
 	var choreId = req.params.chore;
 
 	if (!isValidId(choreId)) {
-      res.json(400, {error: 'Invalid supply ID.'});
+      res.json(400, {error: 'Invalid chore ID.'});
       return;
     }
-	Chores.fetchChore(apartmentId,choreId, 
+	Chores.fetchChore(apartmentId, choreId, 
 		function then(choreModel){
 			Chores.unassignUsers(choreId, 
 				function then(){
 						Chores.removeChore(apartmentId, choreId,
 						function then(){
+							
 							var historyString = req.user.attributes.first_name + ' ' +
 									req.user.attributes.last_name+ ' deleted chore ' + choreModel.get('name');
-									
+								console.log(historyString);
+								console.log(choreModel);	
 									Chores.addHistory(choreModel,historyString, 
 														function then(){
 															res.send(200);
