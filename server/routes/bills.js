@@ -149,12 +149,10 @@ addBill: function(req, res) {
       // add payment models for each of the payments for the bill    
       Bills.savePayments(model.id, roommates, 
         function otherwise(error) {
-          console.log(error);
           res.json(503, {error: 'Database error.'});
         });
       res.json({id: model.attributes.id});
     }).otherwise(function(error) {
-      console.log(error);
       res.json(503, {error: 'Database error'});
     });
 },
@@ -213,7 +211,6 @@ updatePayment: function(req, res) {
                     }
                   },
                   function otherwise(error) {
-                    console.log(error);
                     res.json(503, {error: 'Database error.'});
                   });
               } else {
@@ -224,22 +221,16 @@ updatePayment: function(req, res) {
                     Bills.saveBill(bill);
                   },
                   function otherwise(error) {
-                    console.log(error); 
                     res.json(503, {error: 'Database error.'});
                   });
               }
-            },
-            function otherwise(error) {
-              console.log(error);
             });
         },
         function otherwise(error) {
-          console.log(error);
           res.json(503, {error: 'Database error.'});
         });
     },
-    function otherwise() {
-      console.log(error);
+    function otherwise(error) {
       res.json(503, {error: 'Database error.'});
     });
 },
@@ -296,12 +287,10 @@ editBill: function(req, res) {
             });
         },
         function otherwise(error) {
-          console.log(error);
           res.json(503, {error: 'Database error.'});
         });
     },
     function otherwise(error) {
-      console.log(error);
       res.json(503, {error: 'Database error.'});
     });
 },
@@ -337,7 +326,6 @@ deleteBill: function(req, res) {
               res.send(200);
             },
             function otherwise(error) {
-              console.log(error);
               res.json(503, {error: 'Database error.'})
             });
         },
@@ -508,20 +496,17 @@ createNewReocurring: function(oldBill, res) {
                 bill_id: newBill.attributes.id})
                 .save()
                 .otherwise(function(error) {
-                  console.log(error);
                   res.json(503, {error: 'Database error.'});
                 });
              }
               res.send(200);
             }).otherwise(function(error) {
-              console.log(error);
               res.json(503, {error: 'Database error.'});
             });
           } else {
             res.send(200);
           }
         }).otherwise(function(error) {
-          console.log(error);
           res.json(503, {error: 'Database error.'});
         });
 },
