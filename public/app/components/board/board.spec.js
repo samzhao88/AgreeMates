@@ -74,16 +74,22 @@ describe('board module', function() {
       'msg_id': 1
     };
 
-    /*
+    //edited message
     var editMessage = {
       'subject': 'Subject1',
       'body': 'edited body',
       'id': 1,
 
-    }
-    */
+    };
 
-  describe('method', function() {
+    //fake user
+    var user = {
+      'id': 6, 
+      'first_name': "alice", 
+      'last_name': "dole"
+    };
+
+  describe('BoardCtrl', function() {
     var ctrl, scope, httpMock;
 
     beforeEach(inject(function ($controller, $rootScope, $httpBackend) {
@@ -92,11 +98,36 @@ describe('board module', function() {
       scope = $rootScope.$new();
 
       ctrl = $controller;
+
       ctrl('BoardCtrl', {
         $scope: scope
       });
 
-      httpMock.when('GET', '/messages').respond(function(method, url, data, headers) {
+      httpMock.whenGET('/messages').respond(function(method, url, data, headers) {
+        return [200,messages];
+      });
+
+      httpMock.whenGET('/user').respond(function(method, url, data, headers) {
+        return [200,user];
+      });
+
+      httpMock.whenPOST('/messages', message).respond(function(method, url, data, headers) {
+        return [200,messages];
+      });
+
+      httpMock.whenDELETE('/messages/:message', 0).respond(function(method, url, data, headers) {
+        return [200];
+      });
+
+      httpMock.whenPUT('/messages/:message', editMessage).respond(function(method, url, data, headers) {
+        return [200];
+      });
+
+      httpMock.whenPOST('/messages/:message/comments', comment).respond(function(method, url, data, headers) {
+        return [200,messages];
+      });
+
+      httpMock.whenDELETE('/messages/:message/comments/:comment', 0).respond(function(method, url, data, headers) {
         return [200,messages];
       });
 
@@ -107,13 +138,35 @@ describe('board module', function() {
       httpMock.verifyNoOutstandingRequest();
     }); 
 
-    describe('get', function() {
-      it('should fetch all messages and comments',function() {
-        httpMock.expectGET('/messages').respond(messages);
-        httpMock.flush();
-        expect(scope.messages.length).to.equal(2);
-      });
-    });
+    describe('onload', function() {
+      beforeEach(function() {
+          httpMock.expectGET('/user').respond(user);
+          httpMock.expectGET('/messages').respond(messages);
+          httpMock.flush();   
+        });
 
+      describe('get', function() {
+        it('should fetch all messages and comments',function() {
+          expect(scope.messages.length).to.equal(2);
+          expect(scope.messages[0].comments.length).to.equal(2);
+        });
+      });
+
+      describe('get user', function() {   
+        it('should have correct id', function() {
+          expect(scope.userId).to.equal(6);
+        });
+        it('should have correct first name', function() {
+          expect(scope.userFirstName).to.equal('alice');
+        });
+        it('should have correct last name', function() {
+          expect(scope.userLastName).to.equal('dole');
+        });
+      });
+
+
+
+
+    });
   });
 });
