@@ -90,7 +90,7 @@ describe('board module', function() {
     var editMessage = {
       'subject': 'Subject1',
       'body': 'edited body',
-      'id': 1,
+      'id': 1
 
     };
 
@@ -102,9 +102,9 @@ describe('board module', function() {
     };
 
   describe('BoardCtrl', function() {
-    var ctrl, scope, httpMock;
+    var httpMock, scope, ctrl;
 
-    beforeEach(inject(function ($controller, $rootScope, $httpBackend) {
+    beforeEach(inject(function($controller, $rootScope, $httpBackend) {
       httpMock = $httpBackend;
 
       scope = $rootScope.$new();
