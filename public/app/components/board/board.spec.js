@@ -14,7 +14,7 @@ describe('board module', function() {
 
   var messages = {messages: [
     {
-      'id': 1,
+      'id': 2,
       'subject': 'Subject1',
       'body': 'Body1',
       'date': '2014-05-24T00:20:42.949Z',
@@ -38,7 +38,7 @@ describe('board module', function() {
         ]
     },
     {
-      'id': 2,
+      'id': 1,
       'subject': 'Subject2',
       'body': 'Body2',
       'date': '2014-05-23T00:20:42.949Z',
@@ -46,14 +46,14 @@ describe('board module', function() {
       'author': 'Lukas',
       'comments': [
         {
-          'id': 1,
+          'id': 4,
           'body': 'CommentBody1',
           'date': '2014-05-24T00:20:46.580Z',
           'user_id': 1,
           'author': 'Lukas'
         },
         {
-          'id': 2,
+          'id': 5,
           'body': 'CommentBody2',
           'date': '2014-05-24T00:20:48.580Z',
           'user_id': 1,
@@ -69,7 +69,19 @@ describe('board module', function() {
       'body': 'new body'
     };
 
+    var newMessageRes = {
+      'id': 3,
+      'subject': 'New subject',
+      'body': 'new body'
+    };
+
     var comment = {
+      'subject': 'body',
+      'msg_id': 1
+    };
+
+    var newCommentRes = {
+      'id': 3,
       'subject': 'body',
       'msg_id': 1
     };
@@ -112,23 +124,23 @@ describe('board module', function() {
       });
 
       httpMock.whenPOST('/messages', message).respond(function(method, url, data, headers) {
-        return [200,messages];
+        return [200,newMessageRes];
       });
 
-      httpMock.whenDELETE('/messages/:message', 0).respond(function(method, url, data, headers) {
+      httpMock.whenDELETE('/messages/1').respond(function(method, url, data, headers) {
         return [200];
       });
 
-      httpMock.whenPUT('/messages/:message', editMessage).respond(function(method, url, data, headers) {
+      httpMock.whenPUT('/messages/1', editMessage).respond(function(method, url, data, headers) {
         return [200];
       });
 
-      httpMock.whenPOST('/messages/:message/comments', comment).respond(function(method, url, data, headers) {
-        return [200,messages];
+      httpMock.whenPOST('/messages/1/comments', comment).respond(function(method, url, data, headers) {
+        return [200,newCommentRes];
       });
 
-      httpMock.whenDELETE('/messages/:message/comments/:comment', 0).respond(function(method, url, data, headers) {
-        return [200,messages];
+      httpMock.whenDELETE('/messages/1/comments/1').respond(function(method, url, data, headers) {
+        return [200];
       });
 
     }));
@@ -145,7 +157,7 @@ describe('board module', function() {
           httpMock.flush();   
         });
 
-      describe('get', function() {
+      describe('get messages', function() {
         it('should fetch all messages and comments',function() {
           expect(scope.messages.length).to.equal(2);
           expect(scope.messages[0].comments.length).to.equal(2);
@@ -164,8 +176,39 @@ describe('board module', function() {
         });
       });
 
+      describe('post message', function() {
+        it('should post a new message',function() {
+          httpMock.expectPOST('/messages', message).respond(newMessageRes);
+          httpMock.flush();
+          expect($scope.messages.length).to.be(3);
+          expect($scope.messages[1].body).to.equal('new body');
+        });
+      });
 
+      describe('update message', function() {
+        it('should update a message',function() {
+         
+        });
+      });
 
+      describe('delete message', function() {
+        it('should delete the message with id 1',function() {
+          httpMock.expectDELETE('/messages/1').respond(200);
+          expect($scope.messages[0].id).to.equal(2);
+        });
+      });
+
+      describe('post comment', function() {
+        it('should post a new comment',function() {
+          //httpMock.expectPOST('/messages/:message/comments', comment).respond(newCommentRes);
+        });
+      });
+
+      describe('delete comment', function() {
+        it('should delete the comment with id 1',function() {
+          //httpMock.expectDELETE('/messages', message).respond(200);
+        });
+      });
 
     });
   });
