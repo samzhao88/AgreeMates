@@ -144,7 +144,11 @@ addBill: function(req, res) {
       var historyString = req.user.attributes.first_name + ' ' +
         req.user.attributes.last_name + ' added bill "' +
         bill.attributes.name.trim() + '"'; 
-      Bills.saveHistory(historyString, bill.attributes.apartment_id); 
+      Bills.saveHistory(historyString, bill.attributes.apartment_id,
+        function otherwise(error) { 
+          console.log(error);
+          res.json(503, {error: 'Database error.'});
+        }); 
 
       // add payment models for each of the payments for the bill    
       Bills.savePayments(model.id, roommates, 
@@ -194,13 +198,21 @@ updatePayment: function(req, res) {
                   function then(bill) {
                     bill.attributes.paid = true;
                     Bills.saveBill(bill);
+                  },
+                  function otherwise(error) {
+                    console.log(error);
+                    res.json(503, {error: 'Database error'});
                   });
 
                 Bills.fetchBillWithPayments(billId, apartmentId,
                   function then(oldBill) {
                     var historyString = 'The bill "' + 
                       oldBill.attributes.name + '" is now resolved';
-                    Bills.saveHistory(historyString, apartmentId);
+                    Bills.saveHistory(historyString, apartmentId,
+                      function otherwise(error) {
+                        console.log(error);
+                        res.json(503, {error: error});
+                      });
                   
                     // If the bill is reocurring we need to make a new
                     // instance of it and it's payments
@@ -276,7 +288,11 @@ editBill: function(req, res) {
             function then(model) {
               var historyString = req.user.attributes.first_name + ' ' + 
                 req.user.attributes.last_name + ' edited bill "' + name + '"';
-              Bills.saveHistory(historyString, apartmentId); 
+              Bills.saveHistory(historyString, apartmentId,
+                function otherwise(error) {
+                  console.log(error);
+                  res.json(503, {error: error});
+                }); 
  
               // Add new payments for all the users who need to pay
               Bills.savePayments(billId, roommates, 
@@ -284,6 +300,9 @@ editBill: function(req, res) {
                     res.json(503, {error: 'Database error'});
                 }); 
               res.json({result: 'success'});
+            },
+            function otherwise(error) {
+              res.json(503, {error: 'Database error'});
             });
         },
         function otherwise(error) {
@@ -315,7 +334,11 @@ deleteBill: function(req, res) {
       var historyString = req.user.attributes.first_name + ' ' +
         req.user.attributes.last_name + ' deleted the bill "' +
         model.attributes.name.trim() + '"';
-      Bills.saveHistory(historyString, apartmentId);
+      Bills.saveHistory(historyString, apartmentId,
+        function otherwise(error) {
+          console.log(error);
+          res.json(503, {error: error});
+        });
 
       // Destroy all the payments for a bill and then destroy
       // the bill.
@@ -416,10 +439,11 @@ destroyBill: function(billId, apartmentId, thenFun, otherFun) {
 },
 
 // Creates and saves a new history model to the database
-saveHistory: function(historyString, apartmentId) {
+saveHistory: function(historyString, apartmentId, otherFun) {
   new HistoryModel({apartment_id: apartmentId,
     history_string: historyString, date: new Date()})
     .save()
+    .otherwise(otherFun);
 },
 
 // Fetches a single bill
@@ -522,16 +546,28 @@ updatePaymentHistory: function(req, billId, apartmentId, paid) {
         var historyString = req.user.attributes.first_name + ' ' +
           req.user.attributes.last_name + ' paid their portion of bill "' +
           billModel.attributes.name.trim() + '"';
-        Bills.saveHistory(historyString, apartmentId);
+        Bills.saveHistory(historyString, apartmentId,
+          function otherwise(error) {
+            console.log(error);
+            res.json(503, {error: error});
+          });
       } else {
         var historyString = req.user.attributes.first_name + ' ' +
           req.user.attributes.last_name + ' unpaid their portion of bill "' +
           billModel.attributes.name.trim() + '"';
-        Bills.saveHistory(historyString, apartmentId);
+        Bills.saveHistory(historyString, apartmentId,
+          function otherwise(error) {
+            console.log(error);
+            res.json(503, {error: error});
+          });
         if(billModel.attributes.paid) {
           historyString = 'The bill "' + billModel.attributes.name.trim() +
             '" is no longer resolved';
-          Bills.saveHistory(historyString, apartmentId);
+          Bills.saveHistory(historyString, apartmentId,
+            function otherwise(error) {
+              console.log(error);
+              res.json(503, {error: error});
+            });
         }
       }
     });
