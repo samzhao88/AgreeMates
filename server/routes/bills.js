@@ -123,6 +123,9 @@ addBill: function(req, res) {
   if (!isValidName(req.body.name)) {
     res.json(400, {error: 'Invalid bill name.'});
     return;
+  } else if (new Date(req.body.date) < new Date()) {
+    res.json(400, {error: 'Invalid due date'});
+    return;
   } else if (req.body.total === undefined || req.body.total < 0) {
     res.json(400, {error: 'Invalid bill total.'});
     return;
