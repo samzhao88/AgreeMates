@@ -12,7 +12,7 @@ describe('board module', function() {
     expect(boardModule).not.to.equal(null);
   });
 
-  var messages = {messages: [
+  var messages = {'messages': [
     {
       'id': 2,
       'subject': 'Subject1',
