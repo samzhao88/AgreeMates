@@ -69,7 +69,7 @@ describe('Messages', function() {
     });
 
     it('should return empty messages array if no messages', function() {
-      var queryMessagesStub = succeedingStub('queryMessages', 
+      var queryMessagesStub = succeedingStub('queryMessages',
         []);
       var req = {user: {attributes: {apartment_id: 1}}};
 
@@ -81,23 +81,25 @@ describe('Messages', function() {
     });
 
     it('should return all messages returned by the query', function() {
-      var queryMessagesStub = succeedingStub('queryMessages', 
-        [{messageId: 1, 
+      var queryMessagesStub = succeedingStub('queryMessages',
+        [{messageId: 1,
           subject: 'test subject 1',
           body: 'test body 1',
-          comments: [{author: 'me'}],
+          comments: [],
           authorName: 'test author 1',
           messageDate: 1/1/14,
-          user_id: 11}, 
+          user_id: 11},
          {messageId: 2,
           subject: 'test subject 2',
           body: 'test body 2',
+          comments: [],
           authorName: 'test author 2',
           messageDate: 2/2/14,
-          user_id: 22}, 
+          user_id: 22},
          {messageId: 3,
           subject: 'test subject 3',
           body: 'test body 3',
+          comments: [],
           authorName: 'test author 3',
           messageDate: 3/3/14,
           user_id: 33}]);
@@ -109,18 +111,24 @@ describe('Messages', function() {
             {id: 1,
              subject: 'test subject 1',
              body: 'test body 1',
+             comments: [{author: undefined, body: undefined,
+                date: undefined, id: undefined, user_id: undefined}],
              author: 'test author 1',
              date: 1/1/14,
              user_id: 11},
             {id: 2,
              subject: 'test subject 2',
              body: 'test body 2',
+             comments: [{author: undefined, body: undefined,
+                date: undefined, id: undefined, user_id: undefined}],
              author: 'test author 2',
              date: 2/2/14,
              user_id: 22},
             {id: 3,
              subject: 'test subject 3',
              body: 'test body 3',
+             comments: [{author: undefined, body: undefined,
+                date: undefined, id: undefined, user_id: undefined}],
              author: 'test author 3',
              date: 3/3/14,
              user_id: 33}]});

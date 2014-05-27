@@ -2,7 +2,12 @@
 
 'user strict';
 
-require('../../app');
+var Bookshelf = require('bookshelf');
+Bookshelf.DB = Bookshelf.initialize({
+  client: 'pg',
+  connection: {}
+});
+
 var chai = require('chai');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
@@ -28,7 +33,7 @@ var emptyStub = function(functionName) {
 
 describe('Chores', function(){
 	describe('checkLogin', function(){
-	
+
 	var res, resMock;
 
 	beforeEach(function(){
@@ -57,7 +62,7 @@ describe('Chores', function(){
 		afterEach(function(){
 			resMock.verify();
 		});
-	
+
 		it('fetches the chores', function(){
 			var fetchChoresStub = emptyStub('fetchChores');
 			var req1 = {user: {attributes:{apartment_id: 1}}};
@@ -65,7 +70,7 @@ describe('Chores', function(){
 			expect(fetchChoresStub).to.have.been.calledWith(1);
 			fetchChoresStub.restore();
 		});
-		
+
 		it('should fail with 503 Database error', function(){
 			var fetchChoresStub = failingStub('fetchChores', null);
 			var req1 = {user: {attributes:{apartment_id: 1}}};
@@ -74,7 +79,7 @@ describe('Chores', function(){
 			expect(fetchChoresStub).to.have.been.calledWith(1);
 			fetchChoresStub.restore();
 		});
-		
+
 		it('should return empty json if rows in empty', function(){
 			var fetchChoresStub = succeedingStub('fetchChores', []);
 			var req1 = {user: {attributes:{apartment_id: 1}}};
@@ -85,7 +90,7 @@ describe('Chores', function(){
 		});
 	});
 	describe('addChore', function() {
-	
+
 	var res, resMock;
 
 	beforeEach(function(){
@@ -149,7 +154,7 @@ describe('Chores', function(){
 	});
 
 	describe('editChore',function(){
-	
+
 	var res, resMock;
 
 	beforeEach(function(){
