@@ -530,7 +530,7 @@ angular.module('main.bills').controller('BillsCtrl',
       return $scope.unresolvedBills.length == 0 && $scope.loaded ? true : false;
     };
 
-    //return whether unresolved bills are empty and unselected
+    //return whether bills are empty and selected
     $scope.isUnresolvedEmptyAndSelected = function() {
       if ($scope.table == 'unresolved') {
         return $scope.unresolvedBills.length == 0;
