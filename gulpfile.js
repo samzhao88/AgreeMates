@@ -71,7 +71,7 @@ gulp.task('test:server', function () {
       .pipe(istanbul.writeReports())
       .on('error', handleError)
       .once('end', function () {
-        //process.exit();
+        process.exit();
       });
     });
 });

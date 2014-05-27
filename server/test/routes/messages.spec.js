@@ -53,6 +53,79 @@ describe('Messages', function() {
       var req = {user: {attributes: {apartment_id: 1}}};
       messages.getMessages(req, res);
       expect(queryMessagesStub).to.have.been.calledOnce;
+      expect(queryMessagesStub).to.have.been.calledWith(1);
+      queryMessagesStub.restore();
+    });
+
+    it('should return 503 if failed to query messages', function() {
+      var queryMessagesStub = failingStub('queryMessages');
+      var req = {user: {attributes: {apartment_id: 1}}};
+
+      resMock.expects('json').once().
+        withArgs(503, {error: 'Database error.'});
+      messages.getMessages(req, res);
+
+      queryMessagesStub.restore();
+    });
+
+    it('should return empty messages array if no messages', function() {
+      var queryMessagesStub = succeedingStub('queryMessages', 
+        []);
+      var req = {user: {attributes: {apartment_id: 1}}};
+
+      resMock.expects('json').once().
+        withArgs({messages: []});
+      messages.getMessages(req, res);
+
+      queryMessagesStub.restore();
+    });
+
+    it('should return all messages returned by the query', function() {
+      var queryMessagesStub = succeedingStub('queryMessages', 
+        [{messageId: 1, 
+          subject: 'test subject 1',
+          body: 'test body 1',
+          comments: [{author: 'me'}],
+          authorName: 'test author 1',
+          messageDate: 1/1/14,
+          user_id: 11}, 
+         {messageId: 2,
+          subject: 'test subject 2',
+          body: 'test body 2',
+          authorName: 'test author 2',
+          messageDate: 2/2/14,
+          user_id: 22}, 
+         {messageId: 3,
+          subject: 'test subject 3',
+          body: 'test body 3',
+          authorName: 'test author 3',
+          messageDate: 3/3/14,
+          user_id: 33}]);
+      var req = {user: {attributes: {apartment_id: 1}}};
+
+      resMock.expects('json').once().
+        withArgs(
+          {messages: [
+            {id: 1,
+             subject: 'test subject 1',
+             body: 'test body 1',
+             author: 'test author 1',
+             date: 1/1/14,
+             user_id: 11},
+            {id: 2,
+             subject: 'test subject 2',
+             body: 'test body 2',
+             author: 'test author 2',
+             date: 2/2/14,
+             user_id: 22},
+            {id: 3,
+             subject: 'test subject 3',
+             body: 'test body 3',
+             author: 'test author 3',
+             date: 3/3/14,
+             user_id: 33}]});
+      messages.getMessages(req, res);
+
       queryMessagesStub.restore();
     });
 
