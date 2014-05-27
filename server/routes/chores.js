@@ -155,11 +155,11 @@ var Chores = {
 						function(choreModel, userResp){
 						var response = {chore: choreModel.attributes, users: userResp};
 						if(userResp.length !== roommates.length){
-							res.json(503,{error: 'DataBase error'});
+							res.json(503,{error: 'Database error'});
 						}else{
 								var historyString = req.user.attributes.first_name + ' ' +
-															req.user.attributes.last_name+ ' added chore ' + choreModel.get('name');
-																
+															req.user.attributes.last_name+ ' added chore ' + choreModel.get('name');					
+	
 								Chores.addHistory(choreModel,historyString, 
 													function then(){
 														res.send(200,response);
@@ -169,7 +169,7 @@ var Chores = {
 													});
 						}
 						}, function(){
-						res.json(503,{error: 'DataBaser error'});
+						res.json(503,{error: 'Database error'});
 						});
 		
   }, 
@@ -193,7 +193,7 @@ var Chores = {
 	}
 
 	// Check that the chore being marked as completed
-	
+	console.log(choreId);
 	Chores.fetchChore(apartmentId, choreId,
 		function then(chore){
 			// If the chore is not reocurring mark as completed and send 200
@@ -203,7 +203,7 @@ var Chores = {
 								//One time chore	or		reocurring chore past duedate
 							if(chore.get('interval') === 0|| (!isValidDate(chore.get('duedate')))){ // Only need to log history of who completed chore
 									var historyString = req.user.attributes.first_name + ' ' +
-															req.user.attributes.last_name+ ' edited chore ' + chore.get('name');
+															req.user.attributes.last_name+ ' completed chore ' + chore.get('name');
 																
 															Chores.addHistory(chore,historyString, 
 																function then(){
@@ -244,26 +244,31 @@ var Chores = {
 											function(choreModel, userResp){
 												var response = {chore: choreModel.attributes, users: userResp};
 												if(userResp.length !== users.length){
-													res.json(503,{error: 'DataBase error'});
+													res.json(503,{error: 'Database error'});
 												}else{
 													var historyString = req.user.attributes.first_name + ' ' +
 															req.user.attributes.last_name+ ' completed chore ' + choreModel.get('name');
 																
 															Chores.addHistory(choreModel,historyString, 
 																function then(){
-																	res.send(200);
+																	res.send(200, response);
 																},
 																function otherwise(){
 																	res.json(503, {error: 'Database error'});
 																});
-													res.send(200, response);
 												}
 											},
-													function otherwise(){
-													console.error('Error creating chore new reoccuring chore');
+												function otherwise(){
+														res.json(503, {error: 'Database error'});
 											});
+								},
+								function otherwise(){
+									res.json(503, {error: 'Database error'});
 								});
 							}
+			},
+			function otherwise(){
+							res.json(503, {error: 'Database error'});
 			});
 			}else{
 				res.json(400, {error: 'Chore is already complete'});
@@ -286,7 +291,6 @@ editChore: function(req,res){
 	var interval = req.body.interval;
 	var rotating = req.body.rotating;
 	var number_in_rotation = req.body.number_in_rotation;
-	console.log(number_in_rotation);
 	//Check name has valid format
 	if(!isValidName(name)){
 		res.json(400, {error: 'Invalid chore name.'});
@@ -339,11 +343,11 @@ editChore: function(req,res){
 			interval: interval,
 			rotating: rotating,
 			number_in_rotation: number_in_rotation};
-	//Check that if its aa rotating chore 
+
 	Chores.patchChore(newChore, 
 	function then(choreModel) {
 	// Go through users_chores assocaited with chore
-		Chores.unassignUsers(choreModel.id , function then(ucmodel){
+		Chores.unassignUsers(choreModel.id , function then(){
 			var userChore = [];
 					// Build up user to chore mapping to write to the database
 					// work around do to model representation not working
@@ -356,7 +360,7 @@ editChore: function(req,res){
 					}
 					Chores.assignUsers(userChore, 
 						function then(resp){
-							var response = {chore: choreModel.attributes, assignedUsers: resp};
+							//var response = {chore: choreModel.attributes, assignedUsers: resp};
 							if(resp.length !== userChore.length){
 								res.json(503,{error: 'DataBase error'});
 							}else{
@@ -382,7 +386,7 @@ editChore: function(req,res){
 		});
 	},
 	function otherwise(){
-		res.json(400, {error: 'Database error'});
+		res.json(503, {error: 'Database error'});
 	});
   },
   
@@ -394,18 +398,18 @@ deleteChore: function(req,res){
 	var choreId = req.params.chore;
 
 	if (!isValidId(choreId)) {
-      res.json(400, {error: 'Invalid supply ID.'});
+      res.json(400, {error: 'Invalid chore ID.'});
       return;
     }
-	Chores.fetchChore(apartmentId,choreId, 
+	Chores.fetchChore(apartmentId, choreId, 
 		function then(choreModel){
 			Chores.unassignUsers(choreId, 
 				function then(){
 						Chores.removeChore(apartmentId, choreId,
 						function then(){
+							
 							var historyString = req.user.attributes.first_name + ' ' +
-									req.user.attributes.last_name+ ' deleted chore ' + choreModel.get('name');
-									
+									req.user.attributes.last_name+ ' deleted chore ' + choreModel.get('name');	
 									Chores.addHistory(choreModel,historyString, 
 														function then(){
 															res.send(200);
@@ -456,9 +460,10 @@ deleteChore: function(req,res){
 				return;
 		}
 		next();
-	  }, patchChore: function(chore,success,error){
+	  }, 
+	  patchChore: function(chore,success,error){
 	new ChoreModel({apartment_id: chore.apartment_id, id: chore.id})
-	.save({name: chore.name, duedate: chore.duedate, interval: chore.interval, number_in_rotation: chore.number_in_rotation},{patch: true})
+	.save({name: chore.name, duedate: chore.duedate, interval: chore.interval, number_in_rotation: chore.number_in_rotation, rotating: chore.rotating},{patch: true})
 	.then(success)
 	.otherwise(error);
   },
