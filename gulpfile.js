@@ -59,10 +59,7 @@ function karmaTest(action) {
     });
 }
 
-gulp.task('test', ['test:server', 'test:client'], function() {});
-
-// Run server tests and output reports
-gulp.task('test:server', function () {
+function serverTest(exitOnEnd) {
   gulp.src(['./server/**/*.js', '!./server/test/**/*.js'])
     .pipe(istanbul())
     .on('end', function() {
@@ -71,9 +68,21 @@ gulp.task('test:server', function () {
       .pipe(istanbul.writeReports())
       .on('error', handleError)
       .once('end', function () {
-        process.exit();
+        if (exitOnEnd) {
+          process.exit();
+        }
       });
     });
+}
+
+gulp.task('test', function() {
+  serverTest(false);
+  return karmaTest('run');
+});
+
+// Run server tests and output reports
+gulp.task('test:server', function () {
+  serverTest(true);
 });
 
 // Run client tests and output reports
