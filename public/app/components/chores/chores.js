@@ -82,6 +82,7 @@ function ($scope, $http, $timeout) {
     var alertLength = 4000;
 
     $scope.gindex = 0;
+    
     //dynamic update for weekly one-time UI
     $scope.modal_message = {starts: "Start", due: "Due"};
     $scope.modal_msg = $scope.modal_message.due;
@@ -301,8 +302,8 @@ function ($scope, $http, $timeout) {
     //    chore.users[i].user_id = chore.users[i].id;
     //}
 
-    console.log(chore.users);
-    console.log(temp);
+    // console.log(chore.users);
+    // console.log(temp);
 
     //set the menu list
     for (var i = 0; i < chore.users.length; i++) {

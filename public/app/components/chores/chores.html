@@ -267,7 +267,7 @@
 
 
   <!-- add a filter to table later on -->
-  <div class="clearfix" id="chores-filter" ng-hide="emptyChoreList()">
+  <div class="clearfix" id="chores-filter">
     <div class="btn-group">
       <button type="button" class="btn btn-default" ng-click="setTable('unresolved')" ng-class="{ 'active' : table === 'unresolved' }">Uncompleted</button>
       <button type="button" class="btn btn-default" ng-click="setTable('resolved')" ng-class="{ 'active' : table === 'resolved' }">Completed</button>
@@ -275,7 +275,7 @@
   </div>
 
   <!-- Chores table -->
-  <table class="table table-striped table-hover clearfix text-center">
+  <table class="table table-striped table-hover clearfix text-center" ng-hide="emptyChoreList()">
     <tbody>
       <tr ng-show="!emptyChoreList()">
        <th class="text-center">Name</th>
