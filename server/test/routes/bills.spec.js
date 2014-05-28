@@ -263,46 +263,54 @@ describe('Bills', function() {
     it('should return 503 if a database error occurs when creating the bill', 
       function () {
         var req1 = {user: {attributes: {apartment_id: 1}},
-          body: {name: 'test', interval: 0, duedate: '2020-05-08',
-            roommates: [1], number_in_rotation: 1, rotating: true}};
+          body: {name: 'test', interval: 0, date: '2020-05-08', total: 1,
+            roommates: [{id: 1, amount: 1}, {id: 2, amount: 1}]}};
         var saveBillStub = failingStub('saveBill', null);
         resMock.expects('json').once().withArgs(503, {
           error: 'Database error'
         });
         bills.addBill(req1, res);
-        expect(saveBillStub).to.have.been.calledWith();
+        expect(saveBillStub).to.have.been.calledOnce;
         saveBillStub.restore();
     });
 
-    it('should return 503 if there was a problem saving users to the bill', 
+    it('should return 503 if there was a problem saving payments to the bill', 
       function () {
         var req1 = {user: {attributes: {apartment_id: 1}},
-          body: {name: 'test', interval: 0, duedate: '2020-05-08',
+          body: {name: 'test', interval: 0, date: '2020-05-08', total: 1,
             roommates: [{id: 1, amount: 1}, {id: 2, amount: 1}]}};
-        var saveBillStub = succeedingStub('saveBill', billModel, [1]);
+        var saveBillStub = succeedingStub('saveBill', billModel);
+        var savePaymentsStub = failingStub('savePayments', null);
         resMock.expects('json').once().withArgs(503, {
-          error: 'Database error'
+          error: 'Database error.'
         });
+        resMock.expects('json').once().withArgs({id: 3});
         bills.addBill(req1, res);
         expect(saveBillStub).to.have.been.calledWith();
+        expect(savePaymentsStub).to.have.been.calledWith(3, 
+          [{id: 1, amount: 1}, {id: 2, amount: 1}]);
+
+        savePaymentsStub.restore();
         saveBillStub.restore();
     });
 
-    it('should return 503 if there was a problem saving the history of adding the chore', function () {
-      var req1 = {user: {attributes: 
-        {apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}},
-        body: {name: 'test', interval: 0, duedate: '2020-05-08',
-        roommates: [1, 2], number_in_rotation: 1, rotating: true}};
-      createChoreStub = succeedTripleStub('createChore', choreModel, [1, 2]);
-      addHistoryStub = failDoubleStub('addHistory', null);
-      resMock.expects('json').once().withArgs(503, {
-        error: 'Database error'
-      });
-      chores.addChore(req1, res);
-      expect(createChoreStub).to.have.been.calledWith();
-      expect(addHistoryStub).to.have.been.calledWith(choreModel, 'Gibbs Simon added chore dishes');
-      createChoreStub.restore();
-      addHistoryStub.restore();
+    it('should update the history', function () {
+      var req1 = {user: {attributes: {apartment_id: 1}},
+          body: {name: 'test', interval: 0, date: '2020-05-08', total: 1,
+            roommates: [{id: 1, amount: 1}, {id: 2, amount: 1}]}};
+      var saveBillStub = succeedingStub('saveBill', billModel);
+      var savePaymentsStub = emptyStub('savePayments');
+      var saveHistoryStub = emptyStub('saveHistory');
+
+      resMock.expects('json').once().withArgs({id: 3});
+
+      bills.addBill(req1, res);
+      expect(saveBillStub).to.have.been.calledWith();
+      expect(saveHistoryStub).to.have.been.calledWith();
+
+      saveBillStub.restore();
+      savePaymentsStub.restore();
+      saveHistoryStub.restore();
     });
   });
 
@@ -332,6 +340,131 @@ describe('Bills', function() {
       bills.updatePayment(req1, res);
       bills.updatePayment(req2, res);
       bills.updatePayment(req3, res);
+    });
+
+    it('should fetch and save payment', function() {
+      var fetchPaymentStub = succeedDoubleStub('fetchPayment', 
+        {attributes: {bill_id: 1, user_id: 1, paid: false}});
+      var savePaymentStub = succeedingStub('savePayment');
+      var req1 = {user: {attributes: {apartment_id: 2, id: 1}}, 
+        body: {paid: 'true'}, params: {bill: 1}};
+
+      bills.updatePayment(req1, res);
+
+      expect(fetchPaymentStub).to.have.been.calledWith(1, 1);
+      expect(savePaymentStub).to.have.been.calledWith(
+        {attributes: {bill_id: 1, user_id:1, paid: 'true'}});
+
+      fetchPaymentStub.restore();
+      savePaymentStub.restore();  
+    });
+
+    it('should resolve a bill if needed', function() {
+      var fetchPaymentStub = succeedDoubleStub('fetchPayment', 
+        {attributes: {bill_id: 1, user_id: 1, paid: false}});
+      var savePaymentStub = succeedingStub('savePayment');
+      var fetchPaymentsStub = succeedingStub('fetchPayments', 
+        {models: [{attributes: {paid: true}}, {attributes: {paid: true}}]});
+      var fetchBillStub = succeedDoubleStub('fetchBill', 
+        {attributes: {paid: false}});
+      var updatePaymentHistoryStub = emptyStub('updatePaymentHistory');
+      var saveBillStub = emptyStub('saveBill');
+
+      var req1 = {user: {attributes: {apartment_id: 2, id: 1}}, 
+        body: {paid: 'true'}, params: {bill: 1}};
+      bills.updatePayment(req1, res);
+
+      expect(fetchPaymentsStub).to.have.been.calledWith(1);
+      expect(fetchBillStub).to.have.been.calledWith(1, 2);
+      expect(saveBillStub).to.have.been.calledWith({attributes: {paid: true}});
+
+      fetchPaymentStub.restore();
+      savePaymentStub.restore();
+      fetchPaymentsStub.restore();
+      fetchBillStub.restore();
+      updatePaymentHistoryStub.restore();
+      saveBillStub.restore();
+
+    });
+
+    it('should call createNewReocurring if the bill becomes resolved',
+    function() {
+      var fetchPaymentStub = succeedDoubleStub('fetchPayment', 
+        {attributes: {bill_id: 1, user_id: 1, paid: false}});
+      var savePaymentStub = succeedingStub('savePayment');
+      var fetchPaymentsStub = succeedingStub('fetchPayments', 
+        {models: [{attributes: {paid: true}}, {attributes: {paid: true}}]});
+      var fetchBillStub = succeedDoubleStub('fetchBill', 
+        {attributes: {paid: false}});
+      var updatePaymentHistoryStub = emptyStub('updatePaymentHistory');
+      var saveBillStub = emptyStub('saveBill');
+      var fetchBillWithPaymentsStub = succeedDoubleStub('fetchBillWithPayments',
+        {attributes: {name: 'Test', interval: 3}});
+      var createNewReocurringStub = emptyStub('createNewReocurring');
+
+      var req1 = {user: {attributes: {apartment_id: 2, id: 1}}, 
+        body: {paid: 'true'}, params: {bill: 1}};
+
+      bills.updatePayment(req1, res);
+
+      expect(fetchPaymentsStub).to.have.been.calledWith(1);
+      expect(fetchBillStub).to.have.been.calledWith(1, 2);
+      expect(saveBillStub).to.have.been.calledWith({attributes: {paid: true}});
+      expect(createNewReocurringStub).to.have.been.calledWith(
+        {attributes: {name: 'Test', interval: 3}});
+
+      fetchPaymentStub.restore();
+      savePaymentStub.restore();
+      fetchPaymentsStub.restore();
+      fetchBillStub.restore();
+      updatePaymentHistoryStub.restore();
+      saveBillStub.restore();
+      fetchBillWithPaymentsStub.restore();
+      createNewReocurringStub.restore();
+    });
+
+    it('should update the history', function() {
+      var fetchPaymentStub = succeedDoubleStub('fetchPayment', 
+        {attributes: {bill_id: 1, user_id: 1, paid: false}});
+      var savePaymentStub = succeedingStub('savePayment');
+      var updatePaymentHistoryStub = emptyStub('updatePaymentHistory');
+
+      var req1 = {user: {attributes: {apartment_id: 2, id: 1}}, 
+        body: {paid: 'true'}, params: {bill: 1}};
+
+      bills.updatePayment(req1, res);
+     
+      expect(updatePaymentHistoryStub).to.have.been.calledWith(req1, 1, 2, 'true');
+      fetchPaymentStub.restore();
+      savePaymentStub.restore();
+      updatePaymentHistoryStub.restore();
+      
+    });
+
+    it('should unresolve a bill if needed', function() {
+      var fetchPaymentStub = succeedDoubleStub('fetchPayment', 
+        {attributes: {bill_id: 1, user_id: 1, paid: false}});
+      var savePaymentStub = succeedingStub('savePayment');
+      var updatePaymentHistoryStub = emptyStub('updatePaymentHistory');
+      var fetchPaymentsStub = succeedingStub('fetchPayments', 
+        {models: [{attributes: {paid: false}}, {attributes: {paid: false}}]});
+      var fetchBillStub = succeedDoubleStub('fetchBill', 
+        {attributes: {paid: true}});
+      var saveBillStub = emptyStub('saveBill');
+
+      var req1 = {user: {attributes: {apartment_id: 2, id: 1}}, 
+        body: {paid: 'true'}, params: {bill: 1}};
+
+      bills.updatePayment(req1, res);
+
+      expect(fetchBillStub).to.have.been.calledWith(1, 2);
+      expect(saveBillStub).to.have.been.calledWith({attributes: {paid: false}});
+      fetchPaymentStub.restore();
+      savePaymentStub.restore();
+      fetchPaymentsStub.restore();
+      fetchBillStub.restore();
+      updatePaymentHistoryStub.restore();
+      saveBillStub.restore();
     });
 
   });
