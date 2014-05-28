@@ -181,12 +181,13 @@ describe('board module', function() {
 
     describe('methods', function() {
 
-      beforeEach(function() {
+      /*beforeEach(function() {
         httpMock.expectGET('/messages').respond(messages);
         httpMock.expectGET('/user').respond(user);
         httpMock.flush();   
       });
-      
+*/
+
       describe('post message', function() {
         it('should post a new message',function() {
           httpMock.expectPOST('/messages', message).respond(newMessageRes);
