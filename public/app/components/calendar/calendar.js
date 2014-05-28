@@ -45,7 +45,8 @@ angular.module('main.calendar').controller('CalendarCtrl',
       var s = new Date(start).getTime() / 1000;
       var e = new Date(end).getTime() / 1000;
       var m = new Date(start).getMonth();
-      var events = [{title: 'Feed Me ' + m,start: s + (50000),end: s + (100000),allDay: false, className: ['customFeed']}];
+      var events = [{title: 'Feed Me ' + m,start: s + (50000),end: s + (100000),allDay: false, 
+      className: ['customFeed'], editable: false}];
       callback(events);
     };
 
@@ -60,6 +61,11 @@ angular.module('main.calendar').controller('CalendarCtrl',
 
         $scope.alertMessage = (event.title + ' was clicked ');
         $scope.openModal();
+    };
+
+    $scope.alertOnMouseHover = function(event, jsEvent, view){
+        event.backgroundColor = 'yellow';
+        $('#mycalendar').fullCalendar( 'rerenderEvents' );
     };
 
     // $scope.calEventsExt = {

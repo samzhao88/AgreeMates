@@ -104,11 +104,14 @@ function ($scope, $http, $timeout) {
 
 
     function setModal(interval) {
-    if (interval == 0) {
-      $scope.modal_msg = $scope.modal_message.due;
-    } else {
-      $scope.modal_msg = $scope.modal_message.starts;
-    }
+    if (interval == 0) 
+    {
+        $scope.modal_msg = $scope.modal_message.due;
+    } 
+    else 
+        {
+        $scope.modal_msg = $scope.modal_message.starts;
+        }
     }
 
     //get current user ID and name
@@ -359,7 +362,14 @@ function ($scope, $http, $timeout) {
     if (freq == 0) {
       return "One Time";
     } else {
-      return "Weekly";
+        if( freq == 1)
+        {
+            return "Daily";
+        }
+        else
+        {
+        return "Weekly";
+        }
     }
   };
 
@@ -486,8 +496,5 @@ function ($scope, $http, $timeout) {
       }
     };
 
-
 });
-
-
 
