@@ -23,7 +23,7 @@ CREATE DATABASE postgres WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE 
 CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE LOGIN;
 ALTER USER postgres PASSWORD 'agreemates';
 
-\connect postgres;
+\connect postgres
 
 
 SET statement_timeout = 0;
