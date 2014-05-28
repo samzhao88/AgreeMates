@@ -81,6 +81,18 @@ describe('chores module', function() {
       roommates:[3]
   };
 
+  var edit_chore = {
+    apartment_id: 2,
+      duedate: "2014-07-15",
+      interval: 7,
+      name: "vacuum",
+      number_in_rotation: 2,
+      rotating: true,
+      completed: false,
+      userId: 3,
+      roommates:[3, 5]
+  };
+
   var editChoreResponse = {};
 
   var addChoreResponse = {chore: {
@@ -232,6 +244,29 @@ describe('chores module', function() {
         }); 
 
     });
+
+    describe('update', function() {
+      beforeEach(function() {
+        httpMock.expectPUT('/chores/'+1, edit_chore).respond(editChoreResponse);
+        scope.chore = edit_chore;
+        scope.responsibleList = [];
+        scope.responsibleList.push(users.users[0]);
+        scope.responsibleList.push(users.users[1]);
+        scope.editChore();
+        httpMock.flush();
+        
+      });
+
+      it('should display success',function() {
+        expect(scope.success).to.equal(true);
+      });
+
+      it('should display success message',function() {
+        expect(scope.successmsg).to.equal('Chore vacuum successfully edited!');
+      });
+
+    });
+
     it('should exist', function() {
       expect(ctrl).not.to.equal(null);
     });

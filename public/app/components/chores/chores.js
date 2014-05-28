@@ -384,12 +384,10 @@ function ($scope, $http, $timeout) {
   $scope.isResponsible = function(chore, user) {
     if (chore.interval == 0) {
       return "highlight";
-      console.log(chore.interval);
 
     } else {
         if (chore.rotating == false)
         {
-            console.log(chore.rotating);
             return "highlight";
         }
         else
