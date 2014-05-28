@@ -183,10 +183,6 @@ var Messages = {
 
     Messages.fetchMessage(messageId,
       function then(model) {
-        var historyString = req.user.attributes.first_name + ' ' +
-          req.user.attributes.last_name + ' deleted the message "' +
-          model.attributes.subject.trim() + '"';
-        Messages.saveHistory(apartmentId, historyString);
         // Destroy all of the comments on the message and then
         // destroy the message itself. The user must be the one
         // who created the message.
@@ -194,15 +190,19 @@ var Messages = {
           function then() {
             Messages.destroyMessage(messageId, apartmentId,
               function then() {
+                var historyString = req.user.attributes.first_name + ' ' +
+                  req.user.attributes.last_name + ' deleted the message "' +
+                  model.attributes.subject.trim() + '"';
+                Messages.saveHistory(apartmentId, historyString);
                 res.send(200);
               },
-            function otherwise() {
-              res.json(503, {error: 'Error deleting message'});
-            });
-        },
-        function otherwise() {
-          res.json(503, {error: 'Error deleting comments'});
-        });
+              function otherwise() {
+                res.json(503, {error: 'Error deleting message'});
+              });
+          },
+          function otherwise() {
+            res.json(503, {error: 'Error deleting comments'});
+          });
       },
       function otherwise() {
         res.json(503, {error: 'Database error.'});

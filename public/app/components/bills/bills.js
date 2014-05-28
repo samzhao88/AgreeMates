@@ -530,6 +530,16 @@ angular.module('main.bills').controller('BillsCtrl',
       return $scope.unresolvedBills.length == 0 && $scope.loaded ? true : false;
     };
 
+    //return whether bills are empty and selected
+    $scope.isUnresolvedEmptyAndSelected = function() {
+      if ($scope.table == 'unresolved') {
+        return $scope.unresolvedBills.length == 0;
+      } else if ($scope.table == 'resolved') {
+        return $scope.resolvedBills.length == 0;
+      }
+      return false;
+    }
+
     $scope.convertDate = function(date) {
       return date.split('T')[0];
     };

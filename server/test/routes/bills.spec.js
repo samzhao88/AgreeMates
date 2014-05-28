@@ -2,7 +2,12 @@
 
 'use strict';
 
-var app = require('../../app');
+var Bookshelf = require('bookshelf');
+Bookshelf.DB = Bookshelf.initialize({
+  client: 'pg',
+  connection: {}
+});
+
 var chai = require('chai');
 var bills = require('../../routes/bills');
 var sinon = require('sinon');
@@ -42,19 +47,19 @@ describe('Bills', function() {
   describe('getBills', function() {
 
     it('returns a list of bills and their payments', function() {
-    var fetchBillsStub =  sinon.stub(bills, 'fetchBills', 
+    var fetchBillsStub =  sinon.stub(bills, 'fetchBills',
       function(apartmentId, resolved, thenFun, otherwiseFun) {
         thenFun([ {total: '5', user_id: 3, billPaid: false, userPaid: false,
-               name: 'Test Bill', interval: 0, first_name: 'Jordan', 
+               name: 'Test Bill', interval: 0, first_name: 'Jordan',
                id: 3, bill_id: 43, amount: '5', creatorId: 3, payTo: 'Jordan',
                createdate: '5/20/2014', duedate: '5/29/2014'} ]);
       });
 
       var req = {query: {type: 'resolved'}, user: {attributes: {apartment_id: 1}}};
       resMock.expects('json').once().withArgs(
-        {bills: [{id: 43, name: 'Test Bill',  amount: '5', 
+        {bills: [{id: 43, name: 'Test Bill',  amount: '5',
           createDate: '5/20/2014', dueDate: '5/29/2014', frequency: 0,
-          resolved: false, creatorId: 3, payTo: 'Jordan', 
+          resolved: false, creatorId: 3, payTo: 'Jordan',
           payments: [{userId: 3, name: 'Jordan', amount: '5', paid: false}]}]});
 
       bills.getBills(req, res);
@@ -202,7 +207,7 @@ describe('Bills', function() {
       resMock.expects('json').once().withArgs(401, {error: 'Unauthorized user.'});
       bills.deleteBill(req, res);
     });
-        
+
     it('should return 400 if the bill ID is invalid', function() {
       var req1 = {user: {attributes: {}}, body: {}, params: {bill: 0.5}};
       var req2 = {user: {attributes: {}}, body: {}, params: {bill: 'hello'}};
