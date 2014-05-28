@@ -183,6 +183,7 @@ describe('board module', function() {
           httpMock.flush();
           expect(scope.messages.length).to.be(3);
           expect(scope.messages[1].body).to.equal('new body');
+          expect(scope.messages[2].author).to.equal(user.first_name);
         });
       });
 
