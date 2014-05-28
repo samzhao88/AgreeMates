@@ -190,6 +190,7 @@ describe('board module', function() {
 
       describe('post message', function() {
         it('should post a new message',function() {
+          httpMock.flush();
           httpMock.expectPOST('/messages', message).respond(newMessageRes);
           httpMock.flush();
           expect(scope.messages.length).to.be(3);
