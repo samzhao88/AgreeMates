@@ -153,7 +153,7 @@ describe('board module', function() {
     describe('onload', function() {
       beforeEach(function() {
           httpMock.expectGET('/user').respond(user);
-          httpMock.expectGET('/messages').respond(messages);
+          //httpMock.expectGET('/messages').respond(messages);
           httpMock.flush();   
         });
 
