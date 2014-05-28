@@ -64,14 +64,7 @@ describe('board module', function() {
     }
     ]
     };
-    
-
-    var messages = {'messages': [
-      {
-        'subject': 'Subject1',
-        'body': 'body1'
-      }
-    ]};
+  
 
     var message = {
       'subject': 'New subject',
