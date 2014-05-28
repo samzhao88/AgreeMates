@@ -12,6 +12,7 @@ describe('board module', function() {
     expect(boardModule).not.to.equal(null);
   });
 
+/*
   var messages = {'messages': [
     {
       'id': 2,
@@ -63,6 +64,14 @@ describe('board module', function() {
     }
     ]
     };
+    */
+
+    var messages = {'messages': [
+      {
+        'subject': 'Subject1',
+        'body': 'body1'
+      }
+    ]};
 
     var message = {
       'subject': 'New subject',
@@ -166,13 +175,13 @@ describe('board module', function() {
 
       describe('get user', function() {   
         it('should have correct id', function() {
-          expect(scope.userId).to.equal(6);
+          expect(scope.user.id).to.equal(6);
         });
         it('should have correct first name', function() {
-          expect(scope.userFirstName).to.equal('alice');
+          expect(scope.user.first_name).to.equal('alice');
         });
         it('should have correct last name', function() {
-          expect(scope.userLastName).to.equal('dole');
+          expect(scope.user.last_name).to.equal('dole');
         });
       });
 
