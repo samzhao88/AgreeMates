@@ -2,7 +2,12 @@
 
 'use strict';
 
-require('../../app');
+var Bookshelf = require('bookshelf');
+Bookshelf.DB = Bookshelf.initialize({
+  client: 'pg',
+  connection: {}
+});
+
 var chai = require('chai');
 var sinon = require('sinon');
 var expect = chai.expect;
