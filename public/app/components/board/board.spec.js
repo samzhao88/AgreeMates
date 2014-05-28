@@ -12,7 +12,7 @@ describe('board module', function() {
     expect(boardModule).not.to.equal(null);
   });
 
-/*
+
   var messages = {'messages': [
     {
       'id': 2,
@@ -64,7 +64,7 @@ describe('board module', function() {
     }
     ]
     };
-    */
+    
 
     var messages = {'messages': [
       {
@@ -212,14 +212,17 @@ describe('board module', function() {
 
       describe('post comment', function() {
         it('should post a new comment',function() {
-          httpMock.expectPOST('/messages/:message/comments', comment).respond(newCommentRes);
+          httpMock.expectPOST('/messages/1/comments', comment).respond(newCommentRes);
           httpMock.flush();
+          expect(scope.messages[1].comments.length).to.be(3);
         });
       });
 
       describe('delete comment', function() {
         it('should delete the comment with id 1',function() {
-          //httpMock.expectDELETE('/messages', message).respond(200);
+          httpMock.expectDELETE('/messages/1/comments/4').respond(200);
+          httpMock.flush();
+          expect(scope.messages[1].comments.length).to.be(1);
         });
       });
 
