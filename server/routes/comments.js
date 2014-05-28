@@ -31,8 +31,8 @@ var Comments = {
     if (!isValidId(messageId)) {
       res.json(400, {error: 'Invalid message ID.'});
       return;
-    } else if (text === null) {
-      res.json(400, {error: 'Comment content cannot be null.'});
+    } else if (text === undefined) {
+      res.json(400, {error: 'Must have comment content'});
       return;
     }
 
@@ -44,40 +44,17 @@ var Comments = {
               req.user.attributes.last_name + ' commented on message "' +
               message.attributes.subject.trim() + '"';
             Comments.createHistory(apartmentId, historyString);
+            model.author = req.user.attributes.first_name;
+            res.json(model);
           },
           function otherwise() {
             res.json(503, {error: 'Database error.'});
           });
-
-        model.author = req.user.attributes.first_name;
-        res.json(model);
       },
       function otherwise(error) {
         console.log(error);
         res.json(503, {error: 'Database error.'});
       });
-  },
-
-  // Adds a comment to a message in the DB
-  createComment: function(userId, messageId, text, date, thenFun, otherFun) {
-    new CommentModel({user_id: userId, message_id: messageId, body: text, date: date})
-      .save()
-      .then(thenFun)
-      .otherwise(otherFun);
-  },
-
-  // Gets a message from the DB
-  getMessage: function(messageId, thenFun, otherFun) {
-    new MessageModel({id: messageId})
-      .fetch()
-      .then(thenFun)
-      .otherwise(otherFun);
-  },
-
-  // Creates a history item
-  createHistory: function(apartmentId, historyString) {
-    new HistoryModel({apartment_id: apartmentId, history_string: historyString, date: new Date()})
-    .save();
   },
 
   // Deletes a comment on a message
@@ -102,12 +79,12 @@ var Comments = {
 
     Comments.getMessage(messageId,
       function then(model) {
-        var historyString = req.user.attributes.first_name + ' ' +
-          req.user.attributes.last_name + ' deleted their comment on message "' +
-          model.attributes.subject.trim() + '"';
-        Comments.createHistory(apartmentId, historyString);
         Comments.destroyComment(messageId, commentId, userId,
           function then(model) {
+            var historyString = req.user.attributes.first_name + ' ' +
+              req.user.attributes.last_name + ' deleted their comment on message "' +
+              model.attributes.subject.trim() + '"';
+            Comments.createHistory(apartmentId, historyString);
             res.send(200);
           },
           function otherwise() {
@@ -117,6 +94,28 @@ var Comments = {
       function otherwise() {
         res.json(503, {error: 'Database error.'});
       });
+  },
+
+  // Adds a comment to a message in the DB
+  createComment: function(userId, messageId, text, date, thenFun, otherFun) {
+    new CommentModel({user_id: userId, message_id: messageId, body: text, date: date})
+      .save()
+      .then(thenFun)
+      .otherwise(otherFun);
+  },
+
+  // Gets a message from the DB
+  getMessage: function(messageId, thenFun, otherFun) {
+    new MessageModel({id: messageId})
+      .fetch()
+      .then(thenFun)
+      .otherwise(otherFun);
+  },
+
+  // Creates a history item
+  createHistory: function(apartmentId, historyString) {
+    new HistoryModel({apartment_id: apartmentId, history_string: historyString, date: new Date()})
+    .save();
   },
 
   // Deletes a comment on a message in the DB
