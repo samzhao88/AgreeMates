@@ -117,7 +117,6 @@ describe('board module', function() {
       httpMock = $httpBackend;
 
       scope = $rootScope.$new();
-      scope.loaded = false;
 
       ctrl = $controller;
 
@@ -162,11 +161,9 @@ describe('board module', function() {
 
     describe('onload', function() {
       beforeEach(function() {
-          expect(scope.loaded).to.be(false);
           httpMock.expectGET('/messages').respond(messages);
           httpMock.expectGET('/user').respond(user);
           httpMock.flush();   
-          expect(scope.loaded).to.be(true);
         });
 
       describe('get messages', function() {
@@ -209,13 +206,14 @@ describe('board module', function() {
         it('should delete the message with id 1',function() {
           httpMock.expectDELETE('/messages/1').respond(200);
           httpMock.flush();
-          expect($scope.messages[0].id).to.equal(2);
+          expect(scope.messages.length).to.equal(1);
         });
       });
 
       describe('post comment', function() {
         it('should post a new comment',function() {
-          //httpMock.expectPOST('/messages/:message/comments', comment).respond(newCommentRes);
+          httpMock.expectPOST('/messages/:message/comments', comment).respond(newCommentRes);
+          httpMock.flush();
         });
       });
 
