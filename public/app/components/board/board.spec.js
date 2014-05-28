@@ -177,7 +177,7 @@ describe('board module', function() {
         });
       });
 
-      describe('post message', function() {
+      /*describe('post message', function() {
         it('should post a new message',function() {
           httpMock.expectPOST('/messages', message).respond(newMessageRes);
           httpMock.flush();
@@ -185,7 +185,7 @@ describe('board module', function() {
           expect(scope.messages[1].body).to.equal('new body');
           expect(scope.messages[2].author).to.equal(user.first_name);
         });
-      });
+      });*/
 
       describe('update message', function() {
         it('should update a message',function() {
