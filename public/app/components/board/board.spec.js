@@ -161,11 +161,11 @@ describe('board module', function() {
 
     describe('onload', function() {
       beforeEach(function() {
-          expect($scope.loaded).to.be(false);
+          expect(scope.loaded).to.be(false);
           httpMock.expectGET('/messages').respond(messages);
           httpMock.expectGET('/user').respond(user);
           httpMock.flush();   
-          expect($scope.loaded).to.be(true);
+          expect(scope.loaded).to.be(true);
         });
 
       describe('get messages', function() {
