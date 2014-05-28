@@ -162,13 +162,13 @@ describe('board module', function() {
     describe('onload', function() {
       beforeEach(function() {
           httpMock.expectGET('/user').respond(user);
-          //httpMock.expectGET('/messages').respond(messages);
+          httpMock.expectGET('/messages').respond(messages);
           httpMock.flush();   
         });
 
       describe('get messages', function() {
         it('should fetch all messages and comments',function() {
-          expect(scope.messages.length).to.equal(2);
+          expect(scope.messages.length).to.equal(1);
           expect(scope.messages[0].comments.length).to.equal(2);
         });
       });
