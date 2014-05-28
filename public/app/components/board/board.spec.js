@@ -117,6 +117,7 @@ describe('board module', function() {
       httpMock = $httpBackend;
 
       scope = $rootScope.$new();
+      scope.loaded = false;
 
       ctrl = $controller;
 
@@ -191,20 +192,23 @@ describe('board module', function() {
         it('should post a new message',function() {
           httpMock.expectPOST('/messages', message).respond(newMessageRes);
           httpMock.flush();
-          expect($scope.messages.length).to.be(3);
-          expect($scope.messages[1].body).to.equal('new body');
+          expect(scope.messages.length).to.be(3);
+          expect(scope.messages[1].body).to.equal('new body');
         });
       });
 
       describe('update message', function() {
         it('should update a message',function() {
-         
+           httpMock.expectPUT('/messages/1',editMessage).respond(200);
+           httpMock.flush();
+           expect(scope.messages[1].body).to.equal('edited body')
         });
       });
 
       describe('delete message', function() {
         it('should delete the message with id 1',function() {
           httpMock.expectDELETE('/messages/1').respond(200);
+          httpMock.flush();
           expect($scope.messages[0].id).to.equal(2);
         });
       });
