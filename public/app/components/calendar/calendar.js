@@ -2,10 +2,10 @@
 
 'use strict';
 
-angular.module('main.calendar', ['ui.calendar']);
+angular.module('main.calendar', ['ui.bootstrap','ui.calendar']);
 
-angular.module('main.calendar').controller('CalendarCtrl',
-  function ($scope, $http) {
+angular.module('main.calendar').controller('CalendarCtrl', 
+    function ($scope, $http, $modal) {
 
   	$http.get('/calendar').
     success(function(data) {
@@ -49,6 +49,19 @@ angular.module('main.calendar').controller('CalendarCtrl',
       callback(events);
     };
 
+    $scope.openModal = function () {
+
+    var modalInstance = $modal.open({
+      templateUrl: 'chores_edit_modal.html'
+      });
+    };
+
+    $scope.alertOnEventClick = function( event, allDay, jsEvent, view ){
+
+        $scope.alertMessage = (event.title + ' was clicked ');
+        $scope.openModal();
+    };
+
     // $scope.calEventsExt = {
     //    color: '#f00',
     //    textColor: 'yellow',
@@ -59,9 +72,9 @@ angular.module('main.calendar').controller('CalendarCtrl',
     //     ]
     // };
     /* alert on eventClick */
-    // $scope.alertOnEventClick = function( event, allDay, jsEvent, view ){
-    //     $scope.alertMessage = (event.title + ' was clicked ');
-    // };
+
+
+
     // /* alert on Drop */
     //  $scope.alertOnDrop = function(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view){
     //    $scope.alertMessage = ('Event Droped to make dayDelta ' + dayDelta);
@@ -113,8 +126,8 @@ angular.module('main.calendar').controller('CalendarCtrl',
           left: 'title',
           center: '',
           right: 'today prev,next'
-        }
-        // eventClick: $scope.alertOnEventClick
+        },
+        eventClick: $scope.alertOnEventClick
         // eventDrop: $scope.alertOnDrop,
         // eventResize: $scope.alertOnResize
       }
