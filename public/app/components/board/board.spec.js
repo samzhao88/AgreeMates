@@ -20,7 +20,7 @@ describe('board module', function () {
             'body': 'Body1',
             'date': '2014-05-24T00:20:42.949Z',
             'user_id': 1,
-            'author': 'Lukas',
+            'author': 'alice',
             'comments': [{
                 'id': 1,
                 'body': 'CommentBody1',
@@ -70,13 +70,13 @@ describe('board module', function () {
 
     var comment = {
         'subject': 'body',
-        'msg_id': 1
+        'messageId': 1
     };
 
     var newCommentRes = {
         'id': 3,
         'subject': 'body',
-        'msg_id': 1
+        'messageId': 1
     };
 
     //edited message
