@@ -120,7 +120,7 @@ describe('board module', function () {
                 return [200, newMessageRes];
             });
 
-            /*httpMock.whenDELETE('/messages/1').respond(function (method, url, data, headers) {
+            httpMock.whenDELETE('/messages/1').respond(function (method, url, data, headers) {
                 return [200];
             });
 
@@ -134,7 +134,7 @@ describe('board module', function () {
 
             httpMock.whenDELETE('/messages/1/comments/1').respond(function (method, url, data, headers) {
                 return [200];
-            });*/
+            });
 
         }));
 
@@ -179,13 +179,13 @@ describe('board module', function () {
                 });
 
                 it('should post a new message', function () {
-                    expect(scope.messages.length).to.be(3);
+                    expect(scope.messages.length).to.equal(3);
                     expect(scope.messages[1].body).to.equal('new body');
                     expect(scope.messages[2].author).to.equal(user.first_name);
                 });
             });
 
-            /*describe('update message', function () {
+            describe('update message', function () {
                 it('should update a message', function () {
                     httpMock.expectPUT('/messages/1', editMessage).respond(200);
                     httpMock.flush();
@@ -205,7 +205,7 @@ describe('board module', function () {
                 it('should post a new comment', function () {
                     httpMock.expectPOST('/messages/1/comments', comment).respond(newCommentRes);
                     httpMock.flush();
-                    expect(scope.messages[1].comments.length).to.be(3);
+                    expect(scope.messages[1].comments.length).to.equal(3);
                 });
             });
 
@@ -213,11 +213,9 @@ describe('board module', function () {
                 it('should delete the comment with id 1', function () {
                     httpMock.expectDELETE('/messages/1/comments/4').respond(200);
                     httpMock.flush();
-                    expect(scope.messages[1].comments.length).to.be(1);
+                    expect(scope.messages[1].comments.length).to.equal(1);
                 });
             });
-
-*/
 
         });
     });
