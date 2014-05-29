@@ -18,7 +18,7 @@ angular.module('main.calendar').controller('CalendarCtrl',
     $scope.userId = {};
     $scope.userFirstName = {};
     $scope.userLastName = {};
-
+    $scope.daysinmonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     //variable for events
     $scope.events = [];
 
@@ -106,14 +106,6 @@ angular.module('main.calendar').controller('CalendarCtrl',
         console.log(error);
     });
 
-    var date = new Date();
-    var d = date.getDate();
-    var m = date.getMonth();
-    var y = date.getFullYear();
-    console.log(d);
-    console.log(m);
-    console.log(y);
-    console.log(date);
     var currentView = "month";
     
     // $scope.changeTo = 'Hungarian';
@@ -229,17 +221,47 @@ angular.module('main.calendar').controller('CalendarCtrl',
         // });
     };
 
-    // $scope.changeLang = function() {
-    //   if($scope.changeTo === 'Hungarian'){
-    //     $scope.uiConfig.calendar.dayNames = ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"];
-    //     $scope.uiConfig.calendar.dayNamesShort = ["Vas", "Hét", "Kedd", "Sze", "Csüt", "Pén", "Szo"];
-    //     $scope.changeTo= 'English';
-    //   } else {
-    //     $scope.uiConfig.calendar.dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    //     $scope.uiConfig.calendar.dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    //     $scope.changeTo = 'Hungarian';
-    //   }
+
+    // $scope.eventsF = function (start, end, callback) {
+    //     var events = [];
+    //     var temp = {};
+
+    //     for (var x = 0; x < $scope.chores.length; x++)
+    //     { 
+    //         var interval = $scope.chores[x].interval;
+    //         if(interval != 0)
+    //         {
+    //             var date = new Date( $scope.chores.duedate);
+    //             var d = date.getDate();
+    //             var m = new Date(start).getMonth();
+    //             var chore_m = date.getMonth();
+    //             if(m > chore_m)
+    //             {
+    //                 var w = m - chore_m;
+    //                 while((d < $scope.daysinmonth[chore_m])
+    //             }
+    //             else
+    //             {
+
+    //             }
+
+    //             var y = date.getFullYear();
+    //             temp.title = $scope.chores[x].name;
+    //             temp.allDay = false;
+    //             temp.editable = false;
+    //             temp.color = 'grey';
+    //             for(var z = interval; z < $scope.daysinmonth[m]; z = z + z)
+    //             {
+    //             temp.start = new Date(y, m, d+z, 0, 0);
+    //             temp.end = new Date(y, m, d+z, 16, 0);
+    //             events.push(temp);
+    //             }
+    //         }
+    //     }
+    //     var events = [{title: 'Feed Me ' + m,start: 0,end: 0, allDay: false}];
+    //     callback(events);
     // };
+
     /* event sources array*/
     // $scope.eventSources = [$scope.events, $scope.eventSource, $scope.eventsF];
     // $scope.eventSources2 = [$scope.calEventsExt, $scope.eventsF, $scope.events];
@@ -259,6 +281,41 @@ angular.module('main.calendar').controller('CalendarCtrl',
         return -1;
     }
 
+    function users_to_string (myArray)
+    {
+        var temp_string = '';
+        for(var i = 0, len = myArray.length; i < len; i++) 
+        {
+            temp_string = temp_string + myArray[i].first_name + ", ";
+        }
+        return temp_string;
+    }
+
+    function interval_to_0 (an_interval)
+    {
+        if(an_interval === 1)
+        {
+            return 0;
+        }
+        else
+        {
+            return an_interval;
+        }
+    }
+
+    function interval_to_string (an_interval)
+    {
+        if(an_interval === 0 || an_interval === 1)
+        {
+            return ' by this day';
+        }
+        else
+        {
+            return ' during this week';
+        }
+
+    }
+
     function chore_to_responsible_list(chore)
     {
 
@@ -272,7 +329,7 @@ angular.module('main.calendar').controller('CalendarCtrl',
         var m = date.getMonth();
         var y = date.getFullYear();
 
-        if( !(chore.duedate in $scope.associativeArray)
+        if( !(chore.duedate in $scope.associativeArray))
         {
             $scope.associativeArray[chore.duedate] = 6;
         }
@@ -283,27 +340,29 @@ angular.module('main.calendar').controller('CalendarCtrl',
 
         if(arrayObjectIndexOf(chore.users, $scope.userId, "user_id") === -1)
         {
-            console.log("a");
-            a_event.title = 'You are responsible for the chore "' + chore.name + '" by today!';
-            a_event.start = new Date(y, m, d, 6, 0);
-            a_event.end = new Date(y, m, d, 24, 0);
+            console.log("b");
+            a_event.title = 'Your roommate(s) ' + users_to_string(chore.users) + 'are responsible for the chore "' + chore.name + '"' + interval_to_string(chore.interval);
+            a_event.start = new Date(y, m, d - interval_to_0(chore.interval) + 1, $scope.associativeArray[chore.duedate], 0);
+            a_event.end = new Date(y, m, d, $scope.associativeArray[chore.duedate] + 2, 0);
             a_event.allDay = false;
             a_event.editable = false;
-            a_event.color = 'IndianRed';
             return a_event;
         }
         else
         {
-            console.log("b");
-            a_event.title = 'You roommates responsible for the chore "' + chore.name + '" by this day!';
-            a_event.start = new Date(y, m, d, 6, 0);
-            a_event.end = new Date(y, m, d, 24, 0);
+            console.log("a");
+            a_event.title = 'You are responsible for the chore "' + chore.name + '"' + interval_to_string(chore.interval);
+            a_event.start = new Date(y, m, d - interval_to_0(chore.interval), $scope.associativeArray[chore.duedate], 0);
+            a_event.end = new Date(y, m, d, $scope.associativeArray[chore.duedate] + 2, 0);
             a_event.allDay = false;
             a_event.editable = false;
+            a_event.color = 'IndianRed';
             return a_event;
+
         }
     }
 	
+
 
 	});
 
