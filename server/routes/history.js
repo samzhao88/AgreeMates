@@ -1,10 +1,14 @@
 // History routes
-// jshint camelcase: false
 
 'use strict';
 
-var HistoryModel = require('../models/history').model;
 var HistoryCollection = require('../models/history').collection;
+
+// Checks if a value is an integer
+function isInt(value) {
+  // jshint eqeqeq: false
+  return !isNaN(value) && parseInt(value) == value;
+}
 
 var History = {
 
@@ -84,10 +88,5 @@ var History = {
   },
 
 };
-
-// Checks if a value is an integer
-function isInt(value) {
-  return !isNaN(value) && parseInt(value) == value;
-}
 
 module.exports = History;

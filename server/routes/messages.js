@@ -1,5 +1,4 @@
 // Messages routes
-// jshint camelcase: false
 
 'use strict';
 
@@ -10,6 +9,7 @@ var Bookshelf = require('bookshelf');
 
 // Checks if a value is an integer
 function isInt(value) {
+  // jshint eqeqeq: false
   return !isNaN(value) && parseInt(value) == value;
 }
 
