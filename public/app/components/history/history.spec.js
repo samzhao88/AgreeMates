@@ -6,7 +6,7 @@ var expect = chai.expect;
 
 describe('HistoryCtrl', function() {
 
-  var historyModule, httpMock, scope, controller;
+  var historyModule, httpMock, scope;
 
   var testHistory = {
     history: [
@@ -93,7 +93,7 @@ describe('HistoryCtrl', function() {
     expect(scope.history).to.eql(expectedHistory);
   });
 
-  it('should change nothing on loadMore() if $scope.history is empty', function() {
+  it('should change nothing on loadMore() if empty history', function() {
     httpMock.flush();
     scope.history = [];
     scope.loadMore();
@@ -101,7 +101,7 @@ describe('HistoryCtrl', function() {
     expect(scope.history.length).to.equal(0);
   });
 
-  it('should return whether $scope.history is empty on emptyHistory()', function() {
+  it('should return whether history is empty on emptyHistory()', function() {
     httpMock.flush();
 
     expect(scope.emptyHistory()).to.equal(false);

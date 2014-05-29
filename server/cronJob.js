@@ -1,13 +1,11 @@
+// Creates cron jobs for various AgreeMates tasks
+
+'use strict';
+
 var CronJob = require('cron').CronJob;
-var ChoreModel = require('./models/chore').model;
-var ChoreCollection = require('./models/chore').collection;
-var UserChoreModel = require('./models/users_chores').model;
-var UserChoreCollection = require('./models/users_chores').collection;
-var UserModel = require('./models/user').model;
 var Bookshelf = require('bookshelf');
 var ChoreDao = require('./routes/choreDao');
-			   //Sec, min, hours, day of month, months, day of week
-				   // Set the cron job to 11:59 PM
+
 var choreUpdateor = new CronJob('0 59 23 * * *', function(){
 	var startDate = new Date();
 	startDate.setHours(0);
@@ -27,10 +25,10 @@ var choreUpdateor = new CronJob('0 59 23 * * *', function(){
 		// Update the duedate
 		// update the order_index of each user
 		// Create chore
-		resp.forEach(function(chore){ 
+		resp.forEach(function(chore){
 			//If we have a reocurring_id use that otherwise use the id of our parent.
 			chore.reocurring_id = chore.reocurring_id || chore.id;
-			incrementDate(chore.duedate, chore.interval); 
+			incrementDate(chore.duedate, chore.interval);
 			Bookshelf.DB.knex('users_chores')
 			.where('chore_id', '=', chore.id)
 			.then(function(users_chores){
@@ -49,7 +47,7 @@ var choreUpdateor = new CronJob('0 59 23 * * *', function(){
 					console.error('Chore Cron Job: Error looking up chores');
 				});
 			});
-		
+
 		});
 	}).otherwise(function(){
 		console.error('Chore Cron Job: Error looking up chores');

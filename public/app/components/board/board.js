@@ -1,126 +1,133 @@
+// Front end message board controller
+
 'use strict';
 
 angular.module('main.board', []);
 
-// Angular controller for message board
 angular.module('main.board').controller('BoardCtrl',
   function ($scope, $http, $timeout) {
 
     $scope.newMessage = {subject: '', body: ''};
     $scope.oldMessageBody = '';
-
-    //get request didn't return yet
     $scope.loaded = false;
 
-    //get all messages to put into the message board
-    $http.get('/messages').
-    	success(function(data) {
+    // Get all messages
+    $http.get('/messages')
+      .success(function(data) {
       	$scope.messages = data.messages;
         $scope.loaded = true;
     	});
 
-    //get the user to know which messages/comments can be edited
-    $http.get('/user').
-      success(function(user){
+    // Get this user
+    $http.get('/user')
+      .success(function(user){
          $scope.user = user;
       });
 
-    //add a message
+    // Add a message
     $scope.addMessage = function(){
-
     	var message = angular.copy($scope.newMessage);
 
-    	$http.post('/messages', message).
-	      	success(function(data) {
-            data.comments = [];
-            data.author = $scope.user.first_name;
-	        	$scope.messages.splice(0,0,data);
-	        	$scope.reset();
-	      	}).
-        	error(function(data, status, headers, config){
-          		$scope.errormsg = data.error;
-          		$scope.error = true;
-          		$timeout(function(){$scope.error=false;},4000);
-        	});
+    	$http.post('/messages', message)
+	      .success(function(data) {
+          data.comments = [];
+          data.author = $scope.user.first_name;
+	        $scope.messages.splice(0, 0, data);
+	        $scope.reset();
+	      })
+        .error(function(data) {
+          $scope.errormsg = data.error;
+          $scope.error = true;
+          $timeout(function() {
+            $scope.error = false;
+          }, 4000);
+        });
     };
 
-    $scope.deleteMessage = function(id, index) {
-    	$http.delete('/messages/'+id).
-	      	success(function(data) {
-	        	$scope.messages.splice(index, 1);
-	      	}).
-        	error(function(data, status, headers, config){
-          		$scope.errormsg = data.error;
-          		$scope.error = true;
-          		$timeout(function(){$scope.error=false;},4000);
-        	});
+    // Delete a message
+    $scope.deleteMessage = function(messageId, messageIndex) {
+    	$http.delete('/messages/' + messageId)
+	      .success(function() {
+	        $scope.messages.splice(messageIndex, 1);
+	      })
+        .error(function(data) {
+          $scope.errormsg = data.error;
+          $scope.error = true;
+          $timeout(function() {
+            $scope.error = false;
+          }, 4000);
+        });
     };
 
-    //update a message
-    $scope.updateMessage = function(id, index){
-
-    	$http.put('/messages/'+id, $scope.messages[index]).
-	      	success(function(data) {
-	        	$scope.messages[index].edit = false;
-	      	}).
-        	error(function(data, status, headers, config){
-          		$scope.errormsg = data.error;
-        	});
-
+    // Update a message
+    $scope.updateMessage = function(messageId, messageIndex) {
+    	$http.put('/messages/' + messageId, $scope.messages[messageIndex])
+	      .success(function() {
+	        $scope.messages[messageIndex].edit = false;
+	       })
+        .error(function(data) {
+          $scope.errormsg = data.error;
+          $scope.error = true;
+          $timeout(function() {
+            $scope.error = false;
+          }, 4000);
+        });
     };
 
-    $scope.cancelUpdateMessage = function(index) {
-      $scope.messages[index].body = $scope.oldMessageBody;
-      $scope.messages[index].edit = false;
+    // Cancel a message update
+    $scope.cancelUpdateMessage = function(messageIndex) {
+      $scope.messages[messageIndex].body = $scope.oldMessageBody;
+      $scope.messages[messageIndex].edit = false;
     };
 
-    $scope.setOldMessageBody = function(index) {
-      $scope.oldMessageBody = $scope.messages[index].body;
-      $scope.messages[index].edit = true;
+    // Set old message body in case update is cancelled
+    $scope.setOldMessageBody = function(messageIndex) {
+      $scope.oldMessageBody = $scope.messages[messageIndex].body;
+      $scope.messages[messageIndex].edit = true;
     };
 
-    //get previous comments: TODO
-    $scope.getPrevious = function(){
+    // Add a comment
+    $scope.addComment = function(messageIndex) {
+    	var comment = angular.copy($scope.messages[messageIndex].newComment);
+    	comment.messageId = $scope.messages[messageIndex].id;
 
+    	$http.post('/messages/' + comment.messageId + '/comments/', comment)
+	      .success(function(data) {
+          data.author = $scope.user.first_name;
+	        $scope.messages[messageIndex].comments.push(data);
+          $scope.messages[messageIndex].newComment = {};
+          $scope.messages[messageIndex].showComments = true;
+	      })
+        .error(function(data) {
+          $scope.errormsg = data.error;
+          $scope.error = true;
+          $timeout(function() {
+            $scope.error = false;
+          }, 4000);
+        });
     };
 
-    //add a comment
-    $scope.addComment = function(msg_ind, msg_id){
+    // Delete a comment
+    $scope.deleteComment = function(commentId, messageId,
+      commentIndex, messageIndex) {
 
-    	var comment = angular.copy($scope.messages[msg_ind].newComment);
-    	comment.msg_id = $scope.messages[msg_ind].id;
-
-    	$http.post('/messages/'+comment.msg_id+'/comments/', comment).
-	      	success(function(data) {
-            data.author = $scope.user.first_name;
-	        	$scope.messages[msg_ind].comments.push(data);
-            $scope.messages[msg_ind].newComment = {};
-            $scope.messages[msg_ind].showComments = true;
-	      	}).
-        	error(function(data, status, headers, config){
-          		$scope.errormsg = data.error;
-        	});
+      $http.delete('messages/' + messageId + '/comments/' + commentId)
+        .success(function() {
+	        $scope.messages[messageIndex].comments.splice(commentIndex, 1);
+	      })
+        .error(function(data) {
+          $scope.errormsg = data.error;
+        });
     };
 
-    //delete a comment
-    $scope.deleteComment = function(id, msg_id, ind, msg_ind){
-
-    	$http.delete('messages/'+msg_id+'/comments/'+id).
-	      	success(function(data) {
-	        	$scope.messages[msg_ind].comments.splice(ind, 1);
-	      	}).
-        	error(function(data, status, headers, config){
-          		$scope.errormsg = data.error;
-        	});
-    };
-
-    $scope.reset = function(){
+    // Reset the new message form
+    $scope.reset = function() {
     	$scope.newMessage = {};
     };
 
-
-    $scope.format = function(date){
+    // Formats a date in 'time ago' format
+    $scope.formatDate = function(date) {
       return moment(date).fromNow();
-    }
+    };
 
 });
