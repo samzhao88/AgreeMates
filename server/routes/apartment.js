@@ -73,7 +73,7 @@ function getUsers(req, res) {
 					result.push(temp);
 				} else {
 					var temp = users[i];
-					temp.profile_pic = 'http://placehold.it/300x300';
+					temp.profile_pic = 'img/default.png';
 					result.push(temp);
 				}
 			}
