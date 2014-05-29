@@ -7,6 +7,17 @@ var MessageModel = require('../models/message').model;
 var CommentModel = require('../models/comment').model;
 var HistoryModel = require('../models/history').model;
 
+// Checks if a value is an integer
+function isInt(value) {
+  // jshint eqeqeq: false
+  return !isNaN(value) && parseInt(value) == value;
+}
+
+// Checks if a bill ID is valid
+function isValidId(id) {
+  return isInt(id) && id > 0;
+}
+
 var Comments = {
 
   // Sets up all routes
@@ -51,8 +62,7 @@ var Comments = {
             res.json(503, {error: 'Database error.'});
           });
       },
-      function otherwise(error) {
-        console.log(error);
+      function otherwise() {
         res.json(503, {error: 'Database error.'});
       });
   },
@@ -80,9 +90,10 @@ var Comments = {
     Comments.getMessage(messageId,
       function then(model) {
         Comments.destroyComment(messageId, commentId, userId,
-          function then(model) {
+          function then() {
             var historyString = req.user.attributes.first_name + ' ' +
-              req.user.attributes.last_name + ' deleted their comment on message "' +
+              req.user.attributes.last_name +
+              ' deleted their comment on message "' +
               model.attributes.subject.trim() + '"';
             Comments.createHistory(apartmentId, historyString);
             res.send(200);
@@ -98,7 +109,8 @@ var Comments = {
 
   // Adds a comment to a message in the DB
   createComment: function(userId, messageId, text, date, thenFun, otherFun) {
-    new CommentModel({user_id: userId, message_id: messageId, body: text, date: date})
+    new CommentModel({user_id: userId, message_id: messageId, body: text,
+      date: date})
       .save()
       .then(thenFun)
       .otherwise(otherFun);
@@ -114,29 +126,21 @@ var Comments = {
 
   // Creates a history item
   createHistory: function(apartmentId, historyString) {
-    new HistoryModel({apartment_id: apartmentId, history_string: historyString, date: new Date()})
+    new HistoryModel({apartment_id: apartmentId, history_string: historyString,
+      date: new Date()})
     .save();
   },
 
   // Deletes a comment on a message in the DB
   destroyComment: function(messageId, commentId, userId, thenFun, otherFun) {
     new CommentModel()
-      .query('where', 'id', '=', commentId, 'AND', 'message_id', '=', messageId, 'AND', 'user_id', '=', userId)
+      .query('where', 'id', '=', commentId, 'AND', 'message_id', '=',
+         messageId, 'AND', 'user_id', '=', userId)
       .destroy()
       .then(thenFun)
       .otherwise(otherFun);
   }
 
 };
-
-// Checks if a value is an integer
-function isInt(value) {
-  return !isNaN(value) && parseInt(value) == value;
-}
-
-// Checks if a bill ID is valid
-function isValidId(id) {
-  return isInt(id) && id > 0;
-}
 
 module.exports = Comments;

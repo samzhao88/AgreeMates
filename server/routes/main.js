@@ -32,7 +32,7 @@ function getIndex(req, res) {
 // Sets up all routes
 function setup(app) {
   app.get('/', getIndex);
-};
+}
 
 module.exports.getIndex = getIndex;
 module.exports.setup = setup;
