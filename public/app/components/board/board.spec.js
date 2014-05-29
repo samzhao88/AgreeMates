@@ -132,7 +132,7 @@ describe('board module', function () {
                 return [200, newCommentRes];
             });
 
-            httpMock.whenDELETE('/messages/2/comments/2').respond(function (method, url, data, headers) {
+            httpMock.whenDELETE('/messages/1/comments/4').respond(function (method, url, data, headers) {
                 return [200];
             });
 
@@ -230,7 +230,7 @@ describe('board module', function () {
             describe('delete comment', function () {
 
                 it('should delete the comment with id 4', function () {
-                    httpMock.expectDELETE('/messages/2/comments/4').respond(200);
+                    httpMock.expectDELETE('/messages/1/comments/4').respond(200);
                     scope.deleteComment(4,1,0,1);
                     httpMock.flush();
                     expect(scope.messages[1].comments.length).to.equal(1);
