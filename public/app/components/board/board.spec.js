@@ -124,7 +124,7 @@ describe('board module', function () {
                 return [200];
             });
 
-            httpMock.whenPUT('/messages/1', editMessage).respond(function (method, url, data, headers) {
+            httpMock.whenPUT('/messages/2', editMessage).respond(function (method, url, data, headers) {
                 return [200];
             });
 
@@ -132,7 +132,7 @@ describe('board module', function () {
                 return [200, newCommentRes];
             });
 
-            httpMock.whenDELETE('/messages/1/comments/1').respond(function (method, url, data, headers) {
+            httpMock.whenDELETE('/messages/2/comments/2').respond(function (method, url, data, headers) {
                 return [200];
             });
 
@@ -192,7 +192,7 @@ describe('board module', function () {
             describe('update message', function () {
 
                 it('should update first message', function () {
-                    httpMock.expectPUT('/messages/1', editMessage).respond(200);
+                    httpMock.expectPUT('/messages/2', editMessage).respond(200);
                     scope.updateMessage(2,0);
                     httpMock.flush();
                     expect(scope.messages[0].body).to.equal('edited body');
@@ -201,8 +201,8 @@ describe('board module', function () {
 
             describe('delete message', function () {
 
-                it('should delete the message with id 1', function () {
-                    httpMock.expectDELETE('/messages/1').respond(200);
+                it('should delete the message with id 2', function () {
+                    httpMock.expectDELETE('/messages/2').respond(200);
                     scope.deleteMessage(2,0);
                     httpMock.flush();
                     expect(scope.messages.length).to.equal(1);
@@ -224,8 +224,8 @@ describe('board module', function () {
 
             describe('delete comment', function () {
 
-                it('should delete the comment with id 1', function () {
-                    httpMock.expectDELETE('/messages/1/comments/4').respond(200);
+                it('should delete the comment with id 2', function () {
+                    httpMock.expectDELETE('/messages/2/comments/4').respond(200);
                     scope.deleteComment(2,2,0,0);
                     httpMock.flush();
                     expect(scope.messages[0].comments.length).to.equal(1);
