@@ -178,45 +178,60 @@ describe('board module', function () {
                     httpMock.flush();
                 });
 
-                it('should post a new message', function () {
+                it('should be added to the scope', function () {
                     expect(scope.messages.length).to.equal(3);
-                    expect(scope.messages[1].body).to.equal('new body');
-                    expect(scope.messages[2].author).to.equal(user.first_name);
+                    expect(scope.messages[0].body).to.equal('new body');
+                    expect(scope.messages[0].author).to.equal(user.first_name);
+                });
+
+                it('should not have any comments yet', function() {
+                  expect(scope.messages[0].comments.length).to.equal(0);
                 });
             });
 
             describe('update message', function () {
-                it('should update a message', function () {
+
+                it('should update first message', function () {
                     httpMock.expectPUT('/messages/1', editMessage).respond(200);
+                    scope.updateMessage(2,0);
                     httpMock.flush();
-                    expect(scope.messages[1].body).to.equal('edited body');
+                    expect(scope.messages[0].body).to.equal('edited body');
                 });
             });
 
             describe('delete message', function () {
+
                 it('should delete the message with id 1', function () {
                     httpMock.expectDELETE('/messages/1').respond(200);
+                    scope.deleteMessage(2,0);
                     httpMock.flush();
                     expect(scope.messages.length).to.equal(1);
                 });
+
             });
 
             describe('post comment', function () {
-                it('should post a new comment', function () {
+
+                it('should post a new comment to message id: 1', function () {
                     httpMock.expectPOST('/messages/1/comments', comment).respond(newCommentRes);
+                    scope.addComment(1,1);
+                    scope.messages[1].newComment = newComment;
                     httpMock.flush();
                     expect(scope.messages[1].comments.length).to.equal(3);
                 });
+
             });
 
             describe('delete comment', function () {
+
                 it('should delete the comment with id 1', function () {
                     httpMock.expectDELETE('/messages/1/comments/4').respond(200);
+                    scope.deleteComment(2,2,0,0);
                     httpMock.flush();
-                    expect(scope.messages[1].comments.length).to.equal(1);
+                    expect(scope.messages[0].comments.length).to.equal(1);
                 });
-            });
 
+            });
         });
     });
 });
