@@ -153,10 +153,10 @@ describe('board module', function() {
 
     describe('onload', function() {
       beforeEach(function() {
-        httpMock.expectGET('/messages').respond(messages);
-        httpMock.expectGET('/user').respond(user);
-        httpMock.flush();   
-      });
+          httpMock.expectGET('/messages').respond(messages);
+          httpMock.expectGET('/user').respond(user);
+          httpMock.flush();   
+        });
 
       describe('get messages', function() {
         it('should fetch all messages and comments',function() {
@@ -176,23 +176,15 @@ describe('board module', function() {
           expect(scope.user.last_name).to.equal('dole');
         });
       });
-    });
-
-
-    describe('methods', function() {
-
-      /*beforeEach(function() {
-        httpMock.expectGET('/messages').respond(messages);
-        httpMock.expectGET('/user').respond(user);
-        httpMock.flush();   
-      });
-*/
 
       describe('post message', function() {
-        it('should post a new message',function() {
-          httpMock.flush();
+
+        beforeEach(function() {
           httpMock.expectPOST('/messages', message).respond(newMessageRes);
-          httpMock.flush();
+          httpMock.flush();  
+        });
+
+        it('should post a new message',function() {
           expect(scope.messages.length).to.be(3);
           expect(scope.messages[1].body).to.equal('new body');
           expect(scope.messages[2].author).to.equal(user.first_name);
