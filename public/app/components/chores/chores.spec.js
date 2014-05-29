@@ -290,7 +290,8 @@ describe('chores module', function() {
          expect(scope.chores[1].number_in_rotation).to.equal(1);
       });
 
-    });
+    }); //end put test
+    
 
     it('should exist', function() {
       expect(ctrl).not.to.equal(null);
