@@ -118,9 +118,6 @@ angular.module('main.board').controller('BoardCtrl',
     	$scope.newMessage = {};
     };
 
-    $scope.postButton = function(){
-      return (($scope.newMessage.subject  == '') || ($scope.newMessage.body == '')) ? false : true;
-    };
 
     $scope.format = function(date){
       return moment(date).fromNow();

@@ -26,12 +26,12 @@
               <input type="text" class="form-control" name="subject" ng-model="newMessage.subject" placeholder="Subject" required>
             </div>
             <div class="form-group">
-              <textarea class="form-control" name="body" ng-model="newMessage.body" placeholder="Body" required></textarea>
+              <textarea class="form-control" name="body" ng-model="newMessage.body" placeholder="Message"></textarea>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-            <button ng-disabled="!postButton()" type="submit" class="btn btn-success" data-dismiss="modal" ng-click="addMessage()">Add</button>
+            <button ng-disabled="newMessage.subject === ''" type="submit" class="btn btn-success" data-dismiss="modal" ng-click="addMessage()">Add</button>
           </div>
         </form>
       </div>
