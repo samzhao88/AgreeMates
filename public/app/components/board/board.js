@@ -91,7 +91,7 @@ angular.module('main.board').controller('BoardCtrl',
     	var comment = angular.copy($scope.messages[messageIndex].newComment);
     	comment.messageId = $scope.messages[messageIndex].id;
 
-    	$http.post('/messages/' + comment.messageId + '/comments/', comment)
+    	$http.post('/messages/' + comment.messageId + '/comments', comment)
 	      .success(function(data) {
           data.author = $scope.user.first_name;
 	        $scope.messages[messageIndex].comments.push(data);
