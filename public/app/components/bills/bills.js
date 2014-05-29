@@ -505,8 +505,7 @@ angular.module('main.bills').controller('BillsCtrl',
           };
         };         
       }
-
-      console.log('final: '+ total);
+      
       return total == 0;
     }
 

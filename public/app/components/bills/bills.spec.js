@@ -65,7 +65,7 @@ describe('bills module', function() {
 	
 	 var resolvedBills = {bills: [
 	{
-		'id': 2,
+		'id': 3,
 		'payments': [
 					{
 						'id': 69,
@@ -77,7 +77,7 @@ describe('bills module', function() {
 					}]
 	},
 	{
-		'id': 3,
+		'id': 4,
 		'payments': [
 					{
 						'id': 1,
@@ -171,7 +171,7 @@ describe('bills module', function() {
 			});
 			
 			it('should checkboxes set', function() {
-        //not implemented
+        console.log(scope.checkboxes.length);
 			});
 		});
 		
@@ -190,27 +190,51 @@ describe('bills module', function() {
 		});
 	
 		describe('update balances', function() {
+			beforeEach(function() {
+				scope.updateBalanceModel();
+			});
 			it('should update balance model', function() {
-			  expect(scope.balances.length).to.equal(2);
+				expect(scope.balances.length).to.equal(2);
+				//Michael Irvin			  
         expect(scope.balances[0].userId).to.equal(88);
-        // expect(scope.balances[0].first_name).to.equal('Michael');
-        // expect(scope.balances[0].last_name).to.equal('Irvin');
-        // expect(scope.balances[0].owedToUser).to.equal(60);
-        // console.log(scope.balances[0].owedToUser);
+        expect(scope.balances[0].first_name).to.equal('Michael');
+        expect(scope.balances[0].last_name).to.equal('Irvin');
+        //expect(scope.balances[0].owedToUser).to.equal(60);
+        console.log(scope.balances[0].owedToUser);
+        console.log(scope.balances[0].userOwed);
         //expect(scope.balances[0].userOwed).to.equal(50);
         //expect(scope.balances[0].netBalance).to.equal(10);
+
+        //George Washington
+        expect(scope.balances[1].userId).to.equal(1);
+        expect(scope.balances[1].first_name).to.equal('George');
+        expect(scope.balances[1].last_name).to.equal('Washington');
+        console.log(scope.balances[1]);
+        console.log(scope.balances[1].userOwed);
 			});
 		});
 	
 		describe('select resolved', function() {
-			it('should get all the bills', function() {
-			  
+			beforeEach(function() {
+				scope.setTable('resolved');
+			});
+			it('should set table to unresolved', function() {
+			  expect(scope.bills.length).to.equal(resolvedBills.bills.length);
+			  expect(scope.bills[0].id).to.equal(resolvedBills.bills[0].id);
+			  expect(scope.bills[1].id).to.equal(resolvedBills.bills[1].id);
+			  expect(scope.table).to.equal('resolved');
 			});
 		});
 		
 		describe('select unrsolved', function() {
-			it('should get all the bills', function() {
-			  
+			beforeEach(function() {
+				scope.setTable('unresolved');
+			});
+			it('should set table to unresolved', function() {
+			  expect(scope.bills.length).to.equal(unresolvedBills.bills.length);
+			  expect(scope.bills[0].id).to.equal(unresolvedBills.bills[0].id);
+			  expect(scope.bills[1].id).to.equal(unresolvedBills.bills[1].id);
+			  expect(scope.table).to.equal('unresolved');
 			});
 		});
 		
