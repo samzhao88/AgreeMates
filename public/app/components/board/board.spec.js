@@ -198,6 +198,10 @@ describe('board module', function () {
                     httpMock.flush();
                     expect(scope.messages[0].body).to.equal('edited body');
                 });
+
+                it('should only be updateable is users match', function(){
+                    expect(scope.messages[0].author).to.equal(user.first_name);
+                });
             });
 
             describe('delete message', function () {
