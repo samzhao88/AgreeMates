@@ -181,7 +181,8 @@ describe('board module', function() {
 
         beforeEach(function() {
           httpMock.expectPOST('/messages', message).respond(newMessageRes);
-          httpMock.flush();  
+          scope.message = message;
+          httpMock.flush();
         });
 
         it('should post a new message',function() {
