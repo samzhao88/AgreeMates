@@ -118,12 +118,13 @@ addBill: function(req, res) {
     res.json(401, {error: 'Unauthorized user.'});
     return;
   }
- 
+  var duedate = new Date(req.body.date);
+  duedate.setDate(duedate.getDate() + 1);
   // Check if the fields are acceptable
   if (!isValidName(req.body.name)) {
     res.json(400, {error: 'Invalid bill name.'});
     return;
-  } else if (new Date(req.body.date) < new Date()) {
+  } else if (duedate < new Date()) {
     res.json(400, {error: 'Invalid due date'});
     return;
   } else if (req.body.total === undefined || req.body.total < 0) {
