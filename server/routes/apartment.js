@@ -163,64 +163,33 @@ function deleteApartment(req, res)  {
 	var apartment_id = req.user.attributes.apartment_id;
 	var user_id = req.user.id;
 
-	if(!isValidId(apartmentId)) {
+	if(!isValidId(apartment_id)) {
 		res.json(401, {error: 'Unauthorized Apartment.'});
 		return;
 	}
-	//delete associated users' tie to the apartment
+	//clear associated users' tie to the apartment
 	 new Users()
 	.query('where', 'apartment_id', '=', apartment_id)
 	.fetch()
 	.then(function(collection) {
 		collection.mapThen(function(user) {
-			//delete  bills
+			//update users
 			user.attributes.apartment_id = null;
 			return user.save().then(function(x) {});
-		})
-		.then(function(users) {
-			new Bills()
-			.query('where', 'apartment_id', '=', apartment_id)
-			.fetch()
-			.then(function(bills) {
-				bills.mapThen(function(bill) {
-					bill.attributes.apartment_id = null;
-					return bill.save().then(function(x) {});
-				}).then(function(bills) {
-					new Messages()
-						.query('where', 'apartment_id', '=', apartment_id)
-						.fetch()
-						.then(function(messages) {
-							messages.mapThen(function(messages) {
-								messages.attributes.apartment_id = null;
-								return message.save().then(function(x) {});
-							})
-							.then(function(messages) {
-								new Chores()
-								.query('where', 'apartment_id', '=', apartment_id)
-								.fetch()
-								.then(function(chore) {
-									chore.mapThen(function(chore) {
-										chore.attributes.apartment_id = null;
-										return chore.save().then(function(x) {});
-									})
-									.then(function(chores) {
-										new Supplies()
-										.query('where', 'apartment_id', '=', apartment_id)
-										.fetch()
-										.then(function(supply) {
-											supply.mapThen(function(supply) {
-												supply.attributes.apartment_id = null;
-												return supply.save().then(function(x) {});
-											});
-										});
-									});
-								});
-							});
-						});
-					});
-				});
+		}).then(function(users) {
+			new ApartmentModel()
+			.query('where', 'id', '=', apartment_id)
+			.destroy()
+			.then(function() {
+				res.json(200);
+				})
+			.otherwise(function(error) {
+				res.json(503, {error: error});
 			});
+	}).otherwise(function(error) {
+			res.json(503, {error: error});
 		});
+	});
 }
 
 // Removes a user from their apartment
@@ -238,7 +207,7 @@ function leaveApartment(req, res) {
 			res.send(200);
 		})
 		.otherwise(function() {
-			res.json(504, {error: 'Database error.'});
+			res.json(503, {error: 'Database error.'});
 		});
 }
 
