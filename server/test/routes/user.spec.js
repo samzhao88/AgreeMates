@@ -21,8 +21,10 @@ describe('User', function() {
   describe('getUserInfo', function() {
 
     it('should correctly return user info', function() {
-      var req = {user: {attributes: {id: 1, first_name: 'first', last_name: 'last'}}};
-      resMock.expects('json').once().withArgs({id: 1, first_name: 'first', last_name: 'last'});
+      var req = {user: {attributes: {id: 1, first_name: 'first',
+        last_name: 'last'}}};
+      resMock.expects('json').once().withArgs({id: 1, first_name: 'first',
+        last_name: 'last'});
       user.getUserInfo(req, res);
     });
 
