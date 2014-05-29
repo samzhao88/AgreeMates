@@ -231,9 +231,9 @@ describe('board module', function () {
 
                 it('should delete the comment with id 4', function () {
                     httpMock.expectDELETE('/messages/2/comments/4').respond(200);
-                    scope.deleteComment(4,2);
+                    scope.deleteComment(4,1,0,1);
                     httpMock.flush();
-                    expect(scope.messages[0].comments.length).to.equal(1);
+                    expect(scope.messages[1].comments.length).to.equal(1);
                 });
 
             });
