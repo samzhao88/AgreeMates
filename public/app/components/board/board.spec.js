@@ -173,7 +173,8 @@ describe('board module', function () {
 
                 beforeEach(function () {
                     httpMock.expectPOST('/messages', message).respond(newMessageRes);
-                    scope.message = message;
+                    scope.newMessage = message;
+                    scope.addMessage();
                     httpMock.flush();
                 });
 
