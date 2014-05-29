@@ -193,6 +193,7 @@ describe('board module', function () {
 
                 it('should update first message', function () {
                     httpMock.expectPUT('/messages/2', editMessage).respond(200);
+                    scope.messages[0] = editMessage;
                     scope.updateMessage(2,0);
                     httpMock.flush();
                     expect(scope.messages[0].body).to.equal('edited body');
