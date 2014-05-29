@@ -111,7 +111,7 @@ angular.module('main.board').controller('BoardCtrl',
     $scope.deleteComment = function(commentId, messageId,
       commentIndex, messageIndex) {
 
-      $http.delete('messages/' + messageId + '/comments/' + commentId)
+      $http.delete('/messages/' + messageId + '/comments/' + commentId)
         .success(function() {
 	        $scope.messages[messageIndex].comments.splice(commentIndex, 1);
 	      })
