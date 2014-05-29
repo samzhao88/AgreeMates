@@ -7,21 +7,72 @@ angular.module('main.calendar', ['ui.bootstrap','ui.calendar']);
 angular.module('main.calendar').controller('CalendarCtrl', 
     function ($scope, $http, $modal) {
 
+    //get request didn't return yet   
+    $scope.loaded = false;
+    $scope.chores = [];
+    $scope.chores_uncompleted = [];
+    $scope.chores_completed = [];
+
+    //variable for events
+    $scope.events = [];
+
   	$http.get('/calendar').
     success(function(data) {
-      $scope.title = data.title;
-      //console.log($scope.title);
+    $scope.title = data.title;
+      
     }).
     error(function(data, status, headers, config){
         showErr(data.error);
     });
 
 
+    $http.get('/chores')
+    .success(function(data) {
+        console.log("hello");
+        console.log(data);
+        for (var x = 0; x < $scope.chores.length; x++) {
+            for (var i = 0; i < $scope.chores[x].users[i].length; i++) {
+            $scope.chores[x].users[i].user_id = $scope.chores[x].users[i].id;
+            }
+        }
+        
+        for (var x = 0; x < data.chores.length; x++){
+            if(data.chores[x].completed == true)
+            {
+                $scope.chores_completed.unshift(data.chores[x]);
+            }
+            else
+            {
+                $scope.chores_uncompleted.unshift(data.chores[x]);
+            }
+        }
+        $scope.chores = $scope.chores_uncompleted;
 
- var date = new Date();
+        var date = new Date($scope.chores[0].duedate);
+        console.log(date);
+
+        for(var x = 0; x < $scope.chores.length; x++)
+        {
+        $scope.events.push(chore_to_event($scope.chores[x]));
+
+        }
+
+        $scope.loaded = true;
+    })
+    .error(function(error) {
+        $scope.chores = $scope.chores_uncompleted;
+        $scope.table = 'unresolved';
+        console.log(error);
+    });
+
+    var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
+    console.log(d);
+    console.log(m);
+    console.log(y);
+    console.log(date);
     var currentView = "month";
     
     // $scope.changeTo = 'Hungarian';
@@ -41,14 +92,17 @@ angular.module('main.calendar').controller('CalendarCtrl',
     //   {title: 'Click for Google',start: new Date(y, m, 28),end: new Date(y, m, 29),url: 'http://google.com/'}
     // ];
     // /* event source that calls a function on every view switch */
-    $scope.eventsF = function (start, end, callback) {
-      var s = new Date(start).getTime() / 1000;
-      var e = new Date(end).getTime() / 1000;
-      var m = new Date(start).getMonth();
-      var events = [{title: 'Feed Me ' + m,start: s + (50000),end: s + (100000),allDay: false, 
-      className: ['customFeed'], editable: false}];
-      callback(events);
-    };
+    // $scope.eventsF = function (start, end, callback) {
+    //   var s = new Date(start).getTime() / 1000;
+    //   var e = new Date(end).getTime() / 1000;
+    //   var m = new Date(start).getMonth();
+    //   //console.log(m);
+    //   //console.log(e);
+
+    //   var events = [{title: 'Feed Me ', start: new Date(y, m, d, 6, 0) , end: new Date(y, m, d, 24, 0), allDay: false, 
+    //   className: ['customFeed'], editable: false}];
+    //   callback(events);
+    // };
 
     $scope.openModal = function () {
 
@@ -60,7 +114,7 @@ angular.module('main.calendar').controller('CalendarCtrl',
     $scope.alertOnEventClick = function( event, allDay, jsEvent, view ){
 
         $scope.alertMessage = (event.title + ' was clicked ');
-        $scope.openModal();
+        //$scope.openModal();
     };
 
     $scope.alertOnMouseHover = function(event, jsEvent, view){
@@ -162,6 +216,22 @@ angular.module('main.calendar').controller('CalendarCtrl',
     /* event sources array*/
     // $scope.eventSources = [$scope.events, $scope.eventSource, $scope.eventsF];
     // $scope.eventSources2 = [$scope.calEventsExt, $scope.eventsF, $scope.events];
-    $scope.eventSources = [$scope.eventsF];
+    $scope.eventSources = [$scope.events];
+
+    function chore_to_event(chore)
+    {
+        var a_event = {};
+        var date = new Date(chore.duedate);
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+        a_event.title = 'You are responsible for the chore "' + chore.name + '" by today!';
+        a_event.start = new Date(y, m, d, 6, 0);
+        a_event.end = new Date(y, m, d, 24, 0);
+        a_event.allDay = false;
+        a_event.editable = false;
+        return a_event;
+    }
 	
 	});
+
