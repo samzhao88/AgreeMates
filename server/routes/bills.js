@@ -277,6 +277,12 @@ editBill: function(req, res) {
   } else if (!isValidName(name)) {
     res.json(400, {error: 'Invalid bill name.'});
     return;
+  } else if (new Date(req.body.date) < new Date()) {
+    res.json(400, {error: 'Invalid due date'});
+    return;
+  } else if (req.body.total === undefined || req.body.total < 0) {
+    res.json(400, {error: 'Invalid bill total.'});
+    return;
   }
 
   // Destroy all the payments which are references to the billId
@@ -298,7 +304,7 @@ editBill: function(req, res) {
               Bills.saveHistory(historyString, apartmentId,
                 function otherwise(error) {
                   console.log(error);
-                  res.json(503, {error: error});
+                  res.json(503, {error: 'Database error'});
                 }); 
  
               // Add new payments for all the users who need to pay
@@ -306,7 +312,7 @@ editBill: function(req, res) {
                 function otherwise() {
                     res.json(503, {error: 'Database error'});
                 }); 
-              res.json({result: 'success'});
+              res.send(200);
             },
             function otherwise(error) {
               res.json(503, {error: 'Database error'});
@@ -344,7 +350,7 @@ deleteBill: function(req, res) {
       Bills.saveHistory(historyString, apartmentId,
         function otherwise(error) {
           console.log(error);
-          res.json(503, {error: error});
+          res.json(503, {error: 'Database error.'});
         });
 
       // Destroy all the payments for a bill and then destroy

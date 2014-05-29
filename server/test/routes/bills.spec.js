@@ -470,6 +470,18 @@ describe('Bills', function() {
   });
 
   describe('editBill', function() {
+    beforeEach(function () {
+      res = {
+        json: function () {},
+        send: function () {}
+      };
+      resMock = sinon.mock(res);
+    });
+
+    afterEach(function () {
+      resMock.verify();
+    });
+
 
     it('should return 401 if user is undefined', function() {
       var req = {};
@@ -497,6 +509,135 @@ describe('Bills', function() {
       bills.editBill(req3, res);
     });
 
+    it('should destroy payments', function() {
+      var req1 = {user: {attributes: {}}, 
+        body: {name: 'Bill', total: 5, interval: 3, date: '2016-09-20'},
+        params: {bill: 1}};
+      var destroyPaymentsStub = emptyStub('destroyPayments');
+
+      bills.editBill(req1, res);
+
+      expect(destroyPaymentsStub).to.have.been.calledWith(1);
+      destroyPaymentsStub.restore();
+    });
+
+    it('should fetch and update all fields of the bill', function() {
+      var req1 = {user: {attributes: {apartment_id: 5}}, 
+        body: {name: 'Bill', total: 5, interval: 3, date: '2016-09-20'},
+        params: {bill: 1}};
+      var destroyPaymentsStub = succeedingStub('destroyPayments');
+      var fetchBillStub = succeedDoubleStub('fetchBill', 
+        {attributes: {name: 'Test', amount: 500, duedate: '2016-09-09', 
+          interval: 0}});
+      var saveBillStub = emptyStub('saveBill');
+
+      bills.editBill(req1, res);
+
+      expect(destroyPaymentsStub).to.have.been.calledWith(1);
+      expect(fetchBillStub).to.have.been.calledWith(1, 5);
+      expect(saveBillStub).to.have.been.calledWith({attributes: 
+        {name: 'Bill', amount: 5, duedate: '2016-09-20', interval: 3}});
+      
+      destroyPaymentsStub.restore();
+      fetchBillStub.restore();
+      saveBillStub.restore();
+    });
+
+    it('should add the new payments back in', function() {
+      var req1 = {user: {attributes: {apartment_id: 5}}, 
+        body: {name: 'Bill', total: 5, interval: 3, date: '2016-09-20',
+          roommates: [{id: 1, amount: 1}, {id: 2, amount: 1}]},
+        params: {bill: 1}};
+      var destroyPaymentsStub = succeedingStub('destroyPayments');
+      var fetchBillStub = succeedDoubleStub('fetchBill', 
+        {attributes: {name: 'Test', amount: 500, duedate: '2016-09-09', 
+          interval: 0}});
+      var saveBillStub = succeedingStub('saveBill');
+      var savePaymentsStub = emptyStub('savePayments');
+
+      bills.editBill(req1, res);
+
+      expect(destroyPaymentsStub).to.have.been.calledWith();
+      expect(fetchBillStub).to.have.been.calledWith();
+      expect(saveBillStub).to.have.been.calledWith();
+      expect(savePaymentsStub).to.have.been.calledWith(1, 
+         [{id: 1, amount: 1}, {id: 2, amount: 1}]);
+     
+      destroyPaymentsStub.restore();
+      fetchBillStub.restore();
+      saveBillStub.restore();
+      savePaymentsStub.restore();
+    });
+
+   it('should return 400 if the bill total is undefined or negative', function() {
+      var req1 = {user: {attributes: {}}, body: {name: '1', total: undefined},
+        params: {bill: 1}};
+      var req2 = {user: {attributes: {}}, body: {name: '1', total: -1},
+        params: {bill: 1}};
+      resMock.expects('json').twice().withArgs(400, {error: 'Invalid bill total.'});
+      bills.editBill(req1, res);
+      bills.editBill(req2, res);
+    });
+
+    it('should return 400 if the due date is before the current date', 
+      function(){
+        var req1 = {user: {attributes: {}}, 
+          body: {name: 'test', interval: 0, date: '2014-05-08', total: 1},
+          params: {bill: 1}};
+        var req2 = {user: {attributes: {}},
+          body: {name: 'test', interval: 0, date: '2013-05-08', total: 1},
+          params: {bill: 1}};
+	var req3 = {user: {attributes: {}}, 
+          body: {name: 'test', interval: 0, date: '2013-06-08', total: 1},
+          params: {bill: 1}};
+
+	resMock.expects('json').thrice().withArgs(400, 
+          {error: 'Invalid due date'});
+			bills.editBill(req1, res);
+			bills.editBill(req2, res);
+			bills.editBill(req3, res);
+    });
+    
+
+    it('should return 503 if there is a database error', function() {
+      var req1 = {user: {attributes: {}}, 
+        body: {name: 'Bill', total: 5, interval: 3, date: '2016-09-20'},
+        params: {bill: 1}};
+      var destroyPaymentsStub = failingStub('destroyPayments');
+
+      resMock.expects('json').once().withArgs(503, {error: 'Database error.'});
+      bills.editBill(req1, res);
+
+      expect(destroyPaymentsStub).to.have.been.calledWith(1);
+      destroyPaymentsStub.restore();
+    });
+
+    it('should send 200 on success', function() {
+     var req1 = {user: {attributes: {apartment_id: 5}}, 
+        body: {name: 'Bill', total: 5, interval: 3, date: '2016-09-20',
+          roommates: [{id: 1, amount: 1}, {id: 2, amount: 1}]},
+        params: {bill: 1}};
+      var destroyPaymentsStub = succeedingStub('destroyPayments');
+      var fetchBillStub = succeedDoubleStub('fetchBill', 
+        {attributes: {name: 'Test', amount: 500, duedate: '2016-09-09', 
+          interval: 0}});
+      var saveBillStub = succeedingStub('saveBill');
+      var savePaymentsStub = emptyStub('savePayments');
+     
+      resMock.expects('send').once().withArgs(200);
+      bills.editBill(req1, res);
+ 
+      expect(destroyPaymentsStub).to.have.been.calledWith();
+      expect(fetchBillStub).to.have.been.calledWith();
+      expect(saveBillStub).to.have.been.calledWith();
+      expect(savePaymentsStub).to.have.been.calledWith(1, 
+         [{id: 1, amount: 1}, {id: 2, amount: 1}]);
+     
+      destroyPaymentsStub.restore();
+      fetchBillStub.restore();
+      saveBillStub.restore();
+      savePaymentsStub.restore();
+    });
   });
 
   describe('deleteBill', function() {
@@ -519,7 +660,104 @@ describe('Bills', function() {
     it('should update the history', function() {
       var req = {user: {attributes: {first_name: 'Bob', last_name: 'Smith'}}, 
         body: {}, params: {bill: 1}};
+      var fetchBillStub = succeedDoubleStub('fetchBill', {attributes: 
+        {name: 'Bill'}});
+      var saveHistoryStub = emptyStub('saveHistory');
+      var destroyPaymentsStub = failingStub('destroyPayments');
 
+      bills.deleteBill(req, res);
+
+      expect(saveHistoryStub).to.have.been.calledWith();
+
+      fetchBillStub.restore();
+      saveHistoryStub.restore();
+      destroyPaymentsStub.restore(); 
+    });
+
+    it('should destroy payments', function() {
+      var req1 = {user: {attributes: {}}, 
+        body: {name: 'Bill', total: 5, interval: 3, date: '2016-09-20'},
+        params: {bill: 1}};
+      var destroyPaymentsStub = emptyStub('destroyPayments');
+
+      bills.editBill(req1, res);
+
+      expect(destroyPaymentsStub).to.have.been.calledWith(1);
+      destroyPaymentsStub.restore();
+    });
+
+    it('should delete the bill and return 200 on success', function() {
+      var req = {user: {attributes: {first_name: 'Bob', last_name: 'Smith',
+          apartment_id: 6}}, 
+        body: {}, params: {bill: 1}};
+      var fetchBillStub = succeedDoubleStub('fetchBill', {attributes: 
+        {name: 'Bill'}});
+      var saveHistoryStub = emptyStub('saveHistory');
+      var destroyPaymentsStub = succeedingStub('destroyPayments');
+      var destroyBillStub = succeedDoubleStub('destroyBill');
+
+      resMock.expects('send').once().withArgs(200);
+
+      bills.deleteBill(req, res);
+
+      expect(saveHistoryStub).to.have.been.calledWith();
+      expect(destroyBillStub).to.have.been.calledWith(1, 6);
+
+      fetchBillStub.restore();
+      saveHistoryStub.restore();
+      destroyPaymentsStub.restore();
+      destroyBillStub.restore(); 
+    });
+
+    it('should return 503 if there is an error fetching bill', function() {
+      var req = {user: {attributes: {first_name: 'Bob', last_name: 'Smith',
+          apartment_id: 6}}, 
+        body: {}, params: {bill: 1}};
+      var fetchBillStub = failDoubleStub('fetchBill');
+
+      resMock.expects('json').once().withArgs(503, {error: 'Database error.'});
+
+      bills.deleteBill(req, res);
+ 
+      fetchBillStub.restore();
+    });
+
+    it('should return 503 if there is an error destroying payments', function() {
+      var req = {user: {attributes: {first_name: 'Bob', last_name: 'Smith',
+          apartment_id: 6}}, 
+        body: {}, params: {bill: 1}};
+      var fetchBillStub = succeedDoubleStub('fetchBill', {attributes: 
+        {name: 'Bill'}});
+      var saveHistoryStub = emptyStub('saveHistory');
+      var destroyPaymentsStub = failingStub('destroyPayments');
+
+      resMock.expects('json').once().withArgs(503, {error: 'Database error.'});
+
+      bills.deleteBill(req, res);
+ 
+      fetchBillStub.restore();
+      saveHistoryStub.restore(); 
+      destroyPaymentsStub.restore();
+    });
+
+    it('should return 503 if there is an error destroying bil', function() {
+      var req = {user: {attributes: {first_name: 'Bob', last_name: 'Smith',
+          apartment_id: 6}}, 
+        body: {}, params: {bill: 1}};
+      var fetchBillStub = succeedDoubleStub('fetchBill', {attributes: 
+        {name: 'Bill'}});
+      var saveHistoryStub = emptyStub('saveHistory');
+      var destroyPaymentsStub = succeedingStub('destroyPayments');
+      var destroyBillStub = failDoubleStub('destroyBill');
+
+      resMock.expects('json').once().withArgs(503, {error: 'Database error.'});
+
+      bills.deleteBill(req, res);
+ 
+      fetchBillStub.restore();
+      saveHistoryStub.restore();
+      destroyPaymentsStub.restore();
+      destroyBillStub.restore();
     });
 
     it('should return 400 if the bill ID is invalid', function() {
