@@ -219,7 +219,7 @@ describe('board module', function () {
 
                 it('should post a new comment to message id: 1', function () {
                     httpMock.expectPOST('/messages/1/comments', comment).respond(newCommentRes);
-                    scope.addComment(1,1);
+                    scope.addComment(1);
                     scope.messages[1].newComment = newComment;
                     httpMock.flush();
                     expect(scope.messages[1].comments.length).to.equal(3);
@@ -229,9 +229,9 @@ describe('board module', function () {
 
             describe('delete comment', function () {
 
-                it('should delete the comment with id 2', function () {
+                it('should delete the comment with id 4', function () {
                     httpMock.expectDELETE('/messages/2/comments/4').respond(200);
-                    scope.deleteComment(2,2,0,0);
+                    scope.deleteComment(4,2);
                     httpMock.flush();
                     expect(scope.messages[0].comments.length).to.equal(1);
                 });
