@@ -219,8 +219,8 @@ describe('board module', function () {
 
                 it('should post a new comment to message id: 1', function () {
                     httpMock.expectPOST('/messages/1/comments', comment).respond(newCommentRes);
+                    scope.messages[1].newComment = comment;
                     scope.addComment(1);
-                    scope.messages[1].newComment = newComment;
                     httpMock.flush();
                     expect(scope.messages[1].comments.length).to.equal(3);
                 });
