@@ -196,6 +196,7 @@ angular.module('main.bills').controller('BillsCtrl',
           $scope.updateIdx = -1;
           showSucc("Bill "+bill.name+" successfully added!");
 	       	$scope.reset();
+          console.log($scope.responsible);
 	      }).
         error(function(data, status, headers, config){
           showErr(data.error);
@@ -403,6 +404,7 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //split the bill amount evenly among all selected roommates
     $scope.splitBill = function() {
+      console.log($scope.selectedRoommates);
       var numRoommates = $scope.selectedRoommates.length;
       var amount = Math.round(($scope.bill.total / numRoommates) * 100) / 100;
 
@@ -505,7 +507,7 @@ angular.module('main.bills').controller('BillsCtrl',
           };
         };         
       }
-      
+
       return total == 0;
     }
 

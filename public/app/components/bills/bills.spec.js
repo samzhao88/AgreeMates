@@ -171,7 +171,8 @@ describe('bills module', function() {
 			});
 			
 			it('should checkboxes set', function() {
-        console.log(scope.checkboxes.length);
+        console.log(scope.checkboxes);
+        //expect(scope.checkboxes.length).to.equal(2);
 			});
 		});
 		
