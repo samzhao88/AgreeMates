@@ -66,14 +66,14 @@ describe('Comments', function() {
 
 
     it('should return 400 if the comment content is undefined', function() {
-      var req = {user: {attributes: {apartment_id: 1}}, 
+      var req = {user: {attributes: {apartment_id: 1}},
         params: {message: 1}, body: {}};
       resMock.expects('json').once().withArgs(400, {error: 'Must have comment content'});
       comments.addComment(req, res);
     });
 
     it('should call createComment if the request is valid', function() {
-      var req = {user: {attributes: {apartment_id: 1, id: 2}}, 
+      var req = {user: {attributes: {apartment_id: 1, id: 2}},
         params: {message: 1}, body: {body: 'test comment'}};
       var createCommentStub = emptyStub('createComment');
       comments.addComment(req, res);
@@ -83,7 +83,7 @@ describe('Comments', function() {
     });
 
     it('should return 503 if failed to create comment', function() {
-      var req = {user: {attributes: {apartment_id: 1, id: 2}}, 
+      var req = {user: {attributes: {apartment_id: 1, id: 2}},
         params: {message: 1}, body: {body: 'test comment'}};
       var createCommentStub = sinon.stub(comments, 'createComment',
         function(userId, messageId, text, date, thenFun, otherwiseFun) {
@@ -96,7 +96,7 @@ describe('Comments', function() {
     });
 
     it('should get the message after creating comment', function() {
-      var req = {user: {attributes: {first_name: 'test', last_name: 'user', 
+      var req = {user: {attributes: {first_name: 'test', last_name: 'user',
         apartment_id: 1, id: 2}}, params: {message: 1}, body: {body: 'test comment'}};
       var createCommentStub = sinon.stub(comments, 'createComment',
         function(userId, messageId, text, date, thenFun) {
@@ -111,7 +111,7 @@ describe('Comments', function() {
     });
 
     it('should return 503 if failed to get message', function() {
-      var req = {user: {attributes: {first_name: 'test', last_name: 'user', 
+      var req = {user: {attributes: {first_name: 'test', last_name: 'user',
         apartment_id: 1, id: 2}}, params: {message: 1}, body: {body: 'test comment'}};
       var createCommentStub = sinon.stub(comments, 'createComment',
         function(userId, messageId, text, date, thenFun) {
@@ -126,13 +126,13 @@ describe('Comments', function() {
     });
 
     it('should save to history after getting the message', function() {
-      var req = {user: {attributes: {first_name: 'test', last_name: 'user', 
+      var req = {user: {attributes: {first_name: 'test', last_name: 'user',
         apartment_id: 1, id: 2}}, params: {message: 1}, body: {body: 'test comment'}};
       var createCommentStub = sinon.stub(comments, 'createComment',
         function(userId, messageId, text, date, thenFun) {
           thenFun({author: ''});
         });
-      var getMessageStub = succeedingStub('getMessage', {attributes: 
+      var getMessageStub = succeedingStub('getMessage', {attributes:
                                           {subject: 'test message'}});
       var createHistoryStub = emptyStub('createHistory');
       comments.addComment(req, res);
@@ -193,7 +193,7 @@ describe('Comments', function() {
       comments.deleteComment(req, res);
       getMessageStub.restore();
     });
-    
+
     it('should destroy the comment if the message is fetched', function() {
       var getMessageStub = succeedingStub('getMessage');
       var destroyCommentStub = emptyStub('destroyComment');
@@ -206,14 +206,17 @@ describe('Comments', function() {
     });
 
     it('should save the delete to history and return 200 if destroy succeeded', function() {
-      var getMessageStub = succeedingStub('getMessage');
-      var destroyCommentStub = sinon.stub(comments, 'destroyComment', 
-        function(messageId, commentId, userId, thenFun) {
+      var getMessageStub = sinon.stub(comments, 'getMessage',
+        function(messageId, thenFun) {
           thenFun({attributes: {subject: 'test message'}});
         });
+      var destroyCommentStub = sinon.stub(comments, 'destroyComment',
+        function(messageId, commentId, userId, thenFun) {
+          thenFun();
+        });
       var createHistoryStub = emptyStub('createHistory');
-      var req = {user: {attributes: {apartment_id: 1, id: 2, 
-        first_name: 'test', last_name: 'user'}}, 
+      var req = {user: {attributes: {apartment_id: 1, id: 2,
+        first_name: 'test', last_name: 'user'}},
         params: {message: 1, comment: 1}};
       resMock.expects('send').once().withArgs(200);
       comments.deleteComment(req, res);
@@ -226,12 +229,12 @@ describe('Comments', function() {
 
     it('should return 503 if failed to destroy comment', function() {
       var getMessageStub = succeedingStub('getMessage');
-      var destroyCommentStub = sinon.stub(comments, 'destroyComment', 
+      var destroyCommentStub = sinon.stub(comments, 'destroyComment',
         function(messageId, commentId, userId, thenFun, otherwiseFun) {
           otherwiseFun();
         });
-      var req = {user: {attributes: {apartment_id: 1, id: 2, 
-        first_name: 'test', last_name: 'user'}}, 
+      var req = {user: {attributes: {apartment_id: 1, id: 2,
+        first_name: 'test', last_name: 'user'}},
         params: {message: 1, comment: 1}};
       resMock.expects('json').once().withArgs(503, {error: 'Database error.'});
       comments.deleteComment(req, res);

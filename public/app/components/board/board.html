@@ -26,12 +26,12 @@
               <input type="text" class="form-control" name="subject" ng-model="newMessage.subject" placeholder="Subject" required>
             </div>
             <div class="form-group">
-              <textarea class="form-control" name="body" ng-model="newMessage.body" placeholder="Body" required></textarea>
+              <textarea class="form-control" name="body" ng-model="newMessage.body" placeholder="Message"></textarea>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-            <button ng-disabled="!postButton()" type="submit" class="btn btn-success" data-dismiss="modal" ng-click="addMessage()">Add</button>
+            <button ng-disabled="newMessage.subject === ''" type="submit" class="btn btn-success" data-dismiss="modal" ng-click="addMessage()">Add</button>
           </div>
         </form>
       </div>
@@ -49,21 +49,24 @@
       </a>
       <div id="collapse{{$index}}" class="panel-collapse collapse">
         <div class="panel-body message-panel-body">
-          <p class="message-date pull-left">{{format(message.date)}}</p>
+          <p class="message-date pull-left">{{formatDate(message.date)}}</p>
           <i ng-show="user.id === message.user_id" class="pull-right ion-close-round message-delete" ng-click="deleteMessage(message.id, $index)"></i>
-          <div ng-show="(!message.edit || user.id!=message.user_id)" class="message-body clearfix" ng-click="message.edit=true">
+          <div ng-show="(!message.edit || user.id!=message.user_id)" class="message-body clearfix" ng-click="setOldMessageBody($index)">
             {{message.body}}
-            <i ng-show="user.id === message.user_id" class="ion-edit pull-right message-delete"></i>
+            <i ng-show="user.id === message.user_id" ng-click="setOldMessageBody($index)" class="ion-edit pull-right message-delete"></i>
           </div>
           <div ng-show="!(!message.edit || user.id!=message.user_id)" class="edit">
-            <textarea class="form-control" ng-model="message.body" placeholder="Message" required></textarea><br>
-            <button type="submit" ng-show="!message.body==''" class="btn btn-success pull-right" ng-click="updateMessage(message.id, $index)">Update Message</button><br>
+            <textarea class="form-control" ng-model="message.body" placeholder="Message" required></textarea>
+            <div class="pull-right edit-message-buttons">
+              <button type="button" class="btn btn-default" ng-click="cancelUpdateMessage($index)">Cancel</button>
+              <button type="submit" class="btn btn-success" ng-click="updateMessage(message.id, $index)">Update Message</button>
+            </div>
           </div>
           <ul class="list-group comments">
             <li ng-repeat="comment in message.comments" class="list-group-item comment">
               <i ng-show="user.id==comment.user_id" ng-click="deleteComment(comment.id, message.id, $index, $parent.$index)" class="pull-right ion-close-round comment-delete"></i>
               <h4 class="comment-body">
-                <small>{{comment.author}} - {{format(comment.date)}}</small>
+                <small>{{comment.author}} - {{formatDate(comment.date)}}</small>
               </h4>
               {{comment.body}}
             </li>
