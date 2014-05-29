@@ -9,26 +9,67 @@ angular.module('main.calendar').controller('CalendarCtrl',
 
     //get request didn't return yet   
     $scope.loaded = false;
+
+    //global variables
     $scope.chores = [];
     $scope.chores_uncompleted = [];
     $scope.chores_completed = [];
 
+    $scope.userId = {};
+    $scope.userFirstName = {};
+    $scope.userLastName = {};
+
     //variable for events
     $scope.events = [];
+
+    //calendar variable for events
+    //$scope.eventSources = [];
+
+    $scope.associativeArray = {};
+
+    /* config object */
+    $scope.uiConfig = {
+      calendar:{
+        height: 450,
+        editable: true,
+        header:{
+          left: 'title',
+          center: '',
+          right: 'today prev,next'
+        },
+        eventClick: $scope.alertOnEventClick
+        // eventDrop: $scope.alertOnDrop,
+        // eventResize: $scope.alertOnResize
+      }
+    };
 
   	$http.get('/calendar').
     success(function(data) {
     $scope.title = data.title;
       
     }).
-    error(function(data, status, headers, config){
+    error(function(data){
         showErr(data.error);
+    });
+
+    //get current user ID and name
+    $http.get('/user').
+    success(function(data) {
+        $scope.currUser = data;
+        $scope.userId = data.id;
+        $scope.userFirstName = data.first_name;
+        $scope.userLastName = data.last_name;
+        console.log("hello");
+        console.log($scope.userId);
+    }).
+    error(function(error){
+        console.log(error);
     });
 
 
     $http.get('/chores')
     .success(function(data) {
-        console.log("hello");
+        
         console.log(data);
         for (var x = 0; x < $scope.chores.length; x++) {
             for (var i = 0; i < $scope.chores[x].users[i].length; i++) {
@@ -56,7 +97,7 @@ angular.module('main.calendar').controller('CalendarCtrl',
         $scope.events.push(chore_to_event($scope.chores[x]));
 
         }
-
+        
         $scope.loaded = true;
     })
     .error(function(error) {
@@ -177,21 +218,7 @@ angular.module('main.calendar').controller('CalendarCtrl',
     // $scope.renderCalender = function(calendar) {
     //   calendar.fullCalendar('render');
     // };
-    /* config object */
-    $scope.uiConfig = {
-      calendar:{
-        height: 450,
-        editable: true,
-        header:{
-          left: 'title',
-          center: '',
-          right: 'today prev,next'
-        },
-        eventClick: $scope.alertOnEventClick
-        // eventDrop: $scope.alertOnDrop,
-        // eventResize: $scope.alertOnResize
-      }
-    };
+
 
     //with this you can handle the events that generated when we change the view i.e. Month, Week and Day
     $scope.changeView = function(view,calendar) {
@@ -216,7 +243,26 @@ angular.module('main.calendar').controller('CalendarCtrl',
     /* event sources array*/
     // $scope.eventSources = [$scope.events, $scope.eventSource, $scope.eventsF];
     // $scope.eventSources2 = [$scope.calEventsExt, $scope.eventsF, $scope.events];
+    
     $scope.eventSources = [$scope.events];
+
+    function arrayObjectIndexOf(myArray, searchTerm, property) {
+        for(var i = 0, len = myArray.length; i < len; i++) 
+        {
+            console.log(myArray);
+            if (myArray[i][property] === searchTerm) 
+                {
+                    return i;
+                }
+        }
+        
+        return -1;
+    }
+
+    function chore_to_responsible_list(chore)
+    {
+
+    }
 
     function chore_to_event(chore)
     {
@@ -225,13 +271,39 @@ angular.module('main.calendar').controller('CalendarCtrl',
         var d = date.getDate();
         var m = date.getMonth();
         var y = date.getFullYear();
-        a_event.title = 'You are responsible for the chore "' + chore.name + '" by today!';
-        a_event.start = new Date(y, m, d, 6, 0);
-        a_event.end = new Date(y, m, d, 24, 0);
-        a_event.allDay = false;
-        a_event.editable = false;
-        return a_event;
+
+        if( !(chore.duedate in $scope.associativeArray)
+        {
+            $scope.associativeArray[chore.duedate] = 6;
+        }
+        else
+        {
+            $scope.associativeArray[chore.duedate] = $scope.associativeArray[chore.duedate] + 2;
+        }
+
+        if(arrayObjectIndexOf(chore.users, $scope.userId, "user_id") === -1)
+        {
+            console.log("a");
+            a_event.title = 'You are responsible for the chore "' + chore.name + '" by today!';
+            a_event.start = new Date(y, m, d, 6, 0);
+            a_event.end = new Date(y, m, d, 24, 0);
+            a_event.allDay = false;
+            a_event.editable = false;
+            a_event.color = 'IndianRed';
+            return a_event;
+        }
+        else
+        {
+            console.log("b");
+            a_event.title = 'You roommates responsible for the chore "' + chore.name + '" by this day!';
+            a_event.start = new Date(y, m, d, 6, 0);
+            a_event.end = new Date(y, m, d, 24, 0);
+            a_event.allDay = false;
+            a_event.editable = false;
+            return a_event;
+        }
     }
 	
+
 	});
 
