@@ -2,7 +2,12 @@
 
 'use strict';
 
-var app = require('../../app');
+var Bookshelf = require('bookshelf');
+Bookshelf.DB = Bookshelf.initialize({
+  client: 'pg',
+  connection: {}
+});
+
 var chai = require('chai');
 var bills = require('../../routes/bills');
 var sinon = require('sinon');
@@ -91,6 +96,7 @@ describe('Bills', function() {
         });
 
     it('returns a list of bills and their payments', function() {
+
       var fetchBillsStub =  sinon.stub(bills, 'fetchBills', 
         function(apartmentId, resolved, thenFun, otherwiseFun) {
           thenFun([ {total: '5', user_id: 3, billPaid: false, userPaid: false,
@@ -101,9 +107,9 @@ describe('Bills', function() {
 
       var req = {query: {type: 'resolved'}, user: {attributes: {apartment_id: 1}}};
       resMock.expects('json').once().withArgs(
-        {bills: [{id: 43, name: 'Test Bill',  amount: '5', 
+        {bills: [{id: 43, name: 'Test Bill',  amount: '5',
           createDate: '5/20/2014', dueDate: '5/29/2014', frequency: 0,
-          resolved: false, creatorId: 3, payTo: 'Jordan', 
+          resolved: false, creatorId: 3, payTo: 'Jordan',
           payments: [{userId: 3, name: 'Jordan', amount: '5', paid: false}]}]});
 
       bills.getBills(req, res);
@@ -465,6 +471,18 @@ describe('Bills', function() {
       fetchBillStub.restore();
       updatePaymentHistoryStub.restore();
       saveBillStub.restore();
+    });
+
+    it('should return 503 if fails to fetch payment', function() {
+      var fetchPaymentStub = failDoubleStub('fetchPayment');
+
+      var req1 = {user: {attributes: {apartment_id: 2, id: 1}}, 
+        body: {paid: 'true'}, params: {bill: 1}};
+
+      resMock.expects('json').once().withArgs(503, {error: 'Database error.'});
+
+      bills.updatePayment(req1, res);
+      fetchPaymentStub.restore();
     });
 
   });

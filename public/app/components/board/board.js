@@ -7,6 +7,7 @@ angular.module('main.board').controller('BoardCtrl',
   function ($scope, $http, $timeout) {
 
     $scope.newMessage = {subject: '', body: ''};
+    $scope.oldMessageBody = '';
 
     //get request didn't return yet
     $scope.loaded = false;
@@ -68,6 +69,16 @@ angular.module('main.board').controller('BoardCtrl',
 
     };
 
+    $scope.cancelUpdateMessage = function(index) {
+      $scope.messages[index].body = $scope.oldMessageBody;
+      $scope.messages[index].edit = false;
+    };
+
+    $scope.setOldMessageBody = function(index) {
+      $scope.oldMessageBody = $scope.messages[index].body;
+      $scope.messages[index].edit = true;
+    };
+
     //get previous comments: TODO
     $scope.getPrevious = function(){
 
@@ -107,9 +118,6 @@ angular.module('main.board').controller('BoardCtrl',
     	$scope.newMessage = {};
     };
 
-    $scope.postButton = function(){
-      return (($scope.newMessage.subject  == '') || ($scope.newMessage.body == '')) ? false : true;
-    };
 
     $scope.format = function(date){
       return moment(date).fromNow();

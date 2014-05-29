@@ -7,14 +7,14 @@ describe('chores module', function() {
   //fake users
     var users = {users: [
     {
-      'id': 6, 
-      'first_name': 'alice', 
-      'last_name': 'dole'
-    },
-    {
       'id': 3, 
       'first_name': 'Dennis', 
       'last_name': 'Ding'
+    },
+    {
+      'id': 6, 
+      'first_name': 'alice', 
+      'last_name': 'dole'
     },
     {
       'id': 5,
@@ -25,9 +25,9 @@ describe('chores module', function() {
 
     //fake user
     var user = {
-      'id': 6, 
-      'first_name': "alice", 
-      'last_name': "dole"
+      'id': 3, 
+      'first_name': "Dennis", 
+      'last_name': "Ding"
     };
 
   //fake chores
@@ -71,13 +71,14 @@ describe('chores module', function() {
 
   var new_chore = {
       apartment_id: 2,
-      duedate: "2014-05-24",
+      duedate: "2014-06-31",
       interval: 0,
       name: "vacuum",
       number_in_rotation: 1,
-      roommates: [3],
       rotating: false,
-      userId: 3
+      completed: false,
+      userId: 3,
+      roommates:[3]
   };
 
   var editChoreResponse = {};
@@ -89,7 +90,7 @@ describe('chores module', function() {
     duedate: "2014-05-24T07:00:00.000Z",
     id: 80,
     interval: 0,
-    name: "dishes",
+    name: "vacuum",
     number_in_rotation: 1,
     reocurring_id: 0,
     rotating: false,
@@ -178,34 +179,63 @@ describe('chores module', function() {
 
     describe('get user', function() {   
       it('should have correct id', function() {
-        expect(scope.userId).to.equal(6);
+        console.log(scope.userId);
+        expect(scope.userId).to.equal(3);
       });
       it('should have correct first name', function() {
-        expect(scope.userFirstName).to.equal('alice');
+        expect(scope.userFirstName).to.equal('Dennis');
       });
       it('should have correct last name', function() {
-        expect(scope.userLastName).to.equal('dole');
+        expect(scope.userLastName).to.equal('Ding');
       });
     });
 
 
-    // describe('get', function() { 
-    //   it('should fetch all chores',function() {
-    //   httpMock.expectGET('/chores').respond(chores);
-    //   httpMock.flush();
-    //   expect(scope.chores.length).to.equal(2);
-    //   });
-    // });
+    describe('get chores', function() { 
+      it('should fetch all uncompleted chores',function() {
+      expect(scope.chores_uncompleted.length).to.equal(1);
+      });
+    });
 
+    describe('get chores', function() { 
+        it('should fetch all completed chores',function() {
+        expect(scope.chores.length).to.equal(1);
+        });
+    });
+    //end http tests
+
+    describe('add', function() {
+        beforeEach(function() {
+            httpMock.expectPOST('/chores', new_chore).respond(addChoreResponse);
+            scope.chore = new_chore;
+            scope.responsibleList.push(users.users[0]);
+            scope.addChore();
+            httpMock.flush();    
+        });
+
+        it('responsibleList should be length 1', function() {
+            expect(scope.responsibleList.length).to.equal(1);
+        });
+
+        it('should display success',function() {
+                expect(scope.success).to.equal(true);
+            });
+        it('should display success message',function() {
+                expect(scope.successmsg).to.equal('Chore vacuum successfully added!');
+            });
+        it('should increase the uncompleted chores by 1', function() {
+                expect(scope.chores_uncompleted.length).to.equal(2);
+              });
+
+        it('should have the same name', function(){
+                expect(scope.chores_uncompleted[1].name).to.equal('vacuum');
+        }); 
+
+    });
     it('should exist', function() {
       expect(ctrl).not.to.equal(null);
     });
 
-    it('gets the title from the api and assigns it to scope', function() {
-      //httpMock.expectGET('/chores');
-      //httpMock.flush();
-      //expect(scope.title).to.equal('chores title');
     });
-  });
   });
 });

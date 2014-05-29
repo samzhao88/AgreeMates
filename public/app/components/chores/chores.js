@@ -82,6 +82,7 @@ function ($scope, $http, $timeout) {
     var alertLength = 4000;
 
     $scope.gindex = 0;
+
     //dynamic update for weekly one-time UI
     $scope.modal_message = {starts: "Start", due: "Due"};
     $scope.modal_msg = $scope.modal_message.due;
@@ -103,11 +104,14 @@ function ($scope, $http, $timeout) {
 
 
     function setModal(interval) {
-    if (interval == 0) {
-      $scope.modal_msg = $scope.modal_message.due;
-    } else {
-      $scope.modal_msg = $scope.modal_message.starts;
-    }
+    if (interval == 0) 
+    {
+        $scope.modal_msg = $scope.modal_message.due;
+    } 
+    else 
+        {
+        $scope.modal_msg = $scope.modal_message.starts;
+        }
     }
 
     //get current user ID and name
@@ -119,14 +123,12 @@ function ($scope, $http, $timeout) {
         $scope.userLastName = data.last_name;
     }).
     error(function(data, status, headers, config){
-        console.log(data);
+        //console.log(data);
     });
 
     $http.get('/chores')
     .success(function(data) {
 
-      console.log(data);
-        
         for (var x = 0; x < $scope.chores.length; x++) {
             for (var i = 0; i < $scope.chores[x].users[i].length; i++) {
             $scope.chores[x].users[i].user_id = $scope.chores[x].users[i].id;
@@ -144,7 +146,7 @@ function ($scope, $http, $timeout) {
         }
         $scope.chores = $scope.chores_uncompleted;
         $scope.table = 'unresolved';
-        console.log($scope.chores);
+        
         $scope.loaded = true;
     })
     .error(function(error) {
@@ -161,10 +163,11 @@ function ($scope, $http, $timeout) {
     $http.get('/apartment')
     .success(function(data) {
         $scope.apartment = data;
-        console.log($scope.apartment);
+        
     }).error(function(){});
 
   $scope.addChore = function() {
+    console.log($scope.chore);
     var chore = angular.copy($scope.chore);
     chore.roommates = [];
     chore.interval = parseInt(chore.interval);
@@ -175,7 +178,7 @@ function ($scope, $http, $timeout) {
     }
     chore.apartment_id = $scope.apartment.id;
     chore.userId = $scope.userId;
-    console.log(chore.rotating);
+    //console.log(chore.rotating);
 
     var any = {name: '', id: 0};
     //var at_least_one_user = 0;
@@ -190,7 +193,7 @@ function ($scope, $http, $timeout) {
     if (!chore.duedate) {
       showErr("Please select a valid date.");
     } else {
-        console.log(at_least_one_user());
+        //console.log(at_least_one_user());
         if (!at_least_one_user()) {
         showErr("Please select at least one roommate.");
         } 
@@ -201,13 +204,13 @@ function ($scope, $http, $timeout) {
             any.id = $scope.responsibleList[i].id;
             chore.roommates.push(any.id);
             }
-            //console.log(chore);
+            console.log("hello");
             $http.post('/chores', chore)
             .success(function(data) {
             chore = data.chore;
             chore.users = [];
             chore.users = data.users;
-            console.log(data);
+            //console.log(data);
             $scope.chores_uncompleted.push(chore);
 
             showSucc("Chore "+chore.name+" successfully added!");
@@ -301,8 +304,8 @@ function ($scope, $http, $timeout) {
     //    chore.users[i].user_id = chore.users[i].id;
     //}
 
-    console.log(chore.users);
-    console.log(temp);
+    // console.log(chore.users);
+    // console.log(temp);
 
     //set the menu list
     for (var i = 0; i < chore.users.length; i++) {
@@ -359,7 +362,14 @@ function ($scope, $http, $timeout) {
     if (freq == 0) {
       return "One Time";
     } else {
-      return "Weekly";
+        if( freq == 1)
+        {
+            return "Daily";
+        }
+        else
+        {
+        return "Weekly";
+        }
     }
   };
 
@@ -486,8 +496,5 @@ function ($scope, $http, $timeout) {
       }
     };
 
-
 });
-
-
 

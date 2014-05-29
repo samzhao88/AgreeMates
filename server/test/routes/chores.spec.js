@@ -2,7 +2,12 @@
 
 'user strict';
 
-require('../../app');
+var Bookshelf = require('bookshelf');
+Bookshelf.DB = Bookshelf.initialize({
+  client: 'pg',
+  connection: {}
+});
+
 var chai = require('chai');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
@@ -51,9 +56,9 @@ var failTripleStub = function(functionName, parameters){
 }
 describe('Chores', function(){
 	describe('checkLogin', function(){
-	
+
 	var res, resMock;
-	
+
 	beforeEach(function(){
 		res = {json: function(){}};
 		resMock = sinon.mock(res);
@@ -80,7 +85,7 @@ describe('Chores', function(){
 		afterEach(function(){
 			resMock.verify();
 		});
-	
+
 		it('fetches the chores', function(){
 			var fetchChoresStub = emptyStub('fetchChores');
 			var req1 = {user: {attributes:{apartment_id: 1}}};
@@ -88,7 +93,7 @@ describe('Chores', function(){
 			expect(fetchChoresStub).to.have.been.calledWith(1);
 			fetchChoresStub.restore();
 		});
-		
+
 		it('should fail with 503 Database error', function(){
 			var fetchChoresStub = failingStub('fetchChores', null);
 			var req1 = {user: {attributes:{apartment_id: 1}}};
@@ -97,7 +102,7 @@ describe('Chores', function(){
 			expect(fetchChoresStub).to.have.been.calledWith(1);
 			fetchChoresStub.restore();
 		});
-		
+
 		it('should return empty json if rows in empty', function(){
 			var fetchChoresStub = succeedingStub('fetchChores', []);
 			var req1 = {user: {attributes:{apartment_id: 1}}};
@@ -106,7 +111,7 @@ describe('Chores', function(){
 			expect(fetchChoresStub).to.have.been.calledWith(1);
 			fetchChoresStub.restore();
 		});
-		
+
 		it('should return a chore with a users field', function(){
 			var fetchChoresStub = succeedingStub('fetchChores', [{chore_id: 1,
 																name: 'test',
@@ -140,7 +145,7 @@ describe('Chores', function(){
 			expect(fetchChoresStub).to.have.been.calledWith(1);
 			fetchChoresStub.restore();
 		});
-		
+
 		it('should merge users assigned to a chore together and return a chore with users field', function(){
 			var fetchChoresStub = succeedingStub('fetchChores', [{chore_id: 1,
 																name: 'test',
@@ -193,7 +198,7 @@ describe('Chores', function(){
 			expect(fetchChoresStub).to.have.been.calledWith(1);
 			fetchChoresStub.restore();
 		});
-		
+
 		it('should not merge chores with different ids together', function(){
 			var fetchChoresStub = succeedingStub('fetchChores', [{chore_id: 1,
 																name: 'test',
@@ -257,9 +262,9 @@ describe('Chores', function(){
 			fetchChoresStub.restore();
 		});
 	});
-	
+
 	describe('addChore', function() {
-	
+
 	var choreModel = {id: 3,
 					attributes:{
 					apartment_id: 1,
@@ -273,8 +278,8 @@ describe('Chores', function(){
 					},
 					get: function(name){
 						return 'dishes';
-					}};	
-					
+					}};
+
 	var res, resMock;
 
 	beforeEach(function(){
@@ -334,7 +339,7 @@ describe('Chores', function(){
 			chores.addChore(req1,res);
 			chores.addChore(req2, res);
 		});
-		
+
 		it('should return 503 if a database error occurs when creating the chore', function(){
 			var req1 = {user: {attributes: {apartment_id: 1}}, body: {name: 'test', interval: 0, duedate: '2020-05-08', roommates: [1],number_in_rotation: 1, rotating: true}};
 			createChoreStub = failTripleStub('createChore',null);
@@ -343,7 +348,7 @@ describe('Chores', function(){
 			expect(createChoreStub).to.have.been.calledWith();
 			createChoreStub.restore();
 		});
-		
+
 		it('should return 503 if there was a problem saving users to the chore', function(){
 			var req1 = {user: {attributes: {apartment_id: 1}}, body: {name: 'test', interval: 0, duedate: '2020-05-08', roommates: [1,2],number_in_rotation: 1, rotating: true}};
 			createChoreStub = succeedTripleStub('createChore',choreModel,[1]);
@@ -352,7 +357,7 @@ describe('Chores', function(){
 			expect(createChoreStub).to.have.been.calledWith();
 			createChoreStub.restore();
 		});
-		
+
 		it('should return 503 if there was a problem saving the history of adding the chore', function(){
 			var req1 = {user: {attributes: {apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}}, body: {name: 'test', interval: 0, duedate: '2020-05-08', roommates: [1,2],number_in_rotation: 1, rotating: true}};
 			createChoreStub = succeedTripleStub('createChore',choreModel,[1,2]);
@@ -364,7 +369,7 @@ describe('Chores', function(){
 			createChoreStub.restore();
 			addHistoryStub.restore();
 		});
-		
+
 		it('should return 200 with the chore details and users', function(){
 			var req1 = {user: {attributes: {apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}}, body: {name: 'test', interval: 0, duedate: '2020-05-08', roommates: [1,2],number_in_rotation: 1, rotating: true}};
 			createChoreStub = succeedTripleStub('createChore',choreModel,[1,2]);
@@ -379,7 +384,7 @@ describe('Chores', function(){
 	});
 
 	describe('editChore',function(){
-	
+
 	var res, resMock;
 	var newChore = {apartment_id: 1,
 					id: 3,
@@ -389,7 +394,7 @@ describe('Chores', function(){
 					number_in_rotation: 1,
 					rotating: true,
 					completed: false};
-								
+
 	var choreModel = {id: 3,
 					attribues:{
 					apartment_id: 1,
@@ -403,7 +408,7 @@ describe('Chores', function(){
 					},
 					get: function(name){
 						return 'dishes';
-					}};	
+					}};
 	beforeEach(function(){
 		res = {json: function(){}, send: function(){}};
 		resMock = sinon.mock(res);
@@ -472,7 +477,7 @@ describe('Chores', function(){
 			expect(patchChoreStub).to.have.been.calledWith();
 			patchChoreStub.restore();
 		});
-		
+
 		it('should return 503 if there is a database error when unassigning users to the chore', function(){
 			var req1 = {user:{attributes:{apartment_id: 1}}, body: {name: 'chore', interval: 0, duedate: '2020-05-08', roommates: [1], number_in_rotation: 1, rotating: true},params: {chore: 3}};
 			patchChoreStub = succeedingStub('patchChore', choreModel);
@@ -484,7 +489,7 @@ describe('Chores', function(){
 			patchChoreStub.restore();
 			unassignUsersStub.restore();
 		});
-		
+
 		it('should return 503 if there is a database error when assigning users to the chore', function(){
 			var req1 = {user:{attributes:{apartment_id: 1}}, body: {name: 'chore', interval: 0, duedate: '2020-05-08', roommates: [1], number_in_rotation: 1, rotating: true},params: {chore: 3}};
 			patchChoreStub = succeedingStub('patchChore', choreModel);
@@ -499,7 +504,7 @@ describe('Chores', function(){
 			unassignUsersStub.restore();
 			assignUsersStub.restore();
 		});
-		
+
 		it('should return 503 if there is a database error when recording history', function(){
 			var req1 = {user:{attributes:{apartment_id: 1}}, body: {name: 'chore', interval: 0, duedate: '2020-05-08', roommates: [1], number_in_rotation: 1, rotating: true},params: {chore: 3}};
 			patchChoreStub = succeedingStub('patchChore', choreModel);
@@ -517,7 +522,7 @@ describe('Chores', function(){
 			assignUsersStub.restore();
 			addHistoryStub.restore();
 		});
-		
+
 		it('should send 200 if the chore has been editted and history logged', function(){
 			var req1 = {user:{attributes:{apartment_id: 1}}, body: {name: 'chore', interval: 0, duedate: '2020-05-08', roommates: [1], number_in_rotation: 1, rotating: true},params: {chore: 3}};
 			patchChoreStub = succeedingStub('patchChore', choreModel);
@@ -536,10 +541,10 @@ describe('Chores', function(){
 			addHistoryStub.restore();
 		});
 	});
-	
+
 	describe('completeChore',function(){
 		var res, resMock;
-									
+
 		var choreModel = {id: 3,
 						attributes:{
 						apartment_id: 1,
@@ -570,7 +575,7 @@ describe('Chores', function(){
 								return 1;
 							}
 						}
-		};	
+		};
 		beforeEach(function(){
 			res = {json: function(){}, send: function(){}};
 			resMock = sinon.mock(res);
@@ -578,8 +583,8 @@ describe('Chores', function(){
 
 		afterEach(function(){
 			resMock.verify();
-		});		
-	
+		});
+
 		it('should return 400 if the chore id is invalid', function(){
 			var req1 = {body: {apartment_id: 1, id: -3, user_id: 10}};
 			var req2 = {body: {apartment_id: 1, id: 2.5, user_id: 10}};
@@ -587,7 +592,7 @@ describe('Chores', function(){
 			chores.completeChore(req1,res);
 			chores.completeChore(req2,res);
 		});
-		
+
 		it('should return 503 if database error in fetching the chore', function(){
 			var req1 = {body: {apartment_id: 1, id: 2, user_id: 10}};
 			fetchChoreStub = failDoubleStub('fetchChore', null);
@@ -596,7 +601,7 @@ describe('Chores', function(){
 			expect(fetchChoreStub).to.have.been.calledWith(1,2);
 			fetchChoreStub.restore();
 		});
-		
+
 		it('should return 400 if the chore is already complete', function(){
 			var req1 = {body: {apartment_id: 1, id: 2, user_id: 10}};
 			var chore = {
@@ -614,7 +619,7 @@ describe('Chores', function(){
 			expect(fetchChoreStub).to.have.been.calledWith(1,2);
 			fetchChoreStub.restore();
 		});
-		
+
 		it('should return 503 if there is an error marking the chore complete', function(){
 			var req1 = {body: {apartment_id: 1, id: 2, user_id: 10}};
 			var chore = {
@@ -639,7 +644,7 @@ describe('Chores', function(){
 			fetchChoreStub.restore();
 			markChoreCompleteStub.restore();
 		});
-		
+
 		it('should return 503 if there is an error creating history when marking chore complete of one shot', function(){
 			var req1 = {user: {attributes:{apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}},body: {apartment_id: 1, id: 2, user_id: 10}};
 			var chore = {id: 3,
@@ -677,7 +682,7 @@ describe('Chores', function(){
 			markChoreCompleteStub.restore();
 			addHistoryStub.restore();
 		});
-		
+
 		it('should return 200 if the chore complete of one shot is successful', function(){
 			var req1 = {user: {attributes:{apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}},body: {apartment_id: 1, id: 2, user_id: 10}};
 			var chore = {
@@ -705,7 +710,7 @@ describe('Chores', function(){
 			markChoreCompleteStub.restore();
 			addHistoryStub.restore();
 		});
-		
+
 		it('should return 503 if there is a database error when trying to complete a reoccuring chore', function(){
 			var req1 = {user: {attributes:{apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}},body: {apartment_id: 1, id: 2, user_id: 10}};
 			fetchChoreStub = succeedDoubleStub('fetchChore', choreModel);
@@ -721,7 +726,7 @@ describe('Chores', function(){
 			addHistoryStub.restore();
 			fetchAssignedUsersStub.restore();
 		});
-		
+
 		it('should return 503 if there is a database error when trying to complete a reoccuring chore', function(){
 			var req1 = {user: {attributes:{apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}},body: {apartment_id: 1, id: 2, user_id: 10}};
 			var user_chore = [{
@@ -743,7 +748,7 @@ describe('Chores', function(){
 			fetchAssignedUsersStub.restore();
 			createChoreStub.restore();
 		});
-		
+
 		//Need to add
 		it('should return 503 if there is a database error when trying to create the next instance of a reoccurring chore', function(){
 			var req1 = {user: {attributes:{apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}},body: {apartment_id: 1, id: 2, user_id: 10}};
@@ -766,7 +771,7 @@ describe('Chores', function(){
 			fetchAssignedUsersStub.restore();
 			createChoreStub.restore();
 		});
-		
+
 		it('should return 503 if there is a database error when trying to create the history of marking chore complete', function(){
 			var req1 = {user: {attributes:{apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}},body: {apartment_id: 1, id: 2, user_id: 10}};
 			var user_chore = [{
@@ -791,7 +796,7 @@ describe('Chores', function(){
 			createChoreStub.restore();
 			addHistoryStub.restore();
 		});
-		
+
 		it('should return 200 and the new instance of the chore if marking chore complete and making the history were successful', function(){
 			var req1 = {user: {attributes:{apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}},body: {apartment_id: 1, id: 2, user_id: 10}};
 			var user_chore = [{
@@ -817,7 +822,7 @@ describe('Chores', function(){
 			addHistoryStub.restore();
 		});
 	});
-	
+
 	describe('deleteChore', function(){
 		var res, resMock;
 
@@ -829,7 +834,7 @@ describe('Chores', function(){
 		afterEach(function(){
 			resMock.verify();
 		});
-	
+
 		it('should return 400 if chore id is invalid', function(){
 			var req1 = {user: {attributes: {apartment_id: 1}}, params:{chore: -1}};
 			var req2 = {user: {attributes: {apartment_id: 1}}, params:{chore: undefined}};
@@ -837,7 +842,7 @@ describe('Chores', function(){
 			chores.deleteChore(req1,res);
 			chores.deleteChore(req2,res);
 		});
-		
+
 		it('should return 503 if database error in fetching chore', function(){
 			var req1 = {user: {attributes: {apartment_id: 1}}, params:{chore: 4}};
 			fetchChoreStub = failDoubleStub('fetchChore', null);
@@ -846,9 +851,9 @@ describe('Chores', function(){
 			expect(fetchChoreStub).to.have.been.calledWith(1);
 			fetchChoreStub.restore();
 		});
-		
-		
-		
+
+
+
 		it('should return 503 if database error when unassigning ', function(){
 			var req1 = {user: {attributes: {apartment_id: 1}}, params:{chore: 4}};
 			fetchChoreStub = succeedDoubleStub('fetchChore', 4);
@@ -860,7 +865,7 @@ describe('Chores', function(){
 			fetchChoreStub.restore();
 			unassignUsersStub.restore();
 		});
-		
+
 		it('should return 503 if database error when removing the chore model itself', function(){
 			var req1 = {user: {attributes: {apartment_id: 1}}, params:{chore: 4}};
 			fetchChoreStub = succeedDoubleStub('fetchChore', null);
@@ -875,7 +880,7 @@ describe('Chores', function(){
 			unassignUsersStub.restore();
 			removeChoreStub.restore();
 		});
-		
+
 		it('should return 200 if chore is removed and history recorded properly', function(){
 			var req1 = {user: {attributes: {first_name: 'Greg', last_name: 'Knickels',apartment_id: 1}}, params:{chore: 4}};
 			var choreModel = {get: function(name){
@@ -896,7 +901,7 @@ describe('Chores', function(){
 			removeChoreStub.restore();
 			addHistoryStub.restore();
 		});
-		
+
 		it('should return 200 if chore is removed and history recorded properly', function(){
 			var req1 = {user: {attributes: {first_name: 'Greg', last_name: 'Knickels',apartment_id: 1}}, params:{chore: 4}};
 			var choreModel = {get: function(name){

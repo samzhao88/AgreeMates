@@ -40,13 +40,13 @@ describe('Main', function() {
 
     it('should use a placeholder image if google_id is defined', function() {
       var req = {user: {attributes: {apartment_id: 1, facebook_id: null, google_id: 1, first_name: 'first'}}};
-      resMock.expects('render').once().withArgs('index', {firstname: 'first', profile_pic: 'http://placehold.it/300x300'});
+      resMock.expects('render').once().withArgs('index', {firstname: 'first', profile_pic: 'img/default.png'});
       main.getIndex(req, res);
     });
 
     it('should use a placeholder image if neither facbook_id nor google_id is defined', function() {
       var req = {user: {attributes: {apartment_id: 1, facebook_id: null, google_id: null, first_name: 'first'}}};
-      resMock.expects('render').once().withArgs('index', {firstname: 'first', profile_pic: 'http://placehold.it/300x300'});
+      resMock.expects('render').once().withArgs('index', {firstname: 'first', profile_pic: 'img/default.png'});
       main.getIndex(req, res);
     });
 

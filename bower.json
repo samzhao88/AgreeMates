@@ -12,6 +12,10 @@
     "momentjs": "~2.6.0",
     "angular-ui-sortable": "~0.12.6",
     "jquery-ui": "~1.10.4",
-    "jqueryui-touch-punch": "*"
+    "jqueryui-touch-punch": "*",
+    "angular-ui-calendar": "~0.8.1"
+  },
+  "resolutions": {
+    "jquery": "~2.x"
   }
 }
