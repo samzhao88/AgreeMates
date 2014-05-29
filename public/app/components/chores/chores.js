@@ -167,7 +167,7 @@ function ($scope, $http, $timeout) {
     }).error(function(){});
 
   $scope.addChore = function() {
-    console.log($scope.chore);
+    
     var chore = angular.copy($scope.chore);
     chore.roommates = [];
     chore.interval = parseInt(chore.interval);
@@ -178,10 +178,8 @@ function ($scope, $http, $timeout) {
     }
     chore.apartment_id = $scope.apartment.id;
     chore.userId = $scope.userId;
-    //console.log(chore.rotating);
 
     var any = {name: '', id: 0};
-    //var at_least_one_user = 0;
 
     // checks to see that at lesat one user is checked
     if ($scope.chore.name == '' || !$scope.chore.name)
@@ -193,7 +191,7 @@ function ($scope, $http, $timeout) {
     if (!chore.duedate) {
       showErr("Please select a valid date.");
     } else {
-        //console.log(at_least_one_user());
+        
         if (!at_least_one_user()) {
         showErr("Please select at least one roommate.");
         } 
@@ -204,7 +202,7 @@ function ($scope, $http, $timeout) {
             any.id = $scope.responsibleList[i].id;
             chore.roommates.push(any.id);
             }
-            console.log("hello");
+            
             $http.post('/chores', chore)
             .success(function(data) {
             chore = data.chore;
@@ -299,14 +297,6 @@ function ($scope, $http, $timeout) {
     var temp = $scope.menuList;
     var temp2 = angular.copy($scope.menuList);
 
-    //for(var i = 0; i < chore.users.length; i++)
-    //{
-    //    chore.users[i].user_id = chore.users[i].id;
-    //}
-
-    // console.log(chore.users);
-    // console.log(temp);
-
     //set the menu list
     for (var i = 0; i < chore.users.length; i++) {
         temp = temp.filter(function(user){
@@ -342,7 +332,7 @@ function ($scope, $http, $timeout) {
   }
 
   function at_least_one_user() {
-    console.log($scope.responsibleList);
+    //console.log($scope.responsibleList);
       if ($scope.responsibleList.length == 0) 
       {
         return false;

@@ -86,11 +86,13 @@ describe('chores module', function() {
       duedate: "2014-07-15",
       interval: 7,
       name: "vacuum",
-      number_in_rotation: 2,
+      number_in_rotation: 1,
+      rotation_number: 1, 
       rotating: true,
       completed: false,
       userId: 3,
-      roommates:[3, 5]
+      roommates:[3, 5],
+      id: 80
   };
 
   var editChoreResponse = {};
@@ -166,7 +168,7 @@ describe('chores module', function() {
         return [200, addChoreResponse];
       });
 
-      httpMock.whenPUT('/chores/:chore', chores[0]).respond(function(method, url, data, headers) {
+      httpMock.whenPUT('/chores/:chore', edit_chore).respond(function(method, url, data, headers) {
         return [200, editChoreResponse];
       });
       httpMock.whenDELETE('/chores/:chore', 0).respond(function(method, url, data, headers) {
@@ -232,6 +234,7 @@ describe('chores module', function() {
         it('should display success',function() {
                 expect(scope.success).to.equal(true);
             });
+
         it('should display success message',function() {
                 expect(scope.successmsg).to.equal('Chore vacuum successfully added!');
             });
@@ -243,18 +246,28 @@ describe('chores module', function() {
                 expect(scope.chores_uncompleted[1].name).to.equal('vacuum');
         }); 
 
+        it('should have one user responsible', function(){
+                expect(scope.chores_uncompleted[1].users.length).to.equal(1);
+        });
+
+        it('should have no rotating', function(){
+                expect(scope.chores_uncompleted[1].rotating).to.equal(false);
+        });
     });
+    //end add tests
 
     describe('update', function() {
       beforeEach(function() {
-        httpMock.expectPUT('/chores/'+1, edit_chore).respond(editChoreResponse);
+        httpMock.expectPUT('/chores/'+80, edit_chore).respond(editChoreResponse);
         scope.chore = edit_chore;
+        scope.chores = scope.chores_uncompleted;
+
         scope.responsibleList = [];
         scope.responsibleList.push(users.users[0]);
         scope.responsibleList.push(users.users[1]);
-        scope.editChore();
+        scope.gindex = 1;
+        scope.editChore(1);
         httpMock.flush();
-        
       });
 
       it('should display success',function() {
@@ -263,6 +276,18 @@ describe('chores module', function() {
 
       it('should display success message',function() {
         expect(scope.successmsg).to.equal('Chore vacuum successfully edited!');
+      });
+
+      it('should update to rotating', function() {
+        expect(scope.chores[1].rotating).to.equal(true);
+      });
+
+      it('should update the interval', function() {
+        expect(scope.chores[1].interval).to.equal(7);
+      });
+
+      it('should update the number in rotation', function() {
+         expect(scope.chores[1].number_in_rotation).to.equal(1);
       });
 
     });
