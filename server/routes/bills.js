@@ -118,10 +118,14 @@ addBill: function(req, res) {
     res.json(401, {error: 'Unauthorized user.'});
     return;
   }
- 
+  var duedate = new Date(req.body.date);
+  duedate.setDate(duedate.getDate() + 1);
   // Check if the fields are acceptable
   if (!isValidName(req.body.name)) {
     res.json(400, {error: 'Invalid bill name.'});
+    return;
+  } else if (duedate < new Date()) {
+    res.json(400, {error: 'Invalid due date'});
     return;
   } else if (req.body.total === undefined || req.body.total < 0) {
     res.json(400, {error: 'Invalid bill total.'});
@@ -139,8 +143,8 @@ addBill: function(req, res) {
 
   var bill = Bills.createBill(req);
   var roommates = req.body.roommates;
-  bill.save() 
-    .then(function(model) {
+  Bills.saveBill(bill, 
+    function then (model) {
       var historyString = req.user.attributes.first_name + ' ' +
         req.user.attributes.last_name + ' added bill "' +
         bill.attributes.name.trim() + '"'; 
@@ -151,12 +155,15 @@ addBill: function(req, res) {
         }); 
 
       // add payment models for each of the payments for the bill    
-      Bills.savePayments(model.id, roommates, 
+      Bills.savePayments(model.attributes.id, roommates, 
         function otherwise(error) {
+          console.log(error);
           res.json(503, {error: 'Database error.'});
         });
       res.json({id: model.attributes.id});
-    }).otherwise(function(error) {
+    },
+    function otherwise(error) {
+      console.log(error);
       res.json(503, {error: 'Database error'});
     });
 },
@@ -194,6 +201,7 @@ updatePayment: function(req, res) {
           Bills.fetchPayments(billId, 
             function then(model) {
               if(allPaymentsPaid(model)) {
+                console.log('payments paid');
                 Bills.fetchBill(billId, apartmentId,
                   function then(bill) {
                     bill.attributes.paid = true;
@@ -270,6 +278,12 @@ editBill: function(req, res) {
   } else if (!isValidName(name)) {
     res.json(400, {error: 'Invalid bill name.'});
     return;
+  } else if (new Date(req.body.date) < new Date()) {
+    res.json(400, {error: 'Invalid due date'});
+    return;
+  } else if (req.body.total === undefined || req.body.total < 0) {
+    res.json(400, {error: 'Invalid bill total.'});
+    return;
   }
 
   // Destroy all the payments which are references to the billId
@@ -291,7 +305,7 @@ editBill: function(req, res) {
               Bills.saveHistory(historyString, apartmentId,
                 function otherwise(error) {
                   console.log(error);
-                  res.json(503, {error: error});
+                  res.json(503, {error: 'Database error'});
                 }); 
  
               // Add new payments for all the users who need to pay
@@ -299,7 +313,7 @@ editBill: function(req, res) {
                 function otherwise() {
                     res.json(503, {error: 'Database error'});
                 }); 
-              res.json({result: 'success'});
+              res.send(200);
             },
             function otherwise(error) {
               res.json(503, {error: 'Database error'});
@@ -337,7 +351,7 @@ deleteBill: function(req, res) {
       Bills.saveHistory(historyString, apartmentId,
         function otherwise(error) {
           console.log(error);
-          res.json(503, {error: error});
+          res.json(503, {error: 'Database error.'});
         });
 
       // Destroy all the payments for a bill and then destroy
@@ -401,7 +415,7 @@ fetchPayment: function(billId, userId, thenFun, otherFun) {
     .otherwise(otherFun);
 },
 
-// Creates a bill model from a post request
+// Create a bill model from a post request
 createBill: function(req) {
   var name = req.body.name;
   var amount = req.body.total;
@@ -619,7 +633,7 @@ function createDueDate(date) {
 
 // Checks if an array of payment models are all paid
 function allPaymentsPaid(payments) {
-  for (var i = 0; i < payments.length; i++) {
+  for (var i = 0; i < payments.models.length; i++) {
     var payment = payments.models[i].attributes;
     if (payment.paid !== true) {
       return false;
