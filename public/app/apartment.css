@@ -14,6 +14,14 @@ a:hover {
   text-decoration: none;
 }
 
+.front-logo {
+  padding-top: 50px;
+  width: 90%;
+  max-width: 400px;
+  display: block;
+  margin: 0 auto;
+}
+
 #apartment-title {
   font-weight: 700;
   font-size: 52px;
