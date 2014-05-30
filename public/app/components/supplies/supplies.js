@@ -37,6 +37,7 @@ angular.module('main.supplies').controller('SuppliesCtrl',
       .success(function(data) {
         $scope.supplies = data.supplies;
         $scope.loaded = true;
+        $('.hide').removeClass('hide');
       })
       .error(function(data) {
         showErr(data.error);

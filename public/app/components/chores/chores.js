@@ -87,6 +87,7 @@ angular.module('main.chores').controller('ChoresCtrl',
         $scope.table = 'unresolved';
 
         $scope.loaded = true;
+        $('.hide').removeClass('hide');
       })
       .error(function(error) {
         $scope.chores = $scope.chores_uncompleted;

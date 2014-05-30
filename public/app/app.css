@@ -22,7 +22,7 @@ button:focus {
   margin-right: 15px;
 }
 
-#bill-table {
+#bill-table, #chores-table {
   margin-top: 20px;
 }
 
@@ -226,16 +226,16 @@ html, body {
   font-weight: normal;
 }
 
-#supply-add-button, #chores-add-button, #message-add-button {
+#supply-add-button, #message-add-button {
   float: right;
   margin-bottom: 20px;
 }
 
-#empty-bills-alert {
+#empty-bills-alert, #chores-empty-alert {
   margin-top: 20px;
 }
 
-#chores-empty-alert, #supplies-empty-alert {
+#supplies-empty-alert {
   margin-top: -20px;
 }
 
@@ -350,7 +350,7 @@ html, body {
   templates compile.  The !important is important given that there may be
   other selectors that are more specific or come later and might alter display.
  */
-[ng\:cloak], [ng-cloak], .ng-cloak ng-cloak {
+[ng\:cloak], [ng-cloak], .ng-cloak ng-cloak .ng-hide ng-hide {
   display: none !important;
 }
 
