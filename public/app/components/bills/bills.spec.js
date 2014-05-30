@@ -157,6 +157,12 @@ describe('bills module', function() {
 				expect(scope.roommates[0].id).to.equal(user.id);
 				expect(scope.roommates[0].first_name).to.equal(user.first_name);
 				expect(scope.roommates[0].last_name).to.equal(user.last_name);
+				expect(scope.roommates[1].id).to.equal(users.users[1].id);
+				expect(scope.roommates[1].first_name).to.equal(users.users[1].first_name);
+				expect(scope.roommates[1].last_name).to.equal(users.users[1].last_name);
+				expect(scope.roommates[2].id).to.equal(users.users[2].id);
+				expect(scope.roommates[2].first_name).to.equal(users.users[2].first_name);
+				expect(scope.roommates[2].last_name).to.equal(users.users[2].last_name);
 			});
 			it('should have correct length', function() {
 				expect(scope.roommates.length).to.equal(3);
@@ -170,7 +176,7 @@ describe('bills module', function() {
 			  expect(scope.resolvedBills[1].id).to.equal(resolvedBills.bills[1].id);
 			});
 			
-			it('should checkboxes set', function() {
+			it('should have checkboxes set', function() {
         console.log(scope.checkboxes);
         //expect(scope.checkboxes.length).to.equal(2);
 			});
@@ -188,6 +194,12 @@ describe('bills module', function() {
 			  expect(scope.bills[0].id).to.equal(unresolvedBills.bills[0].id);
 			  expect(scope.bills[1].id).to.equal(unresolvedBills.bills[1].id);
 			});
+			
+			it('should have checkboxes set', function() {
+        console.log(scope.checkboxes);
+        //expect(scope.checkboxes.length).to.equal(2);
+			});
+
 		});
 	
 		describe('update balances', function() {
