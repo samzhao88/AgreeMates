@@ -355,7 +355,7 @@ describe('Bills', function() {
     it('should fetch and save payment', function() {
       var fetchPaymentStub = succeedDoubleStub('fetchPayment',
         {attributes: {bill_id: 1, user_id: 1, paid: false}});
-      var savePaymentStub = succeedingStub('savePayment');
+      var savePaymentStub = emptyStub('savePayment');
       var req1 = {user: {attributes: {apartment_id: 2, id: 1}},
         body: {paid: 'true'}, params: {bill: 1}};
 
@@ -437,6 +437,7 @@ describe('Bills', function() {
         {attributes: {bill_id: 1, user_id: 1, paid: false}});
       var savePaymentStub = succeedingStub('savePayment');
       var updatePaymentHistoryStub = emptyStub('updatePaymentHistory');
+      var fetchPaymentsStub = emptyStub('fetchPayments');
 
       var req1 = {user: {attributes: {apartment_id: 2, id: 1}},
         body: {paid: 'true'}, params: {bill: 1}};
@@ -445,6 +446,8 @@ describe('Bills', function() {
 
       expect(updatePaymentHistoryStub).to.have.been
         .calledWith(req1, 1, 2, 'true');
+
+      fetchPaymentsStub.restore();
       fetchPaymentStub.restore();
       savePaymentStub.restore();
       updatePaymentHistoryStub.restore();
@@ -552,7 +555,6 @@ describe('Bills', function() {
 
       // Set date to be what should be called by editBill
       var date = new Date('2016-09-20');
-      date.setDate(20);
 
       expect(destroyPaymentsStub).to.have.been.calledWith(1);
       expect(fetchBillStub).to.have.been.calledWith(1, 5);
