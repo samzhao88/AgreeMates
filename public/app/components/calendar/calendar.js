@@ -97,7 +97,7 @@ angular.module('main.calendar').controller('CalendarCtrl',
         $scope.events.push(chore_to_event($scope.chores[x]));
 
         }
-        
+        $('#mycalendar').fullCalendar( 'rerenderEvents' );
         $scope.loaded = true;
     })
     .error(function(error) {
@@ -152,7 +152,7 @@ angular.module('main.calendar').controller('CalendarCtrl',
 
     $scope.alertOnMouseHover = function(event, jsEvent, view){
         event.backgroundColor = 'yellow';
-        $('#mycalendar').fullCalendar( 'rerenderEvents' );
+        
     };
 
     // $scope.calEventsExt = {
