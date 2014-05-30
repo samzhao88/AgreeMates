@@ -62,7 +62,7 @@
               <button type="submit" class="btn btn-success" ng-click="updateMessage(message.id, $index)">Update Message</button>
             </div>
           </div>
-          <ul class="list-group comments">
+          <ul class="list-group comments" ng-style="{'margin-top': message.comments.length !== 0 &amp;&amp; message.edit ? '58px' : '20px'}">
             <li ng-repeat="comment in message.comments" class="list-group-item comment">
               <i ng-show="user.id==comment.user_id" ng-click="deleteComment(comment.id, message.id, $index, $parent.$index)" class="pull-right ion-close-round comment-delete"></i>
               <h4 class="comment-body">
