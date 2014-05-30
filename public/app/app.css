@@ -350,7 +350,7 @@ html, body {
   templates compile.  The !important is important given that there may be
   other selectors that are more specific or come later and might alter display.
  */
-[ng\:cloak], [ng-cloak], .ng-cloak ng-cloak {
+[ng\:cloak], [ng-cloak], .ng-cloak ng-cloak .ng-hide ng-hide {
   display: none !important;
 }
 

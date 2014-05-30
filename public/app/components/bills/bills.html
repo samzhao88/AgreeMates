@@ -93,7 +93,7 @@
 		  <button type="button" class="btn btn-default" ng-click="setTable('resolved')" ng-class="{ 'active' : table === 'resolved' }">Resolved</button>
 		</div>
 	</div>
-	<table ng-hide="isUnresolvedEmptyAndSelected()" class="table table-striped table-hover clearfix text-center" id="bill-table">
+	<table ng-hide="isUnresolvedEmptyAndSelected()" class="table table-striped table-hover clearfix text-center hide" id="bill-table">
 		<!-- Table Header -->
 		<tr>
 			<th class="text-center">Bill</th>
@@ -210,8 +210,8 @@
 	</div>
 
 	<!-- Roommates balance table -->
-	<h3 ng-hide="table=='resolved' || emptyBillList()">Balance</h3>
-	<table ng-hide="table=='resolved' || emptyBillList()" class="table table-hover table-striped text-center">
+	<h3 class="hide" ng-hide="table=='resolved' || emptyBillList()">Balance</h3>
+	<table ng-hide="table=='resolved' || emptyBillList()" class="table table-hover table-striped text-center hide">
 		<tr>
 			<th class="text-center">Roommate</th>
 			<th class="text-center">They Owe</th>	
