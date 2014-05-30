@@ -78,13 +78,22 @@ module.exports = function(passport) {
 		process.nextTick(function() {
 
 			var name = profile.displayName.split(' ');
-
+			
 			if (!req.user) {
 				new UserModel({google_id: profile.id})
 					.fetch()
 					.then(function(user) {
 						if (user) {
-							return done(null, user);
+							new UserModel({google_id: profile.id, first_name: name[0], last_name: name[1]})
+											.save({google_picture: profile._json['picture'], email: profile.emails[0].value}, {patch: true})
+											.then(function(model){
+												new UserModel({google_id: profile.id, first_name: name[0]})
+												.fetch()
+												.then(function(userUpdate){
+													return done(null,userUpdate);
+												});
+											});
+							
 						} else {
 							new UserModel({
 								first_name: name[0],
@@ -100,7 +109,6 @@ module.exports = function(passport) {
 						}
 				});
 			} else {
-
 			}
 		});
 

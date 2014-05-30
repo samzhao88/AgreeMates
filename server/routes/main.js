@@ -20,7 +20,7 @@ function getIndex(req, res) {
       req.user.attributes.facebook_id +
       '/picture?height=300&width=300';
   } else if (req.user.attributes.google_id !== null) {
-    profile_pic = 'http://placehold.it/300x300';
+    profile_pic = req.user.attributes.google_picture;
   } else {
     profile_pic = 'http://placehold.it/300x300';
   }
