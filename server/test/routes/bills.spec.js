@@ -253,11 +253,14 @@ describe('Bills', function() {
 
     it('should return 400 if due date is before current date', function() {
       var req1 = {user: {attributes: {}},
-        body: {name: 'test', interval: 0, total: 1,  date: '2014-05-08'}};
+        body: {name: 'test', interval: 0, total: 1,  date: '2014-05-08',
+        roommates: []}};
       var req2 = {user: {attributes: {}},
-        body: {name: 'test', interval: 0, total: 1, date: '2013-05-08'}};
+        body: {name: 'test', interval: 0, total: 1, date: '2013-05-08',
+        roommates: []}};
       var req3 = {user: {attributes: {}},
-        body: {name: 'test', interval: 0, total: 1, date: '2013-06-08'}};
+        body: {name: 'test', interval: 0, total: 1, date: '2013-06-08',
+        roommates: []}};
       resMock.expects('json').thrice().withArgs(400,
         {error: 'Invalid due date'});
       bills.addBill(req1, res);
@@ -547,10 +550,14 @@ describe('Bills', function() {
 
       bills.editBill(req1, res);
 
+      // Set date to be what should be called by editBill
+      var date = new Date('2016-09-20');
+      date.setDate(20);
+
       expect(destroyPaymentsStub).to.have.been.calledWith(1);
       expect(fetchBillStub).to.have.been.calledWith(1, 5);
       expect(saveBillStub).to.have.been.calledWith({attributes:
-        {name: 'Bill', amount: 5, duedate: '2016-09-20', interval: 3}});
+        {name: 'Bill', amount: 5, duedate: date, interval: 3}});
 
       destroyPaymentsStub.restore();
       fetchBillStub.restore();
@@ -584,9 +591,11 @@ describe('Bills', function() {
     });
 
    it('should return 400 if bill total is undefined or negative', function() {
-      var req1 = {user: {attributes: {}}, body: {name: '1', total: undefined},
+      var req1 = {user: {attributes: {}}, body: {name: '1', total: undefined,
+        date: '2016-09-20'},
         params: {bill: 1}};
-      var req2 = {user: {attributes: {}}, body: {name: '1', total: -1},
+      var req2 = {user: {attributes: {}}, body: {name: '1', total: -1,
+        date: '2016-09-20'},
         params: {bill: 1}};
       resMock.expects('json').twice().withArgs(400,
         {error: 'Invalid bill total.'});

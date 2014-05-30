@@ -15,6 +15,17 @@ function isInt(value) {
   return !isNaN(value) && parseInt(value) == value;
 }
 
+//Checks that date is on or after current date.
+// Note this only works for yyyy-mm-dd format of date
+  function isValidDate(date){
+    var currentDate = new Date();
+    currentDate.setHours(0);
+    currentDate.setMinutes(0);
+    currentDate.setSeconds(0);
+    currentDate.setMilliseconds(0);
+    return date >= currentDate;
+  }
+
 // Checks if a bill ID is valid
 function isValidId(id) {
   return isInt(id) && id > 0;
@@ -192,9 +203,6 @@ var Bills = {
     if (!isValidName(req.body.name)) {
       res.json(400, {error: 'Invalid bill name.'});
       return;
-    } else if (duedate < new Date()) {
-      res.json(400, {error: 'Invalid due date'});
-      return;
     } else if (req.body.total === undefined || req.body.total < 0) {
       res.json(400, {error: 'Invalid bill total.'});
       return;
@@ -206,6 +214,9 @@ var Bills = {
       return;
     } else if (req.body.roommates === undefined) {
       res.json(400, {error: 'Invalid roommates.'});
+      return;
+    } else if (!isValidDate(duedate)) {
+      res.json(400, {error: 'Invalid due date'});
       return;
     }
 
@@ -331,7 +342,8 @@ var Bills = {
     var name = req.body.name;
     var total = req.body.total;
     var interval = req.body.interval;
-    var date = req.body.date;
+    var date = new Date(req.body.date);
+    date.setDate(date.getDate() + 1);
     var roommates = req.body.roommates;
 
     // Check for validity of fields
@@ -341,7 +353,7 @@ var Bills = {
     } else if (!isValidName(name)) {
       res.json(400, {error: 'Invalid bill name.'});
       return;
-    } else if (new Date(req.body.date) < new Date()) {
+    } else if (!isValidDate(date)) {
       res.json(400, {error: 'Invalid due date'});
       return;
     } else if (req.body.total === undefined || req.body.total < 0) {
