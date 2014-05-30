@@ -43,7 +43,7 @@
       <a class="message-collapse" data-toggle="collapse" data-parent="#messages-list" data-target="#collapse{{$index}}">
         <div class="panel-heading message-panel-heading">
           <h4 class="panel-title">
-            {{message.subject}} <small>- {{message.author}}</small> <span class="badge pull-right">{{message.comments.length}}</span>
+            {{message.subject}} <small>- {{message.author}}</small> <span class="badge pull-right">{{showCommentNumber(message)}}</span>
           </h4>
         </div>
       </a>

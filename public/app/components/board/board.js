@@ -120,6 +120,15 @@ angular.module('main.board').controller('BoardCtrl',
         });
     };
 
+    // Shows number of comments for a message
+    $scope.showCommentNumber = function(message) {
+      if (message.comments.length === 1) {
+        return '1 comment';
+      }
+
+      return message.comments.length + ' comments';
+    };
+
     // Reset the new message form
     $scope.reset = function() {
     	$scope.newMessage = {};
