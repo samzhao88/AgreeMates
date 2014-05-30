@@ -48,7 +48,8 @@ app.use(passport.session());
 router(app, passport);
 
 app.use(express.static(path.join(__dirname + './../public/app')));
-var cronJob = require('./cronJob');
+
+require('./cronJob');
 app.listen(config.port, function() {
   console.log('Server running on port ' + config.port);
 });

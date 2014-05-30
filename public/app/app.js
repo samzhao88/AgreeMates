@@ -24,14 +24,15 @@
 // Closes menu when clicking in mobile viewport
 $(function() {
   $('.sidebar-collapse a').click(function() {
-    var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+    var width = Math.max(document.documentElement.clientWidth,
+      window.innerWidth || 0);
     if (width < 768) {
-      $(".sidebar-collapse").collapse('hide');
+      $('.sidebar-collapse').collapse('hide');
     }
   });
 });
 
-// Define the "main" module and inject all other modules as dependencies
+// Define the 'main' module and inject all other modules as dependencies
 var app = angular.module('main',
   [
     'main.bills',

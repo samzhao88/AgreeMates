@@ -1,5 +1,4 @@
 // Supplies routes
-// jshint camelcase: false
 
 'use strict';
 
@@ -9,6 +8,7 @@ var HistoryModel = require('../models/history').model;
 
 // Checks if a value is an integer
 function isInt(value) {
+  // jshint eqeqeq: false
   return !isNaN(value) && parseInt(value) == value;
 }
 
@@ -42,7 +42,7 @@ var Supplies = {
     }
 
     var apartmentId = req.user.attributes.apartment_id;
-    Supplies.querySupplies(apartmentId, 
+    Supplies.querySupplies(apartmentId,
       function then(model) {
         var supplies = [];
 
@@ -56,7 +56,7 @@ var Supplies = {
         }
 
         res.json({supplies: supplies});
-      }, 
+      },
       function otherwise() {
         res.json(503, {error: 'Database error.'});
       }
@@ -124,7 +124,7 @@ var Supplies = {
         var historyString = req.user.attributes.first_name + ' ' +
           req.user.attributes.last_name + ' edited supply "' +
           name.trim() + '"';
-        
+
         Supplies.saveHistory(apartmentId, historyString);
         res.send(200);
       },
@@ -176,7 +176,7 @@ var Supplies = {
       .then(thenFun)
       .otherwise(otherwiseFun);
   },
-  editSupply: function(supplyId, apartmentId, name, 
+  editSupply: function(supplyId, apartmentId, name,
                        status, thenFun, otherwiseFun) {
     new SupplyModel({id: supplyId, apartment_id: apartmentId})
       .save({name: name, status: status}, {path: true})
@@ -210,4 +210,3 @@ var Supplies = {
 
 // Sets up all routes
 module.exports = Supplies;
-

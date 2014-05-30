@@ -44,7 +44,7 @@ var Invitations = {
           } else {
             resp.forEach(function(invitation) {
               var historyString = req.user.attributes.first_name + ' ' +
-                req.user.attributes.last_name + ' sent invitation to "' + 
+                req.user.attributes.last_name + ' sent invitation to "' +
                 invitation.email + '"';
               Invitations.saveHistory(apartmentId, historyString);
               var hashedId = hashids.encrypt(invitation.id);
@@ -98,7 +98,8 @@ var Invitations = {
           function() {
             var historyString = req.user.attributes.first_name + ' ' +
               req.user.attributes.last_name + ' accepted invitation';
-            Invitations.saveHistory(model.attributes.apartment_id, historyString);
+            Invitations.saveHistory(model.attributes.apartment_id,
+              historyString);
             Invitations.destroyInvitation(inviteNumber,
               function then() { res.send(200); },
               function otherwise(error) {

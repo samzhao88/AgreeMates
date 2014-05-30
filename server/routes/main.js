@@ -20,9 +20,9 @@ function getIndex(req, res) {
       req.user.attributes.facebook_id +
       '/picture?height=300&width=300';
   } else if (req.user.attributes.google_id !== null) {
-    profile_pic = req.user.attributes.google_picture;
+		profile_pic = req.user.attributes.google_picture;
   } else {
-    profile_pic = 'http://placehold.it/300x300';
+    profile_pic = 'img/default.png';
   }
 
   res.render('index', {firstname: req.user.attributes.first_name,
@@ -32,7 +32,7 @@ function getIndex(req, res) {
 // Sets up all routes
 function setup(app) {
   app.get('/', getIndex);
-};
+}
 
 module.exports.getIndex = getIndex;
 module.exports.setup = setup;

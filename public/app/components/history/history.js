@@ -1,4 +1,4 @@
-// AngularJS controller for history
+// Front end controller for history
 
 'use strict';
 
@@ -8,16 +8,15 @@ angular.module('main.history').controller('HistoryCtrl',
   function ($scope, $http) {
 
     var addedItems = true;
-
     $scope.history = [];
 
     $http.get('/history')
       .success(function(data) {
         $scope.history = data.history;
       })
-      .error(function(error) {});
+      .error(function() {});
 
-    $scope.showNothingMoreMessage = function(date) {
+    $scope.showNothingMoreMessage = function() {
       return !addedItems;
     };
 

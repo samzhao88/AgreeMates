@@ -25,6 +25,7 @@ ALTER USER postgres PASSWORD 'agreemates';
 
 \connect postgres
 
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -526,9 +527,7 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 -- Data for Name: apartments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY apartments (id, name, address) FROM stdin;
-1   test ap 1   test address
-\.
+
 
 
 --
@@ -546,8 +545,6 @@ SELECT pg_catalog.setval('apartments_id_seq', 1, true);
 -- Data for Name: bills; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY bills (id, name, createdate, duedate, "interval", paid, amount, reocurring_id, user_id, apartment_id) FROM stdin;
-\.
 
 
 --
@@ -574,8 +571,6 @@ SELECT pg_catalog.setval('bills_reocurring_id_seq', 1, false);
 -- Data for Name: chores; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY chores (id, name, createdate, duedate, "interval", completed, reocurring_id, user_id, apartment_id) FROM stdin;
-\.
 
 
 --
@@ -602,8 +597,6 @@ SELECT pg_catalog.setval('chores_reocurring_id_seq', 1, false);
 -- Data for Name: comments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY comments (id, body, date, user_id, message_id) FROM stdin;
-\.
 
 
 --
@@ -630,8 +623,6 @@ SELECT pg_catalog.setval('messages_id_seq', 2, true);
 -- Data for Name: payments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY payments (id, paid, amount, user_id, bill_id) FROM stdin;
-\.
 
 
 --
@@ -647,11 +638,6 @@ SELECT pg_catalog.setval('payments_id_seq', 1, false);
 -- TOC entry 2040 (class 0 OID 25146)
 -- Dependencies: 173
 -- Data for Name: supplies; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY supplies (id, apartment_id, name, status) FROM stdin;
-1   1   toilet paper    0
-\.
 
 
 --
@@ -669,10 +655,6 @@ SELECT pg_catalog.setval('supplies_id_seq', 1, true);
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY users (id, google_id, facebook_id, first_name, last_name, email, phone, apartment_id, google_token, facebook_token) FROM stdin;
-1   \N  \N  adf asdf    adf 1111    1   \N  \N
-2   \N  \N  adf asdf    adf 1111    1   \N  \N
-\.
 
 
 --
@@ -681,8 +663,6 @@ COPY users (id, google_id, facebook_id, first_name, last_name, email, phone, apa
 -- Data for Name: users_chores; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY users_chores (user_id, chore_id) FROM stdin;
-\.
 
 
 --
@@ -772,7 +752,7 @@ ALTER TABLE ONLY users
 --
 
 ALTER TABLE ONLY bills
-    ADD CONSTRAINT bills_apartment_id_fkey FOREIGN KEY (apartment_id) REFERENCES apartments(id);
+    ADD CONSTRAINT bills_apartment_id_fkey FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE;
 
 
 --
@@ -790,7 +770,7 @@ ALTER TABLE ONLY bills
 --
 
 ALTER TABLE ONLY chores
-    ADD CONSTRAINT chores_apartment_id_fkey FOREIGN KEY (apartment_id) REFERENCES apartments(id);
+    ADD CONSTRAINT chores_apartment_id_fkey FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE;
 
 
 --
@@ -808,7 +788,7 @@ ALTER TABLE ONLY chores
 --
 
 ALTER TABLE ONLY comments
-    ADD CONSTRAINT comments_message_id_fkey FOREIGN KEY (message_id) REFERENCES messages(id);
+    ADD CONSTRAINT comments_message_id_fkey FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE;
 
 
 --
@@ -826,7 +806,7 @@ ALTER TABLE ONLY comments
 --
 
 ALTER TABLE ONLY messages
-    ADD CONSTRAINT messages_apartment_id FOREIGN KEY (apartment_id) REFERENCES apartments(id);
+    ADD CONSTRAINT messages_apartment_id FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE;
 
 
 --
@@ -844,7 +824,7 @@ ALTER TABLE ONLY messages
 --
 
 ALTER TABLE ONLY payments
-    ADD CONSTRAINT payments_bill_id_fkey FOREIGN KEY (bill_id) REFERENCES bills(id);
+    ADD CONSTRAINT payments_bill_id_fkey FOREIGN KEY (bill_id) REFERENCES bills(id) ON DELETE CASCADE;
 
 
 --
@@ -862,7 +842,7 @@ ALTER TABLE ONLY payments
 --
 
 ALTER TABLE ONLY supplies
-    ADD CONSTRAINT supplies_apartment_id_fkey FOREIGN KEY (apartment_id) REFERENCES apartments(id);
+    ADD CONSTRAINT supplies_apartment_id_fkey FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE;
 
 
 --
@@ -871,7 +851,7 @@ ALTER TABLE ONLY supplies
 --
 
 ALTER TABLE ONLY users
-    ADD CONSTRAINT users_apartment_id_fkey FOREIGN KEY (apartment_id) REFERENCES apartments(id);
+    ADD CONSTRAINT users_apartment_id_fkey FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE;
 
 
 --
@@ -880,7 +860,7 @@ ALTER TABLE ONLY users
 --
 
 ALTER TABLE ONLY users_chores
-    ADD CONSTRAINT users_chores_chore_id_fkey FOREIGN KEY (chore_id) REFERENCES chores(id);
+    ADD CONSTRAINT users_chores_chore_id_fkey FOREIGN KEY (chore_id) REFERENCES chores(id) ON DELETE CASCADE;
 
 
 --
@@ -914,6 +894,11 @@ ALTER TABLE ONLY invitations
 
 ALTER TABLE ONLY invitations
     ADD CONSTRAINT invitations_pkey PRIMARY KEY (id);
+	
+	
+ALTER TABLE ONLY invitations
+    ADD CONSTRAINT invitations_apartment_id FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE;
+
 
 --history tables
 
@@ -939,3 +924,8 @@ ALTER TABLE ONLY history
 
 ALTER TABLE ONLY history
     ADD CONSTRAINT history_pkey PRIMARY KEY (id);
+	
+		
+ALTER TABLE ONLY history
+    ADD CONSTRAINT history_apartment_id FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE;
+

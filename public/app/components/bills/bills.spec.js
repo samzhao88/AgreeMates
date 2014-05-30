@@ -34,7 +34,7 @@ describe('bills module', function() {
 						'paid' : true
 					},
 					{
-						'id': 88,
+						'userId': 88,
             'amount': 60,
 						'paid' : false
 					}]
@@ -47,17 +47,17 @@ describe('bills module', function() {
     'payTo': 'Michael',
 		'payments': [
 					{
-						'id': 1,
+						'userId': 1,
             'amount': 100,
 						'paid' : false
 					},
 					{
-						'id': 88,
+						'userId': 88,
             'amount': 50,
 						'paid' : false
 					},
           {
-            'id': 69,
+            'userId': 69,
             'amount': 150,
             'paid' : false
           }]
@@ -65,26 +65,38 @@ describe('bills module', function() {
 	
 	 var resolvedBills = {bills: [
 	{
-		'id': 2,
+		'id': 3,
+    'name': 'rent',
+    'amount': 300,
+    'creatorId': 88,
+    'payTo': 'Michael',		
 		'payments': [
 					{
-						'id': 69,
+						'userId': 69,
+						'amount': 150,
 						'paid' : true
 					},
 					{
-						'id': 88,
+						'userId': 88,
+						'amount': 150,
 						'paid' : true
 					}]
 	},
 	{
-		'id': 3,
+		'id': 4,
+    'name': 'rent',
+    'amount': 100,
+    'creatorId': 88,
+    'payTo': 'Michael',
 		'payments': [
 					{
-						'id': 1,
+						'userId': 1,
+						'amount': 50,
 						'paid' : true
 					},
 					{
-						'id': 88,
+						'userId': 88,
+						'amount': 50,
 						'paid' : true
 					}]
 	}]};
@@ -94,6 +106,27 @@ describe('bills module', function() {
       'first_name': 'Sue', 
       'last_name': 'PerHot'
     };
+
+  var addBill = {
+  	'name': 'add1',
+  	'total': 10,
+  	'interval': 0,
+  	'date': '06/01/14',
+  	'roommates': [
+  		{
+  			'id': 69,
+  			'amount': 5
+  		},
+  		{
+  			'id': 1,
+  			'amount': 5
+  		}
+  	]
+  };
+
+  var addResponse = {
+  	'id': 5
+  }
   
   var billsModule;
   beforeEach(function() {
@@ -116,14 +149,14 @@ describe('bills module', function() {
       ctrl('BillsCtrl', {
         $scope: scope
       });
-	  httpMock.whenGET('/user').respond(function(method, url, data, headers) {
-			return [200,user];
-	  });
-	  httpMock.whenGET('/apartment/users').respond(function(method, url, data, headers) {
-			return [200,users];
-	  });
-	  httpMock.whenGET('/bills?type=unresolved').respond(unresolvedBills);
-	  httpMock.whenGET('/bills?type=resolved').respond(resolvedBills);
+		  httpMock.whenGET('/user').respond(function(method, url, data, headers) {
+				return [200,user];
+		  });
+		  httpMock.whenGET('/apartment/users').respond(function(method, url, data, headers) {
+				return [200,users];
+		  });
+		  httpMock.whenGET('/bills?type=unresolved').respond(unresolvedBills);
+		  httpMock.whenGET('/bills?type=resolved').respond(resolvedBills);
     }));
 
     afterEach(function() {
@@ -157,6 +190,12 @@ describe('bills module', function() {
 				expect(scope.roommates[0].id).to.equal(user.id);
 				expect(scope.roommates[0].first_name).to.equal(user.first_name);
 				expect(scope.roommates[0].last_name).to.equal(user.last_name);
+				expect(scope.roommates[1].id).to.equal(users.users[1].id);
+				expect(scope.roommates[1].first_name).to.equal(users.users[1].first_name);
+				expect(scope.roommates[1].last_name).to.equal(users.users[1].last_name);
+				expect(scope.roommates[2].id).to.equal(users.users[2].id);
+				expect(scope.roommates[2].first_name).to.equal(users.users[2].first_name);
+				expect(scope.roommates[2].last_name).to.equal(users.users[2].last_name);
 			});
 			it('should have correct length', function() {
 				expect(scope.roommates.length).to.equal(3);
@@ -170,8 +209,10 @@ describe('bills module', function() {
 			  expect(scope.resolvedBills[1].id).to.equal(resolvedBills.bills[1].id);
 			});
 			
-			it('should checkboxes set', function() {
-        //not implemented
+			it('should have checkboxes set', function() {
+        expect(scope.checkboxes.length).to.equal(2);
+        expect(scope.checkboxes[0]).to.equal(0);
+        expect(scope.checkboxes[1]).to.equal(3);
 			});
 		});
 		
@@ -187,38 +228,92 @@ describe('bills module', function() {
 			  expect(scope.bills[0].id).to.equal(unresolvedBills.bills[0].id);
 			  expect(scope.bills[1].id).to.equal(unresolvedBills.bills[1].id);
 			});
+			
+			it('should have checkboxes set', function() {
+        expect(scope.checkboxes.length).to.equal(2);
+        expect(scope.checkboxes[0]).to.equal(0);
+        expect(scope.checkboxes[1]).to.equal(3);
+			});
+
 		});
 	
 		describe('update balances', function() {
+			beforeEach(function() {
+				scope.updateBalanceModel();
+			});
 			it('should update balance model', function() {
-			  expect(scope.balances.length).to.equal(2);
+				expect(scope.balances.length).to.equal(2);
+				//Michael Irvin			  
         expect(scope.balances[0].userId).to.equal(88);
-        // expect(scope.balances[0].first_name).to.equal('Michael');
-        // expect(scope.balances[0].last_name).to.equal('Irvin');
-        // expect(scope.balances[0].owedToUser).to.equal(60);
-        // console.log(scope.balances[0].owedToUser);
-        //expect(scope.balances[0].userOwed).to.equal(50);
-        //expect(scope.balances[0].netBalance).to.equal(10);
+        expect(scope.balances[0].first_name).to.equal('Michael');
+        expect(scope.balances[0].last_name).to.equal('Irvin');
+        expect(scope.balances[0].owedToUser).to.equal(60);
+        expect(scope.balances[0].userOwed).to.equal(150);
+        expect(scope.balances[0].netBalance).to.equal(-90);
+
+        //George Washington
+        expect(scope.balances[1].userId).to.equal(1);
+        expect(scope.balances[1].first_name).to.equal('George');
+        expect(scope.balances[1].last_name).to.equal('Washington');
+        expect(scope.balances[1].owedToUser).to.equal(0);
+        expect(scope.balances[1].userOwed).to.equal(0);
+        expect(scope.balances[1].netBalance).to.equal(0);
 			});
 		});
 	
 		describe('select resolved', function() {
-			it('should get all the bills', function() {
-			  
+			beforeEach(function() {
+				scope.setTable('resolved');
+			});
+			it('should set table to unresolved', function() {
+			  expect(scope.bills.length).to.equal(resolvedBills.bills.length);
+			  expect(scope.bills[0].id).to.equal(resolvedBills.bills[0].id);
+			  expect(scope.bills[1].id).to.equal(resolvedBills.bills[1].id);
+			  expect(scope.table).to.equal('resolved');
 			});
 		});
 		
 		describe('select unrsolved', function() {
-			it('should get all the bills', function() {
-			  
+			beforeEach(function() {
+				scope.setTable('unresolved');
+			});
+			it('should set table to unresolved', function() {
+			  expect(scope.bills.length).to.equal(unresolvedBills.bills.length);
+			  expect(scope.bills[0].id).to.equal(unresolvedBills.bills[0].id);
+			  expect(scope.bills[1].id).to.equal(unresolvedBills.bills[1].id);
+			  expect(scope.table).to.equal('unresolved');
 			});
 		});
 		
-		describe('add bill', function() {
-			it('should get all the bills', function() {
-			  
-			});
-		});
+		// describe('add bill', function() {
+		// 	beforeEach(function() {
+		// 		httpMock.expectPOST('/bills',addBill).respond(addResponse);
+		// 		//scope.bill = supply; 
+		// 		scope.unresolvedBills = unresolvedBills;
+		// 		scope.addBill();
+		// 		httpMock.flush();				
+		// 	});				
+
+		// 	it('should add the bill to unresolvedBills', function() {
+		//   	expect(scope.unresolvedBills.length).to.equal(3);
+		// 	});
+
+		// 	it('should get all the bills', function() {
+		  
+		// 	});
+			
+		// 	it('should get all the bills', function() {
+		  
+		// 	});
+
+		// 	it('should get all the bills', function() {
+		  
+		// 	});
+
+		// 	it('should get all the bills', function() {
+		  
+		// 	});			
+		// });
 		
 		describe('delete bill', function() {
 			it('should get all the bills', function() {

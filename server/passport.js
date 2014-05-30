@@ -83,16 +83,12 @@ module.exports = function(passport) {
 				new UserModel({google_id: profile.id})
 					.fetch()
 					.then(function(user) {
+					console.log(user);
 						if (user) {
-							new UserModel({google_id: profile.id, first_name: name[0], last_name: name[1]})
-											.save({google_picture: profile._json['picture'], email: profile.emails[0].value}, {patch: true})
-											.then(function(model){
-												new UserModel({google_id: profile.id, first_name: name[0]})
-												.fetch()
-												.then(function(userUpdate){
-													return done(null,userUpdate);
-												});
-											});
+							user.attributes.google_picture = profile._json['picture'];
+							user.save().then(function(model){
+								return done(null,model);
+							});
 							
 						} else {
 							new UserModel({
@@ -100,7 +96,8 @@ module.exports = function(passport) {
 								last_name: name[1],
 								email: profile.emails[0].value,
 								google_id: profile.id,
-								google_token: token
+								google_token: token,
+								google_picture: profile._json['picture']
 							})
 								.save()
 								.then(function(user) {
