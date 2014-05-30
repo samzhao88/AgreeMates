@@ -87,7 +87,7 @@ angular.module('main.chores').controller('ChoresCtrl',
         $scope.table = 'unresolved';
 
         $scope.loaded = true;
-        $('.hide').removeClass('hide');
+        $('table.hide').removeClass('hide');
       })
       .error(function(error) {
         $scope.chores = $scope.chores_uncompleted;
@@ -291,7 +291,7 @@ angular.module('main.chores').controller('ChoresCtrl',
       if (interval == 0) {
         return 'Due';
       } else {
-        return 'Starting Due';
+        return 'Start';
       }
     };
 
@@ -426,4 +426,3 @@ angular.module('main.chores').controller('ChoresCtrl',
     };
     //end all functions to control dynamic UI
 });
-
