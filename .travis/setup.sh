@@ -3,8 +3,8 @@
 npm install -g bower
 bower install
 
-if [[ $TRAVIS_SECURE_ENV_VARS ]]
+if $TRAVIS_SECURE_ENV_VARS ; then
   npm install -g protractor
-  sudo node server/app.js 80 & sleep 5
+  node server/app.js & sleep 5
 fi
 
