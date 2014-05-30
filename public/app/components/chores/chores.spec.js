@@ -294,6 +294,19 @@ describe('chores module', function () {
         });
 
       }); //end put test
+      
+      describe('update', function () {
+        beforeEach(function () {
+          httpMock.expectDELETE('/chores/71').respond(deleteChoreResponse);
+          scope.prepareDelete(71, 0);
+          scope.deleteChore();
+          httpMock.flush();
+        });
+
+        it('should display success message',function() {
+          expect(scope.successmsg).to.equal('Chore "dishes" successfully deleted!');
+        });
+      });
 
 
       it('should exist', function () {
@@ -303,3 +316,6 @@ describe('chores module', function () {
     });
   });
 });
+
+
+

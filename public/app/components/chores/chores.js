@@ -206,8 +206,11 @@ angular.module('main.chores').controller('ChoresCtrl',
       $http.delete('/chores/' + $scope.deleteId)
         .success(function(data) {
           $scope.chores.splice($scope.deleteIdx, 1);
+          showSucc("Chore "+ $scope.chores[$scope.deleteIdx].name+" successfully deleted!");
         })
-        .error(function() {});
+        .error(function(error) {
+          console.log(error);
+        });
     };
 
     $scope.cancel = function() {
