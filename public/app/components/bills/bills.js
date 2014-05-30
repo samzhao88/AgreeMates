@@ -285,13 +285,18 @@ angular.module('main.bills').controller('BillsCtrl',
 
       $http.put('/bills/'+id+"/payment", {paid: paid}).
         success(function(data) {
-          for (var i = 0; i < $scope.bills[index].payments.length; i++) {
-            if ($scope.bills[index].payments[i].userId == $scope.userId) {
-              if (paid == "false") {
-                $scope.bills[index].payments[i].paid = false;
-              } else {
-                $scope.bills[index].payments[i].paid = true;
-              }
+          //use if
+          for (var j = 0; j < $scope.bills.length; j++) {
+            if ($scope.bills[j].id == id) {
+              for (var i = 0; i < $scope.bills[index].payments.length; i++) {
+                if ($scope.bills[index].payments[i].userId == $scope.userId) {
+                  if (paid == "false") {
+                    $scope.bills[index].payments[i].paid = false;
+                  } else {
+                    $scope.bills[index].payments[i].paid = true;
+                  }
+                }
+              };              
             }
           };
           $scope.updateBalanceModel();
@@ -327,15 +332,11 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //return the amount owned by the current user for a bill
     $scope.amountOwed = function(id, index) {
-      for (var i = 0; i < $scope.bills.length; i++) {
-        if ($scope.bills[i].id == id){
-          for (var i = 0; i < $scope.bills[index].payments.length; i++) {
-            if ($scope.bills[index].payments[i].userId == $scope.userId) {
-              return $scope.bills[index].payments[i].amount;
-            }
-          };
+      for (var i = 0; i < $scope.bills[index].payments.length; i++) {
+        if ($scope.bills[index].payments[i].userId == $scope.userId) {
+          return $scope.bills[index].payments[i].amount;
         }
-      }
+      };
       return 0;
     };
 
@@ -350,21 +351,21 @@ angular.module('main.bills').controller('BillsCtrl',
           $scope.oldBill = angular.copy($scope.bills[i]);
           $scope.oldBill.dueDate = $scope.convertDate($scope.oldBill.dueDate);
           //add roommates's id who are currently responsible to selectedRoommates
-          for (var i = 0; i < $scope.oldBill.payments.length; i++) {
-            $scope.selectedRoommates.push($scope.oldBill.payments[i].userId);
+          for (var j = 0; j < $scope.oldBill.payments.length; j++) {
+            $scope.selectedRoommates.push($scope.oldBill.payments[j].userId);
           };
 
           //create updatedAmount model that holds all roommates and their amount of bill
-          for (var i = 0; i < $scope.roommates.length; i++) {
-            $scope.updatedAmount[i] = {};
-            $scope.updatedAmount[i].userId = $scope.roommates[i].id;
-            for (var j = 0; j < $scope.oldBill.payments.length; j++) {
-              if ($scope.oldBill.payments[j].userId == $scope.updatedAmount[i].userId) {
-                $scope.updatedAmount[i].amount = $scope.oldBill.payments[j].amount;
+          for (var j = 0; j < $scope.roommates.length; j++) {
+            $scope.updatedAmount[j] = {};
+            $scope.updatedAmount[j].userId = $scope.roommates[j].id;
+            for (var k = 0; k < $scope.oldBill.payments.length; k++) {
+              if ($scope.oldBill.payments[k].userId == $scope.updatedAmount[j].userId) {
+                $scope.updatedAmount[j].amount = $scope.oldBill.payments[k].amount;
               }
             };
-            if ($scope.updatedAmount[i].amount == undefined) {
-              $scope.updatedAmount[i].amount = '';
+            if ($scope.updatedAmount[j].amount == undefined) {
+              $scope.updatedAmount[j].amount = '';
             }
           };
         }
@@ -384,6 +385,7 @@ angular.module('main.bills').controller('BillsCtrl',
       return false;
     }
 
+    //return whether the user is the creator of a bill when updating
     $scope.isOwner = function(billId) {
       //when bill id is not defined
       if (billId === undefined) {
@@ -506,7 +508,6 @@ angular.module('main.bills').controller('BillsCtrl',
         };         
       }
 
-      console.log('final: '+ total);
       return total == 0;
     }
 
