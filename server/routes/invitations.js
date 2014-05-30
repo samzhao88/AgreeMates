@@ -180,11 +180,11 @@ var Invitations = {
       to: email,
       subject: 'You have been invited to an AgreeMates apartment',
       generateTextFromHTML: true,
-      html: 'Hi <br> 
-            You have been invited to join the apartment ' + aptName + ' on AgreeMates.com 
-            by ' + req.user.attributes.first_name +'! <br><br>
-            Click ' + '<a href="' + process.env.MANDRILL_INVURL + id + '">here</a> to join.<br><br>
-            The AgreeMates Team'
+      html: 'Hi <br>' +
+            'You have been invited to join the apartment ' + aptName + ' on AgreeMates.com' +
+            'by ' + req.user.attributes.first_name +'! <br><br>' +
+            'Click ' + '<a href="' + process.env.MANDRILL_INVURL + id + '">here</a> to join.<br><br>' +
+            'The AgreeMates Team'
 
     };
     smtpTransport.sendMail(mailOptions, function(error, response) {
