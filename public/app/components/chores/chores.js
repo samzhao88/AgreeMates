@@ -350,7 +350,7 @@ function ($scope, $http, $timeout) {
     $scope.responsibleList = [];
   };
 
-    //select unresolved bills or resolved bills
+    //select unresolved chores or resolved chores
     $scope.setTable = function(table) {
         if (table == 'resolved') {
         $scope.chores = $scope.chores_completed;    
@@ -388,7 +388,7 @@ function ($scope, $http, $timeout) {
         temp.completed = true;
         $scope.chores_completed.push(temp);
         }        
-    }).error(function(data, status, headers, config){
+    }).error(function(data){
 
          console.log(data);
     });
