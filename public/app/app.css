@@ -14,6 +14,11 @@ button:focus {
   outline: none;
 }
 
+#brand-logo {
+  height: 32px;
+  margin-top: -5px;
+}
+
 #side-menu li.active {
   background-color: #263645;
 }
@@ -226,6 +231,14 @@ html, body {
   font-weight: normal;
 }
 
+.front-logo {
+  padding-top: 50px;
+  width: 90%;
+  max-width: 400px;
+  display: block;
+  margin: 0 auto;
+}
+
 #supply-add-button, #message-add-button {
   float: right;
   margin-bottom: 20px;
@@ -300,8 +313,7 @@ html, body {
 /*classes for rotating responsiblity chores input UI*/
 .item, .placeholder {
   vertical-align: top;
-  text-align: left;
-  font-weight: 700;
+  text-align: center;
 }
 
 .placeholder {

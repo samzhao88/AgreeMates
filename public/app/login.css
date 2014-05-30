@@ -17,6 +17,14 @@ a:hover {
   max-width: 800px;
 }
 
+.front-logo {
+  padding-top: 50px;
+  width: 90%;
+  max-width: 400px;
+  display: block;
+  margin: 0 auto;
+}
+
 #login-title {
   font-weight: 700;
   font-size: 52px;
