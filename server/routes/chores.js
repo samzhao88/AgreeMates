@@ -135,7 +135,7 @@ var Chores = {
   // Process chore form and adds to database
   addChore: function (req, res) {
     var name = req.body.name;
-	name = name.trim();
+	name = name;
     var apartmentId = req.user.attributes.apartment_id;
     var userId = req.user.attributes.id;
     var dueDate = parseDate(req.body.duedate);
@@ -200,7 +200,7 @@ var Chores = {
 
     var newChore = {
       apartment_id: apartmentId,
-      name: name,
+      name: name.trim(),
       duedate: dueDate,
       createdate: createDate,
       user_id: userId,
