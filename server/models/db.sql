@@ -402,7 +402,8 @@ CREATE TABLE users (
     phone integer,
     apartment_id integer,
     google_token character varying(255),
-    facebook_token character varying(255)
+    facebook_token character varying(255),
+	google_picture character varying(255)
 );
 
 

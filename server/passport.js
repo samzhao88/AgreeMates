@@ -78,20 +78,26 @@ module.exports = function(passport) {
 		process.nextTick(function() {
 
 			var name = profile.displayName.split(' ');
-
+			
 			if (!req.user) {
 				new UserModel({google_id: profile.id})
 					.fetch()
 					.then(function(user) {
+					console.log(user);
 						if (user) {
-							return done(null, user);
+							user.attributes.google_picture = profile._json['picture'];
+							user.save().then(function(model){
+								return done(null,model);
+							});
+							
 						} else {
 							new UserModel({
 								first_name: name[0],
 								last_name: name[1],
 								email: profile.emails[0].value,
 								google_id: profile.id,
-								google_token: token
+								google_token: token,
+								google_picture: profile._json['picture']
 							})
 								.save()
 								.then(function(user) {
@@ -100,7 +106,6 @@ module.exports = function(passport) {
 						}
 				});
 			} else {
-
 			}
 		});
 

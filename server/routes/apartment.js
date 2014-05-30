@@ -69,8 +69,7 @@ function getUsers(req, res) {
 	var apartmentId = req.user.attributes.apartment_id;
 
 	Bookshelf.DB.knex('users')
-		.select('id', 'first_name', 'last_name', 'email', 'phone', 'facebook_id',
-			'google_id')
+		.select('id', 'first_name', 'last_name', 'email', 'phone', 'facebook_id', 'google_id', 'google_picture')
 		.where('apartment_id', '=', apartmentId)
 		.then(function(users) {
 			var result = [];
@@ -80,7 +79,8 @@ function getUsers(req, res) {
 					temp.profile_pic = 'https://graph.facebook.com/' +
 						users[i].facebook_id  + '/picture?height=300&width=300';
 				} else {
-					temp.profile_pic = 'img/default.png';
+					var temp = users[i];
+					temp.profile_pic = users[i].google_picture;
 				}
 				result.push(temp);
 			}
