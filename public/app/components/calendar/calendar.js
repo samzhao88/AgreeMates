@@ -108,13 +108,7 @@ angular.module('main.calendar').controller('CalendarCtrl',
 
     var currentView = "month";
     
-    // $scope.changeTo = 'Hungarian';
-    /* event source that pulls from google.com */
-    // $scope.eventSource = {
-    //         url: "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic",
-    //         className: 'gcal-event',           // an option!
-    //         currentTimezone: 'America/Chicago' // an option!
-    // };
+
     /* event source that contains custom events on the scope */
     // $scope.events = [
     //   {title: 'All Day Event',start: new Date(y, m, 1)},
@@ -299,6 +293,10 @@ angular.module('main.calendar').controller('CalendarCtrl',
         }
         else
         {
+            if(an_interval === 7)
+            {
+                return 6;
+            }
             return an_interval;
         }
     }
@@ -342,9 +340,9 @@ angular.module('main.calendar').controller('CalendarCtrl',
         {
             console.log("b");
             a_event.title = 'Your roommate(s) ' + users_to_string(chore.users) + 'are responsible for the chore "' + chore.name + '"' + interval_to_string(chore.interval);
-            a_event.start = new Date(y, m, d - interval_to_0(chore.interval) + 1, $scope.associativeArray[chore.duedate], 0);
+            a_event.start = new Date(y, m, d - interval_to_0(chore.interval), $scope.associativeArray[chore.duedate], 0);
             a_event.end = new Date(y, m, d, $scope.associativeArray[chore.duedate] + 2, 0);
-            a_event.allDay = false;
+            a_event.allDay = true;
             a_event.editable = false;
             return a_event;
         }
@@ -354,7 +352,7 @@ angular.module('main.calendar').controller('CalendarCtrl',
             a_event.title = 'You are responsible for the chore "' + chore.name + '"' + interval_to_string(chore.interval);
             a_event.start = new Date(y, m, d - interval_to_0(chore.interval), $scope.associativeArray[chore.duedate], 0);
             a_event.end = new Date(y, m, d, $scope.associativeArray[chore.duedate] + 2, 0);
-            a_event.allDay = false;
+            a_event.allDay = true;
             a_event.editable = false;
             a_event.color = 'IndianRed';
             return a_event;
