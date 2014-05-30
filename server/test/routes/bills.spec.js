@@ -555,7 +555,6 @@ describe('Bills', function() {
 
       // Set date to be what should be called by editBill
       var date = new Date('2016-09-20');
-      date.setDate(date.getDate() + 1);
 
       expect(destroyPaymentsStub).to.have.been.calledWith(1);
       expect(fetchBillStub).to.have.been.calledWith(1, 5);
