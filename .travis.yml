@@ -5,6 +5,7 @@ before_script:
 - npm install -g bower
 - npm install -g protractor
 - bower install
+- webdriver-manager update
 script:
 - npm test
 - node server/app.js
