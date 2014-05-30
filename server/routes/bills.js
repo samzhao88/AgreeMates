@@ -198,7 +198,6 @@ var Bills = {
     }
 
     var duedate = new Date(req.body.date);
-    duedate.setDate(duedate.getDate() + 1);
 
     if (!isValidName(req.body.name)) {
       res.json(400, {error: 'Invalid bill name.'});
@@ -343,7 +342,6 @@ var Bills = {
     var total = req.body.total;
     var interval = req.body.interval;
     var date = new Date(req.body.date);
-    date.setDate(date.getDate() + 1);
     var roommates = req.body.roommates;
 
     // Check for validity of fields
