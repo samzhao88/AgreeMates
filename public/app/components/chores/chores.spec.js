@@ -304,8 +304,21 @@ describe('chores module', function () {
         });
 
         it('should display success message',function() {
-          expect(scope.successmsg).to.equal('Chore "dishes" successfully deleted!');
+          expect(scope.successmsg).to.equal('Chore dishes successfully deleted!');
         });
+
+        it('should change chores to be 0',function() {
+          expect(scope.chores.length).to.equal(0);
+        });
+
+        it('should change chores uncompleted to be 0',function() {
+          expect(scope.chores_uncompleted.length).to.equal(0);
+        });
+
+        it('should leave chores completed to be 1',function() {
+          expect(scope.chores_completed.length).to.equal(1);
+        });
+
       });
 
 
