@@ -374,7 +374,7 @@ describe('Chores', function(){
 			var req1 = {user: {attributes: {apartment_id: 1, first_name: 'Gibbs', last_name: 'Simon'}}, body: {name: 'test', interval: 0, duedate: '2020-05-08', roommates: [1,2],number_in_rotation: 1, rotating: true}};
 			createChoreStub = succeedTripleStub('createChore',choreModel,[1,2]);
 			addHistoryStub = succeedDoubleStub('addHistory', null);
-			resMock.expects('send').once().withArgs(200, {chore: choreModel.attributes, users: [1,2]});
+			resMock.expects('json').once().withArgs({chore: choreModel.attributes, users: [1,2]});
 			chores.addChore(req1,res);
 			expect(createChoreStub).to.have.been.calledWith();
 			expect(addHistoryStub).to.have.been.calledWith(choreModel, 'Gibbs Simon added chore dishes');
@@ -808,7 +808,7 @@ describe('Chores', function(){
 			fetchAssignedUsersStub = succeedingStub('fetchAssignedUsers', user_chore);
 			createChoreStub = succeedTripleStub('createChore',choreModel,[10]);
 			addHistoryStub = succeedDoubleStub('addHistory', null);
-			resMock.expects('send').once().withArgs(200, {chore: choreModel.attributes, users: [10]});
+			resMock.expects('json').once().withArgs({chore: choreModel.attributes, users: [10]});
 			chores.completeChore(req1,res);
 			expect(fetchChoreStub).to.have.been.calledWith(1,2);
 			expect(markChoreCompleteStub).to.have.been.calledWith(2);
