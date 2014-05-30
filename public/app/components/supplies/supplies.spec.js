@@ -27,13 +27,13 @@ describe('supplies module:', function() {
   ]};
 
   var supply = {
-    'name': 'new chore',
+    'name': 'new supply',
     'status': 0
   };
   var supplyEditResponse = {}
   var supplyAddResponse = {
     'id': 3,
-    'name': 'new chore',
+    'name': 'new supply',
     'status': 0
   };
   var supplyDeleteResponse = {
@@ -94,10 +94,10 @@ describe('supplies module:', function() {
 			});
 			
 			it('should display success message',function() {
-				expect(scope.successmsg).to.equal('Supply "new chore" successfully added!');
+				expect(scope.successmsg).to.equal('Supply "new supply" successfully added!');
 			});
 			
-			it('should hava scope which include all chores',function() {
+			it('should hava scope which include all supplies',function() {
 				expect(scope.supplies.length).to.equal(3);
 			});
 			
@@ -110,7 +110,7 @@ describe('supplies module:', function() {
 			});
 			
 			it('should have correct name',function() {
-				expect(scope.supplies[0].name).to.equal('new chore');
+				expect(scope.supplies[0].name).to.equal('new supply');
 			});
 	    });
 	
@@ -130,7 +130,7 @@ describe('supplies module:', function() {
 				expect(scope.successmsg).to.equal('Supply "toilet paper" successfully edited!');
 			});
 			
-			it('should hava scope which include all chores',function() {
+			it('should hava scope which include all supplies',function() {
 				expect(scope.supplies.length).to.equal(2);
 			});
 			
@@ -159,7 +159,7 @@ describe('supplies module:', function() {
 				expect(scope.successmsg).to.equal('Supply "toilet paper" successfully deleted!');
 			});
 			
-			it('should hava scope which include all chores',function() {
+			it('should hava scope which include all supplies',function() {
 				expect(scope.supplies.length).to.equal(1);
 			});
 			

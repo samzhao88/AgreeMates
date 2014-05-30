@@ -44,7 +44,6 @@ var app = angular.module('main',
     'main.apartment',
     'main.history',
     'main.invitations',
-    'main.calendar',
     'LocalStorageModule',
     'ngRoute'
   ]
@@ -86,11 +85,6 @@ app.config(function($routeProvider) {
     when('/invitations/:invite', {
     module: 'main.invitations',
     controller: 'InviteCtrl'
-  }).
-    when('/calendar', {
-    templateUrl: 'components/calendar/calendar.html',
-    module: 'main.calendar',
-    controller: 'CalendarCtrl'
   }).
     otherwise({
     redirectTo: '/board'

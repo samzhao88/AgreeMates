@@ -46,7 +46,7 @@
                 <label class ="col-sm-3 control-label" for="xfour">{{setModal(chore.interval)}} Date</label>
 
                 <div class = "col-sm-5">
-                <input type="date" class="form-control" id="xfour" name="bday" ng-model="chore.duedate" min="{{today()}}" required>
+                <input type="date" class="form-control" id="xfour" name="choredate" ng-model="chore.duedate" min="{{today()}}" required>
                 </div>
               </div>
 
@@ -59,12 +59,11 @@
                 <td class = "testing">
 
                     <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="menuList"
-                    ng-class="{'minimalList':menuEmpty()}">
+                    ng-class="{'minimalList2':menuEmpty()}">
                     <div ng-repeat="user in menuList" class="item">
                     <span>{{user.first_name}}</span>
                     </div>
                     </ul>
-                  <!--<div ng-show="menuList.length==0">No One Left</div>-->
                 </td>
 
                 <td class = "testing">
@@ -139,7 +138,7 @@
                 <label class ="col-sm-3 control-label" for="xfour">{{setModal(chore.interval)}} Date</label>
 
                 <div class = "col-sm-5">
-                <input type="date" class="form-control" id="xfour" name="bday" ng-model="chore.duedate" min="{{today()}}" required>
+                <input type="date" class="form-control" id="xfour" name="choredate" ng-model="chore.duedate" min="{{today()}}" required>
                 </div>
               </div>
 
@@ -152,7 +151,7 @@
                 <td class = "testing">
 
                     <ul ui-sortable="sortableOptions" class="connectedList1" ng-model="menuList"
-                    ng-class="{'minimalList':menuEmpty()}">
+                    ng-class="{'minimalList2':menuEmpty()}">
                     <div ng-repeat="user in menuList" class="item">
                     <span>{{user.first_name}}</span>
                     </div>
@@ -185,8 +184,6 @@
                     </span>
                     </div>
                 </div>
-                <!--<div>list1: {{menuList }}</div>-->
-                <!--<div>list2: {{responsibleList }}</div>-->
                 </form>
       </div>
 

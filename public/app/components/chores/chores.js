@@ -8,63 +8,8 @@ angular.module('main.chores').controller('ChoresCtrl',
 
 function ($scope, $http, $timeout) {
 
-   //get request didn't return yet
+    //get request didn't return yet
     $scope.loaded = false;
-
-    //all functions to manage the dynamic menu in add and edit chores UI modals
-    $scope.menuEmpty = function(){
-        return $scope.menuList.length == 0;
-    };
-
-    $scope.responsibleEmpty = function() {
-        return $scope.responsibleList.length == 0;
-    };
-
-    $scope.users_at_least_two = function() {
-        if($scope.responsibleList.length < 2 || parseInt($scope.chore.interval) == 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-    };
-
-    $scope.users_and_rotating = function()
-    {
-        if($scope.responsibleList.length > 1 && $scope.chore.rotating == true)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-
-    };
-
-    $scope.populate_rotation = function(){
-        $scope.rotation_number = [];
-        for(var i = 1; i < $scope.responsibleList.length; i++)
-        {
-            $scope.rotation_number[(i - 1)] = i;
-        }
-    };
-
-    $scope.check_interval = function(){
-        if(parseInt($scope.chore.interval) == 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    };
-    //end all functions to control dynamic UI
-    
 
     //variables to control the connected list menu
     $scope.menuList = {};
@@ -122,8 +67,8 @@ function ($scope, $http, $timeout) {
         $scope.userFirstName = data.first_name;
         $scope.userLastName = data.last_name;
     }).
-    error(function(data, status, headers, config){
-        //console.log(data);
+    error(function(error){
+        console.log(error);
     });
 
     $http.get('/chores')
@@ -134,6 +79,7 @@ function ($scope, $http, $timeout) {
             $scope.chores[x].users[i].user_id = $scope.chores[x].users[i].id;
             }
         }
+
         for (var x = 0; x < data.chores.length; x++){
             if(data.chores[x].completed == true)
             {
@@ -158,16 +104,20 @@ function ($scope, $http, $timeout) {
     $http.get('/apartment/users')
     .success(function(data) {
       $scope.users = data.users;
-    }).error(function() {});
+    }).error(function(error) {
+        console.log(error);
+        });
 
     $http.get('/apartment')
     .success(function(data) {
         $scope.apartment = data;
         
-    }).error(function(){});
+    }).error(function(error){
+        console.log(error);
+        });
 
-  $scope.addChore = function() {
-    console.log($scope.chore);
+    $scope.addChore = function() {
+    
     var chore = angular.copy($scope.chore);
     chore.roommates = [];
     chore.interval = parseInt(chore.interval);
@@ -178,12 +128,10 @@ function ($scope, $http, $timeout) {
     }
     chore.apartment_id = $scope.apartment.id;
     chore.userId = $scope.userId;
-    //console.log(chore.rotating);
 
     var any = {name: '', id: 0};
-    //var at_least_one_user = 0;
 
-    // checks to see that at lesat one user is checked
+    // checks to see that at least one user is checked
     if ($scope.chore.name == '' || !$scope.chore.name)
     {
             showErr("Please input a valid name.");
@@ -193,7 +141,7 @@ function ($scope, $http, $timeout) {
     if (!chore.duedate) {
       showErr("Please select a valid date.");
     } else {
-        //console.log(at_least_one_user());
+        
         if (!at_least_one_user()) {
         showErr("Please select at least one roommate.");
         } 
@@ -204,17 +152,19 @@ function ($scope, $http, $timeout) {
             any.id = $scope.responsibleList[i].id;
             chore.roommates.push(any.id);
             }
-            console.log("hello");
+            
             $http.post('/chores', chore)
             .success(function(data) {
             chore = data.chore;
             chore.users = [];
             chore.users = data.users;
-            //console.log(data);
+            
             $scope.chores_uncompleted.push(chore);
 
             showSucc("Chore "+chore.name+" successfully added!");
-            }).error(function() {});
+            }).error(function(error) { 
+                console.log(error);
+            });
       }
     }
     }
@@ -225,7 +175,7 @@ function ($scope, $http, $timeout) {
     //$scope.chore.roommates = [];
     var any = {name: '', id: 0};
     var temp = [];
-    
+
     if ($scope.chore.name == '' || !$scope.chore.name)
     {
             showErr("Please input a valid name.");
@@ -299,14 +249,6 @@ function ($scope, $http, $timeout) {
     var temp = $scope.menuList;
     var temp2 = angular.copy($scope.menuList);
 
-    //for(var i = 0; i < chore.users.length; i++)
-    //{
-    //    chore.users[i].user_id = chore.users[i].id;
-    //}
-
-    // console.log(chore.users);
-    // console.log(temp);
-
     //set the menu list
     for (var i = 0; i < chore.users.length; i++) {
         temp = temp.filter(function(user){
@@ -342,7 +284,6 @@ function ($scope, $http, $timeout) {
   }
 
   function at_least_one_user() {
-    console.log($scope.responsibleList);
       if ($scope.responsibleList.length == 0) 
       {
         return false;
@@ -384,12 +325,10 @@ function ($scope, $http, $timeout) {
   $scope.isResponsible = function(chore, user) {
     if (chore.interval == 0) {
       return "highlight";
-      console.log(chore.interval);
 
     } else {
         if (chore.rotating == false)
         {
-            console.log(chore.rotating);
             return "highlight";
         }
         else
@@ -400,7 +339,7 @@ function ($scope, $http, $timeout) {
   };
 
   $scope.format = function(date) {
-    return moment(date).format('MMMM Do, YYYY');
+    return moment(date).utc().format('MMMM Do, YYYY');
   };
 
   $scope.setList = function() {
@@ -411,7 +350,7 @@ function ($scope, $http, $timeout) {
     $scope.responsibleList = [];
   };
 
-    //select unresolved bills or resolved bills
+    //select unresolved chores or resolved chores
     $scope.setTable = function(table) {
         if (table == 'resolved') {
         $scope.chores = $scope.chores_completed;    
@@ -423,7 +362,7 @@ function ($scope, $http, $timeout) {
     };
 
   $scope.today = function() {
-    return moment().format('YYYY-MM-DD');
+    return moment().utc().format('YYYY-MM-DD');
   };
 
   $scope.doChore = function(id, index)
@@ -449,14 +388,14 @@ function ($scope, $http, $timeout) {
         temp.completed = true;
         $scope.chores_completed.push(temp);
         }        
-    }).error(function(data, status, headers, config){
+    }).error(function(data){
 
          console.log(data);
     });
 
   };
 
-  $scope.isDone = function(id, index){
+    $scope.isDone = function(id, index){
     if($scope.chores[index].completed == true)
     {
         return false;
@@ -465,7 +404,7 @@ function ($scope, $http, $timeout) {
     {
         return true;
     }
-  };
+    };
 
     //set up delete chore id and index
     $scope.prepareDelete = function(id, index) {
@@ -492,9 +431,68 @@ function ($scope, $http, $timeout) {
       }
       else
       {
+        if($scope.table === 'resolved' && $scope.chores_completed == 0)
+        {
+            return true;
+        }
         return false;
       }
     };
+
+
+    //all functions to manage the dynamic menu in add and edit chores UI modals
+    $scope.menuEmpty = function(){
+        return $scope.menuList.length == 0;
+    };
+
+    $scope.responsibleEmpty = function() {
+        return $scope.responsibleList.length == 0;
+    };
+
+    $scope.users_at_least_two = function() {
+        if($scope.responsibleList.length < 2 || parseInt($scope.chore.interval) == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    };
+
+    $scope.users_and_rotating = function()
+    {
+        if($scope.responsibleList.length > 1 && $scope.chore.rotating == true)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
+    };
+
+    $scope.populate_rotation = function(){
+        $scope.rotation_number = [];
+        for(var i = 1; i < $scope.responsibleList.length; i++)
+        {
+            $scope.rotation_number[(i - 1)] = i;
+        }
+    };
+
+    $scope.check_interval = function(){
+        if(parseInt($scope.chore.interval) == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    };
+    //end all functions to control dynamic UI
 
 });
 
