@@ -456,6 +456,7 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //put the dollar sign in front of the balance
     $scope.showBalance = function(num) {
+      num = $scope.showTwoDecimal(num);
       if (num < 0) {
         num = num * -1;
         return '-$' + num;
@@ -535,6 +536,13 @@ angular.module('main.bills').controller('BillsCtrl',
       return false;
     }
 
+    $scope.showTwoDecimal = function(num) {
+      if (num % 1 === 0) {
+        return num;
+      }
+      return Math.round(nun * 100) / 100;
+    }
+
     $scope.convertDate = function(date) {
       return date.split('T')[0];
     };
@@ -545,7 +553,7 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //formate the date
     $scope.format = function(date) {
-      return moment(date).format('MMMM Do, YYYY');
+      return moment(date).utc().format('MMMM Do, YYYY');
     };
 
     //show and hide an error msg
