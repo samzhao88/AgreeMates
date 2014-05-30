@@ -334,7 +334,7 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.amountOwed = function(id, index) {
       for (var i = 0; i < $scope.bills[index].payments.length; i++) {
         if ($scope.bills[index].payments[i].userId == $scope.userId) {
-          return $scope.bills[index].payments[i].amount;
+          return $scope.showTwoDecimal($scope.bills[index].payments[i].amount);
         }
       };
       return 0;
@@ -407,7 +407,7 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.splitBill = function() {
       var numRoommates = $scope.selectedRoommates.length;
       var amount = Math.floor(($scope.bill.total / numRoommates) * 100) / 100;
-      var evenly = ($scope.bill.total - amount * numRoommates) * 100;
+      var evenly = Math.floor(($scope.bill.total - amount * numRoommates) * 100);
 
       for (var i = 0; i < $scope.responsible.length; i++) {
         var responsible = false;
@@ -540,7 +540,7 @@ angular.module('main.bills').controller('BillsCtrl',
       if (num % 1 === 0) {
         return num;
       }
-      return Math.round(nun * 100) / 100;
+      return parseFloat(num).toFixed(2);
     }
 
     $scope.convertDate = function(date) {
