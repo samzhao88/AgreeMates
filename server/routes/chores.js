@@ -73,7 +73,7 @@ var Chores = {
           return;
         }
         var lastChoreId = -1;
-        var name, dueDate, createDate, interval, 
+        var name, dueDate, createDate, interval,
 		  completed, rotating, number_in_rotation;
         for (var i = 0; i < rows.length; i++) {
           // If choreid is differt, then all users_chores for the current
@@ -227,7 +227,7 @@ var Chores = {
 
           Chores.addHistory(choreModel, historyString,
             function then() {
-              res.send(response);
+              res.json(response);
             },
             function otherwise() {
               res.json(503, {
@@ -264,8 +264,8 @@ var Chores = {
           Chores.markChoreComplete(choreId,
             function then() {
               //One time chore	or		reocurring chore past duedate
-              if (chore.get('interval') === 0 || 
-			    (!isValidDate(chore.get('duedate')))) { 
+              if (chore.get('interval') === 0 ||
+			    (!isValidDate(chore.get('duedate')))) {
                 var historyString = req.user.attributes.first_name + ' ' +
                   req.user.attributes.last_name + ' completed chore ' +
 				    chore.get('name');
@@ -303,7 +303,7 @@ var Chores = {
                     var users = [];
                     for (var j = 0; j < users_chores.length; j++) {
                       //Rotating algorithm
-                      orderIndex[j] = (users_chores[j].order_index - 
+                      orderIndex[j] = (users_chores[j].order_index -
 					    chore.get('number_in_rotation'));
                       if (orderIndex[j] < 0) {
                         orderIndex[j] = orderIndex[j] + users_chores.length;
@@ -472,7 +472,7 @@ var Chores = {
                   });
                 } else {
                   var historyString = req.user.attributes.first_name + ' ' +
-                    req.user.attributes.last_name + ' edited chore ' + 
+                    req.user.attributes.last_name + ' edited chore ' +
 					  choreModel.get('name');
                   Chores.addHistory(choreModel, historyString,
                     function then() {
@@ -705,7 +705,7 @@ var Chores = {
         /*Save away our array of users to new chore
 		  mapThen :Function to call for each element in the collection
 		  Collects the return value of all of the function calls into a single response
-		  then(function(resp)): takes the response built by the mapThen and verify 
+		  then(function(resp)): takes the response built by the mapThen and verify
 		  that the size of the array is equal to the number of user ids giving in the request.
 		*/
         new UserChoreCollection(userChore)

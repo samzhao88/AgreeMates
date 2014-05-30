@@ -673,7 +673,7 @@ describe('Chores', function(){
 			fetchChoreStub = succeedDoubleStub('fetchChore', chore);
 			markChoreCompleteStub = succeedingStub('markChoreComplete',null);
 			addHistoryStub = failDoubleStub('addHistory', null);
-			resMock.expects('json').once().withArgs(503, {error: 'Database error'});
+			resMock.expects('json').once().withArgs(503, {error: 'Database error.'});
 			chores.completeChore(req1,res);
 			expect(fetchChoreStub).to.have.been.calledWith(1,2);
 			expect(markChoreCompleteStub).to.have.been.calledWith(2);
