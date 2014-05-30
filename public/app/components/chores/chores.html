@@ -6,12 +6,10 @@
     <div class="pull-right alert alert-success" ng-show="success">{{successmsg}}</div>
     <div class="pull-right alert alert-danger" ng-show="error">{{errormsg}}</div>
     </div>
-    
+
     <hr>
 
-	<div id="chores-add-button">
-		<button type="button" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-success" ng-click="cancel(); chore.interval = 0; chore.rotating = false; setList(); reset_responsibleList();">Add Chore</button>
-	</div>
+	<button type="button" data-toggle="modal" data-target="#chores_add_modal" class="btn btn-success pull-right" ng-click="cancel(); chore.interval = 0; chore.rotating = false; setList(); reset_responsibleList();">Add Chore</button>
 
   <!-- Add chores modal -->
   <div class="modal fade" id="chores_add_modal" tabindex="-1" role="dialog" aria-labelledby="addChoreLabel" aria-hidden="true">
@@ -199,7 +197,7 @@
 
 
   <!-- add a filter to table later on -->
-  <div class="clearfix" id="chores-filter">
+  <div class="clearfix">
     <div class="btn-group">
       <button type="button" class="btn btn-default" ng-click="setTable('unresolved')" ng-class="{ 'active' : table === 'unresolved' }">Uncompleted</button>
       <button type="button" class="btn btn-default" ng-click="setTable('resolved')" ng-class="{ 'active' : table === 'resolved' }">Completed</button>
@@ -207,7 +205,7 @@
   </div>
 
   <!-- Chores table -->
-  <table class="table table-striped table-hover clearfix text-center hide" ng-hide="emptyChoreList()">
+  <table class="table table-striped table-hover clearfix text-center hide" id="chores-table" ng-hide="emptyChoreList()">
     <tbody>
       <tr ng-show="!emptyChoreList()">
        <th class="text-center">Name</th>
