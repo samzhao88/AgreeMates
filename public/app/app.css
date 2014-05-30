@@ -313,8 +313,7 @@ html, body {
 /*classes for rotating responsiblity chores input UI*/
 .item, .placeholder {
   vertical-align: top;
-  text-align: left;
-  font-weight: 700;
+  text-align: center;
 }
 
 .placeholder {
