@@ -1,15 +1,8 @@
 language: node_js
 node_js:
 - '0.10'
-before_script:
-- npm install -g bower
-- npm install -g protractor
-- bower install
-- webdriver-manager update
-script:
-- npm test
-- node server/app.js
-- protractor protractor.travis.js
+before_script: .travis/setup.sh
+script: .travis/test.sh
 deploy:
   provider: heroku
   app:
