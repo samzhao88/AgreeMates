@@ -69,7 +69,7 @@ describe('board module', function () {
     };
 
     var comment = {
-        'subject': 'body',
+        'body': 'comment body',
         'messageId': 1
     };
 
@@ -224,6 +224,10 @@ describe('board module', function () {
                     httpMock.flush();
                     expect(scope.messages[1].comments.length).to.equal(3);
                 });
+
+                it('should be the correct content in the comment', function(){
+                    expect(scope.messages[1].comments[2].body).to.equal(comment.body);
+                })
 
             });
 
