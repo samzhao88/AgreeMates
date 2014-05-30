@@ -336,12 +336,11 @@ angular.module('main.bills').controller('BillsCtrl',
 
     //return the amount owned by the current user for a bill
     $scope.amountOwed = function(id, index) {
-        for (var i = 0; i < $scope.bills[index].payments.length; i++) {
-          if ($scope.bills[index].payments[i].userId == $scope.userId) {
-            return $scope.bills[index].payments[i].amount;
-          }
-        };
-      }
+      for (var i = 0; i < $scope.bills[index].payments.length; i++) {
+        if ($scope.bills[index].payments[i].userId == $scope.userId) {
+          return $scope.bills[index].payments[i].amount;
+        }
+      };
       return 0;
     };
 
