@@ -406,12 +406,8 @@ angular.module('main.bills').controller('BillsCtrl',
     //split the bill amount evenly among all selected roommates
     $scope.splitBill = function() {
       var numRoommates = $scope.selectedRoommates.length;
-      var amount = Math.round(($scope.bill.total / numRoommates) * 100) / 100;
-
-      var evenly = true;
-      if (amount * numRoommates != $scope.bill.total) {
-        evenly = false;
-      }
+      var amount = Math.floor(($scope.bill.total / numRoommates) * 100) / 100;
+      var evenly = ($scope.bill.total - amount * numRoommates) * 100;
 
       for (var i = 0; i < $scope.responsible.length; i++) {
         var responsible = false;
@@ -419,9 +415,10 @@ angular.module('main.bills').controller('BillsCtrl',
           if ($scope.selectedRoommates[j] == $scope.responsible[i].id) {
             responsible = true;
             $scope.responsible[i].amount = amount;
-            if (i == 0 && !evenly) {
+            if (evenly > 0) {
               $scope.responsible[i].amount += 0.01;
               $scope.responsible[i].amount = Math.round($scope.responsible[i].amount * 100) / 100;
+              evenly--;
             }
           }
         };
@@ -436,11 +433,7 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.splitBillEdit = function() {
       var numRoommates = $scope.selectedRoommates.length;
       var amount = Math.round(($scope.oldBill.amount / numRoommates) * 100) / 100;
-
-      var evenly = true;
-      if (amount * numRoommates != $scope.oldBill.amount) {
-        evenly = false;
-      }
+      var evenly = ($scope.bill.total - amount * numRoommates) * 100;
 
       for (var i = 0; i < $scope.updatedAmount.length; i++) {
         var responsible = false;
@@ -448,9 +441,10 @@ angular.module('main.bills').controller('BillsCtrl',
           if ($scope.selectedRoommates[j] == $scope.updatedAmount[i].userId) {
             responsible = true;
             $scope.updatedAmount[i].amount = amount;
-            if (i == 0 && !evenly) {
+            if (evenly > 0) {
               $scope.updatedAmount[i].amount += 0.01;
               $scope.updatedAmount[i].amount = Math.round($scope.updatedAmount[i].amount * 100) / 100;
+              evenly--;
             }
           }
         };

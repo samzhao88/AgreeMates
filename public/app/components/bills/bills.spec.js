@@ -107,6 +107,28 @@ describe('bills module', function() {
       'last_name': 'PerHot'
     };
 
+  var bill = {
+  	'name': 'add1',
+  	'total': 10,
+  	'interval': 0,
+  	'date': '06/01/14'
+  }
+
+  var responsible = [
+  	{
+  		'id': 69,
+  		'amount': 5
+  	},
+  	{
+  		'id': 1,
+  		'amount': 5
+  	},{
+  		'id': 88,
+  	}
+  ];
+
+  var selectedRoommates = [69, 1];
+
   var addBill = {
   	'name': 'add1',
   	'total': 10,
@@ -155,6 +177,9 @@ describe('bills module', function() {
 		  httpMock.whenGET('/apartment/users').respond(function(method, url, data, headers) {
 				return [200,users];
 		  });
+		  httpMock.whenPOST('/bills/', addBill).respond(function(method, url, data, headers) {
+				return [200,addResponse];
+			});
 		  httpMock.whenGET('/bills?type=unresolved').respond(unresolvedBills);
 		  httpMock.whenGET('/bills?type=resolved').respond(resolvedBills);
     }));
@@ -285,35 +310,38 @@ describe('bills module', function() {
 			});
 		});
 		
-		// describe('add bill', function() {
-		// 	beforeEach(function() {
-		// 		httpMock.expectPOST('/bills',addBill).respond(addResponse);
-		// 		//scope.bill = supply; 
-		// 		scope.unresolvedBills = unresolvedBills;
-		// 		scope.addBill();
-		// 		httpMock.flush();				
-		// 	});				
+		describe('add bill', function() {
+			beforeEach(function() {
+				httpMock.expectPOST('/bills/',addBill).respond(addResponse);
+				scope.bill = bill; 
+				scope.responsible = responsible;
+				scope.selectedRoommates = selectedRoommates;
+				scope.unresolvedBills = unresolvedBills.bills;
+				scope.userId = 69;
+				scope.addBill();
+				httpMock.flush();				
+			});				
 
-		// 	it('should add the bill to unresolvedBills', function() {
-		//   	expect(scope.unresolvedBills.length).to.equal(3);
-		// 	});
+			it('should add the bill to unresolvedBills', function() {
+		  	//expect(scope.unresolvedBills.length).to.equal(3);
+			});
 
-		// 	it('should get all the bills', function() {
+			it('should get all the bills', function() {
 		  
-		// 	});
+			});
 			
-		// 	it('should get all the bills', function() {
+			it('should get all the bills', function() {
 		  
-		// 	});
+			});
 
-		// 	it('should get all the bills', function() {
+			it('should get all the bills', function() {
 		  
-		// 	});
+			});
 
-		// 	it('should get all the bills', function() {
+			it('should get all the bills', function() {
 		  
-		// 	});			
-		// });
+			});			
+		});
 		
 		describe('delete bill', function() {
 			it('should get all the bills', function() {
