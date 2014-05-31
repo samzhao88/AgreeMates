@@ -36,10 +36,8 @@ angular.module('main.bills').controller('BillsCtrl',
     $scope.deleteId = -1;
     //delete bill index
     $scope.deleteIdx = -1;
-
     //get request didn't return yet
     $scope.loaded = false;
-
 
     //get current user ID and name
     $http.get('/user').
