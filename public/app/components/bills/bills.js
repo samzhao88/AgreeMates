@@ -79,6 +79,7 @@ angular.module('main.bills').controller('BillsCtrl',
         };
       };
       $scope.loaded = true;
+      $('.hide').removeClass('hide');
     }).
     error(function(data, status, headers, config){
         showErr(data.error);

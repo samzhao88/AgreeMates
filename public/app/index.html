@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="vendor/ionicons/css/ionicons.min.css">
   <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="app.css">
-  <link rel="stylesheet" href="vendor/fullcalendar/fullcalendar.css">
 </head>
 
 <body>
@@ -26,11 +25,11 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/">AgreeMates</a>
+        <a class="navbar-brand" href="/"><img id="brand-logo" src="img/logo.png" alt="AgreeMates"></a>
       </div>
 
       <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li><a href="https://github.com/AgreeMates/AgreeMates/wiki/Product-Home-Page"><i class="ion-ios7-information-outline" id="help-icon"></i></a></li>
+        <li><a href="https://github.com/AgreeMates/AgreeMates/wiki/Product-Home-Page"><i class="ion-ios7-help-outline" id="help-icon"></i></a></li>
       </ul>
 
       <!-- side-bar -->
@@ -78,10 +77,6 @@
               <a href='#/settings'>Settings</a>
             </li>
 
-            <li ng-class="{active: isActive('/calendar')}">
-              <a href='#/calendar'>Calendar</a>
-            </li>            
-
             <li class="visible-xs">
               <a href="https://github.com/AgreeMates/AgreeMates/wiki/Product-Home-Page">Help</a>
             </li>
@@ -119,7 +114,7 @@
   <script type="text/javascript" src="vendor/fullcalendar/gcal.js"></script>
 
   <script src="vendor/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-  
+
   <script src="app.js"></script>
 
   <script src="components/bills/bills.js"></script>
@@ -131,8 +126,6 @@
   <script src="components/apartment/apartment.js"></script>
   <script src="components/history/history.js"></script>
   <script src="components/invitations/invitations.js"></script>
-  <script src="components/calendar/calendar.js"></script>
-
 
   <script>
     // JS function to collapse the side-bar when the page is less than 768px wide
